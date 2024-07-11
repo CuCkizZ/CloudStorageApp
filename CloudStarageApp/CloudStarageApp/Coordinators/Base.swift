@@ -48,7 +48,7 @@ class Coorditator: CoordinatorProtocol {
     var childCoordinators: [CoordinatorProtocol]
     var type: CoordinatorType
     var navigationController: UINavigationController?
-    var finishDelegate: (CoorditatorFinishDelegate)?
+    var finishDelegate: CoorditatorFinishDelegate?
     
     init(childCoordinators: [CoordinatorProtocol] = [CoordinatorProtocol](), type: CoordinatorType, navigationController: UINavigationController, finishDelegate: CoorditatorFinishDelegate? = nil) {
         self.childCoordinators = childCoordinators
