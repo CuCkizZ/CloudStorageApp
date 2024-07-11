@@ -26,7 +26,7 @@ class ViewController: UIViewController {
         }
         
         label.text = "Hello World!"
-        label.font = .systemFont(ofSize: 40, weight: UIFont.Weight(20))
+        label.font = .Inter.bold.size(of: 40)
     }
 
 }
