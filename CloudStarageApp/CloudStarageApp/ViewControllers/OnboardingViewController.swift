@@ -90,6 +90,8 @@ class OnboardingViewController: UIViewController {
             pageControl.currentPage = 2
             pageViewController.setViewControllers([pages[2]], direction: .forward, animated: true)
             onboardingButton.setTitle("Войти", for: .normal)
+        case 2:
+            viewModel.onbordingFinish()
         default:
             break
         }
