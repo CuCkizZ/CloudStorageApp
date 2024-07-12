@@ -21,15 +21,16 @@ final class OnboardingCoordinator: Coorditator {
 private extension OnboardingCoordinator {
     
     func setupOnboarding() {
-        var pages = [UIViewController]()
-        let firstVC = UIViewController()
-        firstVC.view.backgroundColor = .purple
+        var pages = [OnboardingPageViewController]()
         
-        let secondVc = UIViewController()
-        secondVc.view.backgroundColor = .yellow
+        let firstVC = OnboardingPageViewController()
+        firstVC.configure(Constants.Onboarding.text1, Constants.Onboarding.image1)
         
-        let thirdVc = UIViewController()
-        thirdVc.view.backgroundColor = .green
+        let secondVc = OnboardingPageViewController()
+        secondVc.configure(Constants.Onboarding.text2, Constants.Onboarding.image2)
+    
+        let thirdVc = OnboardingPageViewController()
+        thirdVc.configure(Constants.Onboarding.text3, Constants.Onboarding.image3)
         
         pages.append(firstVC)
         pages.append(secondVc)
