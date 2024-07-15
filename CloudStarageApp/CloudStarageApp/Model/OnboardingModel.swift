@@ -10,5 +10,4 @@ import UIKit
 struct OnboardingModel {
     let image: String
     let text: String
-    let buttonTitle: String
 }
