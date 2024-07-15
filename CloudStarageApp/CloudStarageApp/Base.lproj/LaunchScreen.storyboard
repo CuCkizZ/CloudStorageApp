@@ -20,19 +20,18 @@
                                 <rect key="frame" x="46.666666666666657" y="276" width="300" height="300"/>
                                 <subviews>
                                     <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="лого" translatesAutoresizingMaskIntoConstraints="NO" id="IU9-S4-1Wg">
-                                        <rect key="frame" x="75" y="33" width="150" height="150"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="300" height="300"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="150" id="drc-Z9-EOl"/>
-                                            <constraint firstAttribute="height" constant="150" id="u8q-qK-4Qd"/>
+                                            <constraint firstAttribute="width" constant="300" id="drc-Z9-EOl"/>
+                                            <constraint firstAttribute="height" constant="300" id="u8q-qK-4Qd"/>
                                         </constraints>
                                     </imageView>
                                 </subviews>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
-                                    <constraint firstItem="IU9-S4-1Wg" firstAttribute="top" secondItem="hZu-jc-tg6" secondAttribute="top" constant="33" id="7Zx-pq-agB"/>
+                                    <constraint firstItem="IU9-S4-1Wg" firstAttribute="centerY" secondItem="hZu-jc-tg6" secondAttribute="centerY" id="0Rb-dd-9ZQ"/>
                                     <constraint firstItem="IU9-S4-1Wg" firstAttribute="centerX" secondItem="hZu-jc-tg6" secondAttribute="centerX" id="WcM-td-ckc"/>
                                     <constraint firstAttribute="height" constant="300" id="Xgx-cw-kXQ"/>
-                                    <constraint firstItem="IU9-S4-1Wg" firstAttribute="centerX" secondItem="hZu-jc-tg6" secondAttribute="centerX" id="k5E-7t-Sch"/>
                                     <constraint firstAttribute="width" constant="300" id="k5G-cx-jak"/>
                                 </constraints>
                             </view>
