@@ -27,6 +27,7 @@ class ViewController: UIViewController {
         
         label.text = "Hello World!"
         label.font = .Inter.bold.size(of: 40)
+        label.textColor = .black
     }
 
 }
