@@ -18,7 +18,7 @@ class OnboardingViewController: UIViewController {
     
     private var pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
     private var pageControl = UIPageControl()
-    lazy var onboardingButton = UIButton()
+    private lazy var onboardingButton = BigButtonView()
     
     init(pages: [OnboardingPageViewController] = [OnboardingPageViewController](), viewModel: OnboardingViewModelProtocol) {
         self.pages = pages
@@ -38,6 +38,7 @@ class OnboardingViewController: UIViewController {
         // Do any additional setup after loading the view.
         setupPageView()
         setupPageControl()
+        setupButton()
     }
     
     // MARK: - Navigation
@@ -61,18 +62,18 @@ class OnboardingViewController: UIViewController {
         pageControl.currentPageIndicatorTintColor = AppColors.standartBlue
         pageControl.backgroundStyle = .automatic
         
-        onboardingButton.setTitle("Далее", for: .normal)
-        onboardingButton.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
-        onboardingButton.titleLabel?.font = .Inter.light.size(of: 16)
-        onboardingButton.backgroundColor = AppColors.standartBlue
-        onboardingButton.layer.cornerRadius = 10
-        
         view.addSubview(pageControl)
         view.addSubview(onboardingButton)
         pageControl.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(140)
             make.centerX.equalToSuperview()
         }
+        
+       
+    }
+    
+    func setupButton() {
+        onboardingButton.action = buttonPressed
         
         onboardingButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(50)
@@ -89,7 +90,7 @@ class OnboardingViewController: UIViewController {
         case 1:
             pageControl.currentPage = 2
             pageViewController.setViewControllers([pages[2]], direction: .forward, animated: true)
-            onboardingButton.setTitle("Войти", for: .normal)
+            onboardingButton.setTitle("Войти")
         case 2:
             viewModel.onbordingFinish()
         default:
@@ -129,9 +130,9 @@ extension OnboardingViewController: UIPageViewControllerDelegate {
         if let firstVC = pendingViewControllers.first as? OnboardingPageViewController {
             if let index = pages.firstIndex(of: firstVC) {
                 pageControl.currentPage = index
-                if index == 2 { onboardingButton.setTitle("Войти", for: .normal)
+                if index == 2 { onboardingButton.setTitle("Войти")
                 } else {
-                    onboardingButton.setTitle("Далее", for: .normal)
+                    onboardingButton.setTitle("Далее")
                 }
             }
         }
