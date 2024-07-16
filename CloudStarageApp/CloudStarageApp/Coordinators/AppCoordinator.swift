@@ -15,10 +15,13 @@ class AppCoordinator: Coorditator {
     override func start() {
         showOnboardingFlow()
 //        if userStorage.skipOnboarding {
-//            showMainFlow()
+//            showAuthFlow()
 //        } else {
-//            showOnboardingFlow()
+//           showOnboardingFlow()
 //        }
+        
+      
+        
     }
     
     override func finish() {
@@ -40,6 +43,18 @@ private extension AppCoordinator {
         let tabBarController = factory.makeMainFlow(coordinator: self, finishDelegate: self)
         navigationController.pushViewController(tabBarController, animated: true)
     }
+    
+    func showAuthFlow() {
+        guard let navigationController = navigationController else { return }
+        let loginVC = factory.makeAuthFlow(coordinator: self, finishDelegate: self)
+        navigationController.pushViewController(loginVC, animated: true)
+    }
+}
+
+extension AppCoordinator {
+    func showMainScene() {
+        showMainFlow()
+    }
 }
 
 extension AppCoordinator: CoorditatorFinishDelegate {
@@ -49,7 +64,8 @@ extension AppCoordinator: CoorditatorFinishDelegate {
         switch childCoordinator.type {
         case .onboarding:
             navigationController?.viewControllers.removeAll()
-            showMainFlow()
+            //showMainFlow()
+            showAuthFlow()
         case .app:
             return
         default:

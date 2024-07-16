@@ -61,7 +61,7 @@ private extension OnboardingPageViewController {
         textLabel.snp.makeConstraints { make in
             make.width.equalTo(243)
         }
-        
+
         stackView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()
