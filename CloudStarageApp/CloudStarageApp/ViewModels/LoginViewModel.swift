@@ -8,6 +8,8 @@
 import Foundation
 
 protocol LoginViewOutput: AnyObject {
+    var isLoading: Observable<Bool> { get set }
+    
     func login(login: String, password: String)
     func registration()
     func openHomeVC()
@@ -15,6 +17,8 @@ protocol LoginViewOutput: AnyObject {
 }
 
 final class LoginViewModel {
+    
+    var isLoading: Observable<Bool> = Observable(false)
     
     private let coordinator: AppCoordinator
     
@@ -30,9 +34,14 @@ final class LoginViewModel {
 
 extension LoginViewModel: LoginViewOutput {
     func login(login: String, password: String) {
+        if isLoading.value ?? true {
+            return
+        }
+        isLoading.value = true
         DispatchQueue.global().asyncAfter(deadline: .now() + 2) { [weak self] in
             DispatchQueue.main.async {
                 guard let self = self else { return }
+                self.isLoading.value = false
                 self.goToMainScreen()
             }
         }

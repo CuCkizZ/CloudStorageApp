@@ -26,6 +26,8 @@ final class LoginViewController: UIViewController {
     private lazy var bottomButtomCT = NSLayoutConstraint()
     private lazy var bottomStackViewCT = NSLayoutConstraint()
     
+    let activityIndicator = UIActivityIndicatorView(style: .large)
+    
     
     private let welcomeLabel = UILabel()
     private let loginTextField = CSTextField()
@@ -63,6 +65,19 @@ final class LoginViewController: UIViewController {
         stopKeybordListener()
     }
     
+    func bindViewModel() {
+        viewModel.isLoading.bind { [weak self] isLoading in
+            guard let self = self, let isLoading = isLoading else { return }
+            DispatchQueue.main.async {
+                if isLoading {
+                    self.activityIndicator.startAnimating()
+                } else {
+                    self.activityIndicator.stopAnimating()
+                }
+            }
+        }
+    }
+    
 }
 
 // MARK: Private Setup Methods
@@ -71,12 +86,14 @@ private extension LoginViewController {
     
     func setupView() {
         view.backgroundColor = .white
+        view.addSubview(activityIndicator)
         view.addSubview(welcomeLabel)
         view.addSubview(stackView)
         view.addSubview(loginButton)
         setupButton()
         setupWelcomeLabel()
         setupConstraints()
+        bindViewModel()
     }
     
     func setupWelcomeLabel() {
@@ -98,7 +115,6 @@ private extension LoginViewController {
     }
     
     func setupConstraints() {
-        
         welcomeLabel.snp.makeConstraints { make in
             make.top.left.equalTo(view.safeAreaLayoutGuide).inset(16)
         }
@@ -119,6 +135,10 @@ private extension LoginViewController {
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(50)
             make.horizontalEdges.equalToSuperview().inset(20)
             make.height.equalTo(50)
+        }
+        
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
         }
     }
 }
