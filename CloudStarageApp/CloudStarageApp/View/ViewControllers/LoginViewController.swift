@@ -27,6 +27,7 @@ final class LoginViewController: UIViewController {
     private lazy var bottomStackViewCT = NSLayoutConstraint()
     
     let activityIndicator = UIActivityIndicatorView(style: .large)
+    private let loadingView = UIView()
     
     
     private let welcomeLabel = UILabel()
@@ -71,8 +72,10 @@ final class LoginViewController: UIViewController {
             DispatchQueue.main.async {
                 if isLoading {
                     self.activityIndicator.startAnimating()
+                    self.loadAnimating()
                 } else {
                     self.activityIndicator.stopAnimating()
+                    self.stopAnimating()
                 }
             }
         }
@@ -86,6 +89,7 @@ private extension LoginViewController {
     
     func setupView() {
         view.backgroundColor = .white
+        view.addSubview(loadingView)
         view.addSubview(activityIndicator)
         view.addSubview(welcomeLabel)
         view.addSubview(stackView)
@@ -113,6 +117,20 @@ private extension LoginViewController {
         print("taped")
         onSighInTapped()
     }
+    
+    func loadAnimating() {
+        loadingView.isHidden = false
+        loadingView.backgroundColor = .gray.withAlphaComponent(0.5)
+        
+        loadingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
+        }
+    }
+    
+    func stopAnimating() {
+        loadingView.isHidden = true
+    }
+
     
     func setupConstraints() {
         welcomeLabel.snp.makeConstraints { make in
