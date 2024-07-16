@@ -8,7 +8,7 @@
 import Foundation
 
 protocol LoginViewOutput: AnyObject {
-    func login()
+    func login(login: String, password: String)
     func registration()
     func openHomeVC()
     func close()
@@ -22,11 +22,20 @@ final class LoginViewModel {
         self.coordinator = coordinator
     }
     
+    private func goToMainScreen() {
+        coordinator.showMainScene()
+    }
+    
 }
 
 extension LoginViewModel: LoginViewOutput {
-    func login() {
-        
+    func login(login: String, password: String) {
+        DispatchQueue.global().asyncAfter(deadline: .now() + 2) { [weak self] in
+            DispatchQueue.main.async {
+                guard let self = self else { return }
+                self.goToMainScreen()
+            }
+        }
     }
     
     func registration() {

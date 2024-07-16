@@ -51,6 +51,12 @@ private extension AppCoordinator {
     }
 }
 
+extension AppCoordinator {
+    func showMainScene() {
+        showMainFlow()
+    }
+}
+
 extension AppCoordinator: CoorditatorFinishDelegate {
     func coordinatorDidFinish(childCoordinator: CoordinatorProtocol) {
         removeChildCoordinator(childCoordinator)

@@ -74,6 +74,7 @@ private extension LoginViewController {
         view.addSubview(welcomeLabel)
         view.addSubview(stackView)
         view.addSubview(loginButton)
+        setupButton()
         setupWelcomeLabel()
         setupConstraints()
     }
@@ -82,6 +83,18 @@ private extension LoginViewController {
         welcomeLabel.text = "Drive in"
         welcomeLabel.font = .Inter.bold.size(of: 40)
         welcomeLabel.textColor = .black
+    }
+    
+    func setupButton() {
+        loginButton.action = { [weak self] in
+            guard let self = self else { return }
+            self.buttonPressed()
+        }
+    }
+        
+    @objc func buttonPressed() {
+        print("taped")
+        onSighInTapped()
     }
     
     func setupConstraints() {
@@ -137,8 +150,8 @@ private extension LoginViewController {
     }
     
     @objc func keybordWillShow(_ notification: Notification) {
-//        guard let keybordFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
-//        let keyboardHeight = keybordFrame.cgRectValue.height
+        //        guard let keybordFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+        //        let keyboardHeight = keybordFrame.cgRectValue.height
         
     }
     
@@ -151,7 +164,7 @@ private extension LoginViewController {
 
 extension LoginViewController: LoginViewInput {
     func onSighInTapped() {
-        
+        viewModel.login(login: loginTextField.text ?? "", password: loginTextField.text ?? "")
     }
     
     func onSignUpTapped() {
