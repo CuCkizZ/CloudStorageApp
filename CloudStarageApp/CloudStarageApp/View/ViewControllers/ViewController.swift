@@ -21,8 +21,7 @@ class ViewController: UIViewController {
     func testSetup() {
         view.addSubview(label)
         label.snp.makeConstraints { make in
-            make.top.left.equalTo(view.safeAreaLayoutGuide).inset(20)
-            make.right.equalTo(view.safeAreaLayoutGuide).inset(100)
+            make.top.left.equalTo(view.safeAreaLayoutGuide).inset(16)
         }
         
         label.text = "Hello World!"

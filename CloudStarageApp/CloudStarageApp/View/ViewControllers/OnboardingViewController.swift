@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 protocol OnboardingViewControllerProtocol {
     
@@ -18,7 +19,7 @@ class OnboardingViewController: UIViewController {
     
     private var pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
     private var pageControl = UIPageControl()
-    private lazy var onboardingButton = BigButtonView()
+    private lazy var onboardingButton = CSBlueButton()
     
     init(pages: [OnboardingPageViewController] = [OnboardingPageViewController](), viewModel: OnboardingViewModelProtocol) {
         self.pages = pages
@@ -77,7 +78,7 @@ class OnboardingViewController: UIViewController {
         
         onboardingButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(50)
-            make.left.right.equalToSuperview().inset(20)
+            make.horizontalEdges.equalToSuperview().inset(20)
             make.height.equalTo(50)
         }
     }

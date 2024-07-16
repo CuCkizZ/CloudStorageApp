@@ -76,4 +76,12 @@ struct SceneFactory {
         //navigationController.pushViewController(tabBarController, animated: true)
         return tabBarController
     }
+    
+    static func makeAuthFlow(coordinator: AppCoordinator, finishDelegate: CoorditatorFinishDelegate) -> LoginViewController {
+        let viewModel = LoginViewModel(coordinator: coordinator)
+        let loginVC = LoginViewController(viewModel: viewModel)
+        return loginVC
+    }
+    
 }
+
