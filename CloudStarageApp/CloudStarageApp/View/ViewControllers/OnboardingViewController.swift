@@ -74,7 +74,10 @@ class OnboardingViewController: UIViewController {
     }
     
     func setupButton() {
-        onboardingButton.action = buttonPressed
+        onboardingButton.action = { [weak self] in
+            guard let self = self else { return }
+            self.buttonPressed()
+        }
         
         onboardingButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(50)

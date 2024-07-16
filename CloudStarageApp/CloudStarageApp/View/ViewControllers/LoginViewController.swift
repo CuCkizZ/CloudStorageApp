@@ -8,6 +8,12 @@
 import UIKit
 import SnapKit
 
+private enum Placeholder {
+    static let user = "Введите логин"
+    static let password = "Введите пароль"
+}
+
+
 protocol LoginViewInput: AnyObject {
     func onSighInTapped()
     func onSignUpTapped()
@@ -16,6 +22,10 @@ protocol LoginViewInput: AnyObject {
 final class LoginViewController: UIViewController {
     
     private let viewModel: LoginViewOutput
+    
+    private lazy var bottomButtomCT = NSLayoutConstraint()
+    private lazy var bottomStackViewCT = NSLayoutConstraint()
+    
     
     private let welcomeLabel = UILabel()
     private let loginTextField = CSTextField()
@@ -46,11 +56,13 @@ final class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
         setupView()
-        
-        // Do any additional setup after loading the view.
     }
+    
+    deinit {
+        stopKeybordListener()
+    }
+    
 }
 
 // MARK: Private Setup Methods
@@ -73,6 +85,7 @@ private extension LoginViewController {
     }
     
     func setupConstraints() {
+        
         welcomeLabel.snp.makeConstraints { make in
             make.top.left.equalTo(view.safeAreaLayoutGuide).inset(16)
         }
@@ -97,12 +110,42 @@ private extension LoginViewController {
     }
 }
 
-private enum Placeholder {
-    static let user = "Введите логин"
-    static let password = "Введите пароль"
+// MARK: Keybord
+
+private extension LoginViewController {
+    func setupObservers() {
+        startKeybordListener()
+    }
+    
+    func startKeybordListener() {
+        NotificationCenter.default.addObserver(self, selector: #selector(keybordWillShow(_:)),
+                                               name: UIResponder.keyboardWillShowNotification,
+                                               object: nil)
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(keybordWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
+        view.addGestureRecognizer(tapGesture)
+    }
+    
+    func stopKeybordListener() {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
+    @objc func handleTap(_ sender: UITapGestureRecognizer) {
+        view.endEditing(true)
+    }
+    
+    @objc func keybordWillShow(_ notification: Notification) {
+//        guard let keybordFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+//        let keyboardHeight = keybordFrame.cgRectValue.height
+        
+    }
+    
+    @objc func keybordWillHide(_ notification: Notification) {
+        
+    }
 }
-
-
 
 // MARK: - Protocol Methods
 
@@ -115,4 +158,6 @@ extension LoginViewController: LoginViewInput {
         
     }
 }
+
+
 
