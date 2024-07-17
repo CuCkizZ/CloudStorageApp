@@ -22,8 +22,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let navBar = UINavigationController()
         window?.rootViewController = navBar
         window?.makeKeyAndVisible()
-        let coordinator = AppCoordinator(type: .app, navigationController: navBar)
-        coordinator.start()
+        let appCoordinator = AppCoordinator(type: .app, navigationController: navBar)
+        self.coordinator = appCoordinator
+        appCoordinator.start()
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {
