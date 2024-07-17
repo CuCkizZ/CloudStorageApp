@@ -20,14 +20,14 @@ final class LoginViewModel {
     
     var isLoading: Observable<Bool> = Observable(false)
     
-    private let coordinator: AppCoordinator
+    private let coordinator: LoginCoordinator
     
-    init(coordinator: AppCoordinator) {
+    init(coordinator: LoginCoordinator) {
         self.coordinator = coordinator
     }
     
     private func goToMainScreen() {
-        coordinator.showMainScene()
+        coordinator.finish()
     }
     
 }

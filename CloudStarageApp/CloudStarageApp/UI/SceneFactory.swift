@@ -77,11 +77,22 @@ struct SceneFactory {
         return tabBarController
     }
     
-    static func makeAuthFlow(coordinator: AppCoordinator, finishDelegate: CoorditatorFinishDelegate) -> LoginViewController {
+    static func makeLoginScene(coordinator: LoginCoordinator) -> LoginViewController {
         let viewModel = LoginViewModel(coordinator: coordinator)
         let loginVC = LoginViewController(viewModel: viewModel)
         return loginVC
     }
+    
+    static func makeLoginFlow(coordinator: AppCoordinator,
+                              navigationController: UINavigationController,
+                              finisDelegate: CoorditatorFinishDelegate) -> LoginCoordinator {
+        let loginCoordinator = LoginCoordinator(type: .login,
+                                                          navigationController: navigationController,
+                                                          finishDelegate: finisDelegate)
+        coordinator.addChildCoordinator(loginCoordinator)
+        return loginCoordinator
+    }
+    
     
 }
 
