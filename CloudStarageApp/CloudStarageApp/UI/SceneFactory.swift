@@ -49,19 +49,19 @@ struct SceneFactory {
                              finishDelegate: CoorditatorFinishDelegate) -> TabBarController {
         let homeNavigationController = UINavigationController()
         let homeCoordinator = HomeCoordinator(type: .home, navigationController: homeNavigationController)
-        homeNavigationController.tabBarItem = UITabBarItem(title: "Главная", image: UIImage(systemName: "house.fill"), tag: 0)
+        homeNavigationController.tabBarItem = UITabBarItem(title: nil, image: UIImage(resource: .homeTab), tag: 0)
         homeCoordinator.finishDelegate = finishDelegate
         homeCoordinator.start()
         
         let storageNavigationController = UINavigationController()
         let storageCoordinator = StorageCoordinator(type: .storage, navigationController: storageNavigationController)
-        storageNavigationController.tabBarItem = UITabBarItem(title: "Хранищиле", image: UIImage(systemName: "folder.fill"), tag: 1)
+        storageNavigationController.tabBarItem = UITabBarItem(title: nil, image: UIImage(resource: .storageTab), tag: 1)
         storageCoordinator.finishDelegate = finishDelegate
         storageCoordinator.start()
         
         let profileNavigationController = UINavigationController()
         let profileCoordinator = ProfileCoordinator(type: .profile, navigationController: profileNavigationController)
-        profileNavigationController.tabBarItem = UITabBarItem(title: "Профиль", image: UIImage(systemName: "person.fill"), tag: 2)
+        profileNavigationController.tabBarItem = UITabBarItem(title: nil, image: UIImage(resource: .profileTab), tag: 2)
         profileCoordinator.finishDelegate = finishDelegate
         profileCoordinator.start()
         

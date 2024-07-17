@@ -22,11 +22,13 @@ class TabBarController: UITabBarController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
+        tabBar.itemPositioning = .centered
+        
         tabBar.backgroundColor = .white
         tabBar.tintColor = AppColors.standartBlue
         tabBar.layer.borderWidth = 1
-        tabBar.layer.borderColor = UIColor.gray.withAlphaComponent(0.1).cgColor
+        tabBar.layer.borderColor = { UIColor.gray.withAlphaComponent(0.1).cgColor }()
         let shadowImage = UIImage(named: "tabBarShadow")
         tabBar.shadowImage = shadowImage
     }
