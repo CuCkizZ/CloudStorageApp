@@ -24,6 +24,11 @@ extension UIFont {
                 UIFont(name: Constants.Inter.light, size: size)!
             }
         }
+        enum extraLight {
+            static func size(of size: CGFloat) -> UIFont {
+                UIFont(name: Constants.Inter.extraLight, size: size)!
+            }
+        }
     }
 }
 
