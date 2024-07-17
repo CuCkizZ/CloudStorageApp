@@ -46,10 +46,11 @@ protocol TabBarCoordinatorProtocol: AnyObject, CoordinatorProtocol {
 }
 
 class Coorditator: CoordinatorProtocol {
+    
     var childCoordinators: [CoordinatorProtocol]
     var type: CoordinatorType
     var navigationController: UINavigationController?
-    var finishDelegate: CoorditatorFinishDelegate?
+    weak var finishDelegate: CoorditatorFinishDelegate?
     
     init(childCoordinators: [CoordinatorProtocol] = [CoordinatorProtocol](), type: CoordinatorType, navigationController: UINavigationController, finishDelegate: CoorditatorFinishDelegate? = nil) {
         self.childCoordinators = childCoordinators

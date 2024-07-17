@@ -19,9 +19,6 @@ class AppCoordinator: Coorditator {
 //        } else {
 //           showOnboardingFlow()
 //        }
-        
-      
-        
     }
     
     override func finish() {
@@ -63,14 +60,14 @@ extension AppCoordinator: CoorditatorFinishDelegate {
         
         switch childCoordinator.type {
         case .onboarding:
-            navigationController?.viewControllers.removeAll()
             //showMainFlow()
             showAuthFlow()
+            navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         case .app:
             return
         case .login:
-            navigationController?.viewControllers.removeAll()
             showMainFlow()
+            navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         default:
             navigationController?.popToRootViewController(animated: false)
         }
