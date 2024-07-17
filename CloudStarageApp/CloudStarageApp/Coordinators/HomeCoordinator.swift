@@ -9,13 +9,21 @@ import UIKit
 
 final class HomeCoordinator: Coorditator {
     
+    private let factory = SceneFactory.self
+    
     override func start() {
-        let vc = ViewController()
-        vc.view.backgroundColor = .white
-        navigationController?.pushViewController(vc, animated: true)
-        
+        showHomeScene()
     }
     override func finish() {
         print("Im done")
+    }
+}
+
+extension HomeCoordinator {
+    
+    func showHomeScene() {
+        guard let navigationController = navigationController else { return }
+        let loginVC = factory.makeHomeScene(coordinator: self)
+        navigationController.pushViewController(loginVC, animated: true)
     }
 }

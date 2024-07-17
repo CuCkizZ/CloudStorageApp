@@ -93,6 +93,10 @@ struct SceneFactory {
         return loginCoordinator
     }
     
+    static func makeHomeScene(coordinator: HomeCoordinator) -> HomeViewController {
+        let homeVC = HomeViewController()
+        return homeVC
+    }
     
 }
 
