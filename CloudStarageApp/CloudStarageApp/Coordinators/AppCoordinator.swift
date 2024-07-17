@@ -43,11 +43,11 @@ private extension AppCoordinator {
         let tabBarController = factory.makeMainFlow(coordinator: self, finishDelegate: self)
         navigationController.pushViewController(tabBarController, animated: true)
     }
-    
     func showAuthFlow() {
         guard let navigationController = navigationController else { return }
-        let loginVC = factory.makeAuthFlow(coordinator: self, finishDelegate: self)
-        navigationController.pushViewController(loginVC, animated: true)
+        let loginCoordinator = factory.makeLoginFlow(coordinator: self,
+                                            navigationController: navigationController, finisDelegate: self)
+        loginCoordinator.start()
     }
 }
 
@@ -68,6 +68,9 @@ extension AppCoordinator: CoorditatorFinishDelegate {
             showAuthFlow()
         case .app:
             return
+        case .login:
+            navigationController?.viewControllers.removeAll()
+            showMainFlow()
         default:
             navigationController?.popToRootViewController(animated: false)
         }
