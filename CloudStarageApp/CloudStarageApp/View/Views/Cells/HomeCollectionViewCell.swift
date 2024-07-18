@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class HomeCollectionViewCell: UICollectionViewCell {
+final class HomeCollectionViewCell: UICollectionViewCell {
     
     private let view = UIView()
     
@@ -45,9 +45,14 @@ class HomeCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(dateLabel)
         
         setupLabels()
-        nameLabel.text = "Название файла"
-        sizeLabel.text = "5 кб"
-        dateLabel.text = "20.12.22 11:21"
+        
+    }
+    
+    func configure(_ model: CellDataModel) {
+        nameLabel.text = model.name
+        sizeLabel.text = model.size
+        dateLabel.text = model.date
+        contentImageView.image = model.icon
     }
     
 }

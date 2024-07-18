@@ -31,6 +31,7 @@ final class CSTextField: UITextField {
         self.leftViewMode = .always
         
         let placeholderColor = UIColor.white
-        self.attributedPlaceholder = NSAttributedString(string: "0", attributes: [NSAttributedString.Key.foregroundColor: placeholderColor])
+        self.attributedPlaceholder = NSAttributedString(string: "0", 
+                                                        attributes: [NSAttributedString.Key.foregroundColor: placeholderColor])
     }
 }

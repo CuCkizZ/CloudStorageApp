@@ -7,9 +7,9 @@
 
 import UIKit
 
-struct LastHomeModel {
+struct CellDataModel {
     let name: String
     let size: String
-    let date: Date
+    let date: String
     let icon: UIImage
 }

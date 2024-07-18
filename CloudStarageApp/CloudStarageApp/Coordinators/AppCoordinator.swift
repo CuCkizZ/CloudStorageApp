@@ -7,7 +7,7 @@
 
 import UIKit
 
-class AppCoordinator: Coorditator {
+final class AppCoordinator: Coorditator {
     
     private let userStorage = UserStorage.shared
     private let factory = SceneFactory.self
@@ -36,10 +36,11 @@ private extension AppCoordinator {
                                    finisDelegate: self)
     }
     
-    func showMainFlow() {
+    func showMainScene() {
         let tabBarController = factory.makeMainFlow(coordinator: self, finishDelegate: self)
         self.tabBarController = tabBarController
         let transition = CATransition()
+//        TODO: create transition file
         transition.duration = 0.3
         transition.type = .reveal
         self.window?.layer.add(transition, forKey: kCATransition)
@@ -51,13 +52,25 @@ private extension AppCoordinator {
                                             navigationController: navigationController, finisDelegate: self)
         loginCoordinator.start()
     }
+    
+    func showDetailScene() {
+//        guard let navigationController = navigationController else { return }
+//        let detailCoordinator = factory.makeDetailScene(coordinator: self)
+//        detailCoordinator.start()
+    }
+    
 }
 
 extension AppCoordinator {
-    func showMainScene() {
-        showMainFlow()
+    func showMainFlow() {
+        showMainScene()
+    }
+    func showDetealScene() {
+        
     }
 }
+
+// MARK: CoorditatorFinishDelegate
 
 extension AppCoordinator: CoorditatorFinishDelegate {
     func coordinatorDidFinish(childCoordinator: CoordinatorProtocol) {
@@ -71,8 +84,10 @@ extension AppCoordinator: CoorditatorFinishDelegate {
         case .app:
             return
         case .login:
-            showMainFlow()
+            showMainScene()
             navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
+        case .homeDetail:
+            showDetailScene()
         default:
             navigationController?.popToRootViewController(animated: false)
         }

@@ -39,7 +39,6 @@ final class OnboardingPageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Do any additional setup after loading the view.
         setupView()
         setupConstraints()
     }
@@ -57,11 +56,9 @@ private extension OnboardingPageViewController {
     }
     
     func setupConstraints() {
-        
         textLabel.snp.makeConstraints { make in
             make.width.equalTo(243)
         }
-
         stackView.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.centerY.equalToSuperview()

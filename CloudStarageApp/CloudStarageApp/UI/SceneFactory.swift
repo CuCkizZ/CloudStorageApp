@@ -47,6 +47,7 @@ struct SceneFactory {
     
     static func makeMainFlow(coordinator: AppCoordinator,
                              finishDelegate: CoorditatorFinishDelegate) -> TabBarController {
+        
         let homeNavigationController = UINavigationController()
         let homeCoordinator = HomeCoordinator(type: .home, navigationController: homeNavigationController)
         homeNavigationController.tabBarItem = UITabBarItem(title: nil, image: UIImage(resource: .homeTab), tag: 0)
@@ -69,11 +70,8 @@ struct SceneFactory {
         coordinator.addChildCoordinator(storageCoordinator)
         coordinator.addChildCoordinator(profileCoordinator)
         
-        print("tabbar controller")
-        
         let tabBarControllers = [homeNavigationController, storageNavigationController, profileNavigationController]
         let tabBarController = TabBarController(tabBarControllers: tabBarControllers)
-        //navigationController.pushViewController(tabBarController, animated: true)
         return tabBarController
     }
     
@@ -94,9 +92,13 @@ struct SceneFactory {
     }
     
     static func makeHomeScene(coordinator: HomeCoordinator) -> HomeViewController {
-        let homeVC = HomeViewController()
+        let viewModel = HomeViewModel(coordinator: coordinator)
+        let homeVC = HomeViewController(viewModel: viewModel)
         return homeVC
     }
-    
+    static func makeDetailScene(coordinator: DetailCoordinator) -> DetailViewController {
+        let detailVC = DetailViewController()
+        return detailVC
+    }
 }
 

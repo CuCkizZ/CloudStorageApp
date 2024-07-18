@@ -12,6 +12,7 @@ enum CoordinatorType {
     case onboarding
     case login
     case home
+    case homeDetail
     case storage
     case profile
 }
