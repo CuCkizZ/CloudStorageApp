@@ -12,7 +12,7 @@ protocol OnboardingViewControllerProtocol {
     
 }
 
-class OnboardingViewController: UIViewController {
+final class OnboardingViewController: UIViewController {
     
     private let viewModel: OnboardingViewModelProtocol
     private var pages: [OnboardingPageViewController]
@@ -35,14 +35,13 @@ class OnboardingViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        // Do any additional setup after loading the view.
         setupPageView()
         setupPageControl()
         setupButton()
     }
+}
     
-    // MARK: - Navigation
+private extension OnboardingViewController {
     
     func setupPageView() {
         view.backgroundColor = .white
@@ -70,7 +69,6 @@ class OnboardingViewController: UIViewController {
             make.centerX.equalToSuperview()
         }
         
-       
     }
     
     func setupButton() {
@@ -102,6 +100,7 @@ class OnboardingViewController: UIViewController {
         }
     }
 }
+
 
 extension OnboardingViewController: OnboardingViewControllerProtocol {
     

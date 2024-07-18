@@ -6,12 +6,10 @@
 //
 
 import UIKit
-import SnapKit
 
 final class CSBlueButton: UIButton {
     
     var action: (() -> Void)?
-    //private lazy var button = UIButton()
     
     init() {
         super .init(frame: .zero)
@@ -31,7 +29,7 @@ final class CSBlueButton: UIButton {
 
 private extension CSBlueButton {
     
-    private func setupButton() {
+    func setupButton() {
         self.setTitle("Далее", for: .normal)
         self.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
         self.titleLabel?.font = .Inter.light.size(of: 16)
@@ -39,7 +37,7 @@ private extension CSBlueButton {
         self.layer.cornerRadius = 12
     }
     
-    @objc private func buttonPressed() {
+    @objc func buttonPressed() {
         guard let action = self.action else { return }
         action()
     }

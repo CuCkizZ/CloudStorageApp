@@ -10,8 +10,11 @@ import SnapKit
 
 final class HomeViewController: UIViewController {
     
-    lazy var titleLable = UILabel()
-    lazy var collectionView: UICollectionView = {
+    var viewModel: HomeViewModelProtocol
+    var cellDataSource: [CellDataModel] = []
+    
+    private lazy var titleLable = UILabel()
+    private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
         layout.minimumLineSpacing = 20
@@ -21,12 +24,24 @@ final class HomeViewController: UIViewController {
         return collection
     }()
 
+    init(viewModel: HomeViewModelProtocol) {
+        self.viewModel = viewModel
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupLayout()
+        mapModel()
     }
-
+    
+    func mapModel() {
+        cellDataSource.append(contentsOf: repeatElement(CellDataModel(name: "Наименование", size: "5 кб", date: "12.12.32 33:22", icon: UIImage(resource: .file)), count: 5))
+    }
 }
 
 // MARK: Layout
@@ -46,7 +61,6 @@ private extension HomeViewController {
     }
     
     func setupTitleLable() {
-        
         titleLable.text = "Last one"
         titleLable.font = .Inter.bold.size(of: 30)
         titleLable.textColor = .black
@@ -81,11 +95,14 @@ extension HomeViewController: UICollectionViewDelegate {
 
 extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        30
+        cellDataSource.count
+        
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath)
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! HomeCollectionViewCell
+        let model = cellDataSource[indexPath.row]
+        cell.configure(model)
         
         return cell
     }
