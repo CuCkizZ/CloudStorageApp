@@ -9,13 +9,19 @@ import UIKit
 
 final class ProfileCoordinator: Coorditator {
     
+    private let factory = SceneFactory.self
+    
     override func start() {
-        let vc = ViewController()
-        vc.view.backgroundColor = AppColors.customGray
-        navigationController?.pushViewController(vc, animated: true)
+       showProfileScene()
         
     }
     override func finish() {
         print("Im done")
+    }
+    
+    func showProfileScene() {
+        guard let navigationController = navigationController else { return }
+        let loginVC = factory.makeProfileScene(coordinator: self)
+        navigationController.pushViewController(loginVC, animated: true)
     }
 }

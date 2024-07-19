@@ -100,5 +100,10 @@ struct SceneFactory {
         let detailVC = DetailViewController()
         return detailVC
     }
+    static func makeProfileScene(coordinator: ProfileCoordinator) -> ProfileViewController {
+        let viewModel = ProfileViewModel(coordinator: coordinator)
+        let view = ProfileViewController(viewModel: viewModel)
+        return view
+    }
 }
 

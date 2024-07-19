@@ -13,7 +13,15 @@
 		<string>Inter-Thin.ttf</string>
 		<string>Inter-ExtraBold.ttf</string>
 		<string>Inter-Bold.ttf</string>
-		<string>Inter-Black.ttfInter-Bold.ttfInter-ExtraBold.ttfInter-ExtraLight.ttfInter-Light.ttfInter-Medium.ttfInter-Regular.ttfInter-SemiBold.ttfInter-Thin.ttf</string>
+		<string>Inter-Black.ttf
+Inter-Bold.ttf
+Inter-ExtraBold.ttf
+Inter-ExtraLight.ttf
+Inter-Light.ttf
+Inter-Medium.ttf
+Inter-Regular.ttf
+Inter-SemiBold.ttf
+Inter-Thin.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
