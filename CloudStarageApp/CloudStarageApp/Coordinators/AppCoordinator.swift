@@ -54,9 +54,6 @@ private extension AppCoordinator {
     }
     
     func showDetailScene() {
-//        guard let navigationController = navigationController else { return }
-//        let detailCoordinator = factory.makeDetailScene(coordinator: self)
-//        detailCoordinator.start()
     }
     
 }

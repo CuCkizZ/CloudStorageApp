@@ -6,5 +6,8 @@
 //
 
 import Foundation
+import YandexLoginSDK
 
-
+class NetworkService {
+    
+}

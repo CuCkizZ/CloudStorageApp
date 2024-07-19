@@ -28,6 +28,7 @@ final class LoginViewController: UIViewController {
     
     let activityIndicator = UIActivityIndicatorView(style: .large)
     private let loadingView = UIView()
+    private let yandexButton = YandexButton()
     
     
     private let welcomeLabel = UILabel()
@@ -94,6 +95,7 @@ private extension LoginViewController {
         view.addSubview(welcomeLabel)
         view.addSubview(stackView)
         view.addSubview(loginButton)
+        view.addSubview(yandexButton)
         setupButton()
         setupWelcomeLabel()
         setupConstraints()
@@ -110,6 +112,10 @@ private extension LoginViewController {
         loginButton.action = { [weak self] in
             guard let self = self else { return }
             self.buttonPressed()
+        }
+        
+        func setupYandex() {
+            
         }
     }
         
@@ -134,7 +140,8 @@ private extension LoginViewController {
     
     func setupConstraints() {
         welcomeLabel.snp.makeConstraints { make in
-            make.top.left.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.left.equalToSuperview().inset(16)
+            make.top.equalToSuperview().inset(50)
         }
         stackView.snp.makeConstraints { make in
             make.center.equalToSuperview()
@@ -146,6 +153,12 @@ private extension LoginViewController {
         }
         passwordTextFiled.snp.makeConstraints { make in
             make.horizontalEdges.equalTo(stackView)
+            make.height.equalTo(50)
+        }
+        
+        yandexButton.snp.makeConstraints { make in
+            make.bottom.equalTo(loginButton.snp.top).inset(-16)
+            make.horizontalEdges.equalToSuperview().inset(20)
             make.height.equalTo(50)
         }
         
@@ -209,6 +222,5 @@ extension LoginViewController: LoginViewInput {
         
     }
 }
-
 
 
