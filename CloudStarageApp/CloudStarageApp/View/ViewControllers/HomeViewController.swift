@@ -13,7 +13,11 @@ final class HomeViewController: UIViewController {
     var viewModel: HomeViewModelProtocol
     var cellDataSource: [CellDataModel] = []
     
-    private lazy var titleLable = UILabel()
+    private lazy var titleLabel: TitleLabel = {
+        let label = TitleLabel()
+        label.text = "Last One"
+        return label
+    }()
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.scrollDirection = .vertical
@@ -55,15 +59,8 @@ private extension HomeViewController {
     
     func setupView() {
         view.backgroundColor = .white
-        view.addSubview(titleLable)
+        view.addSubview(titleLabel)
         setupCollectionView()
-        setupTitleLable()
-    }
-    
-    func setupTitleLable() {
-        titleLable.text = "Last one"
-        titleLable.font = .Inter.bold.size(of: 30)
-        titleLable.textColor = .black
     }
     
     func setupCollectionView() {
@@ -76,13 +73,12 @@ private extension HomeViewController {
     }
     
     func setupConstraints() {
-        titleLable.snp.makeConstraints { make in
-            make.top.equalToSuperview().inset(100)
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide)
             make.left.equalToSuperview().inset(16)
         }
-        
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(titleLable.snp.bottom)
+            make.top.equalTo(titleLabel.snp.bottom)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
             make.horizontalEdges.equalToSuperview()
         }

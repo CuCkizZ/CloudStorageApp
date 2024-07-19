@@ -31,7 +31,12 @@ final class LoginViewController: UIViewController {
     private let yandexButton = YandexButton()
     
     
-    private let welcomeLabel = UILabel()
+    private lazy var titleLabel: TitleLabel = {
+        let label = TitleLabel()
+        label.text = "Drive in"
+        return label
+    }()
+    
     private let loginTextField = CSTextField()
     private let passwordTextFiled = CSTextField()
     private let loginButton = CSBlueButton()
@@ -92,20 +97,13 @@ private extension LoginViewController {
         view.backgroundColor = .white
         view.addSubview(loadingView)
         view.addSubview(activityIndicator)
-        view.addSubview(welcomeLabel)
+        view.addSubview(titleLabel)
         view.addSubview(stackView)
         view.addSubview(loginButton)
         view.addSubview(yandexButton)
         setupButton()
-        setupWelcomeLabel()
         setupConstraints()
         bindViewModel()
-    }
-    
-    func setupWelcomeLabel() {
-        welcomeLabel.text = "Drive in"
-        welcomeLabel.font = .Inter.bold.size(of: 40)
-        welcomeLabel.textColor = .black
     }
     
     func setupButton() {
@@ -139,9 +137,9 @@ private extension LoginViewController {
 
     
     func setupConstraints() {
-        welcomeLabel.snp.makeConstraints { make in
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide)
             make.left.equalToSuperview().inset(16)
-            make.top.equalToSuperview().inset(50)
         }
         stackView.snp.makeConstraints { make in
             make.center.equalToSuperview()

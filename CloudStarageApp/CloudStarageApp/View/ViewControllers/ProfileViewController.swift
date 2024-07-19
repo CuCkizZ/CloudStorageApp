@@ -12,7 +12,11 @@ final class ProfileViewController: UIViewController {
     
     private let viewModel: ProfileViewModelProtocol
     
-    private let profileLable = UILabel()
+    private lazy var titleLabel: TitleLabel = {
+        let label = TitleLabel()
+        label.text = "Profile"
+        return label
+    }()
     
     private let totalStorageLabel = UILabel()
     private let usedStorageLabel = UILabel()
@@ -59,6 +63,7 @@ private extension ProfileViewController {
     
     func setupLayout() {
         view.backgroundColor = .white
+        view.addSubview(titleLabel)
         view.addSubview(storageCircleView)
         view.addSubview(usedStorageLabel)
         view.addSubview(leftStorageLabel)
@@ -75,20 +80,9 @@ private extension ProfileViewController {
         storageCircleView.image = UIImage(resource: .storageCircle)
         leftImageView.image = UIImage(resource: .playstore)
         usedImageView.image = UIImage(resource: .playstore)
-        
-        
-        
+    
         leftStorageLabel.text = "15gb - lefr"
         usedStorageLabel.text = "5gb - used"
-        
-//        view.addSubview(storageCircleView)
-//        view.addSubview(usedStorageLabel)
-//        view.addSubview(leftStorageLabel)
-//        view.addSubview(usedImageView)
-//        view.addSubview(leftImageView)
-//        view.addSubview(downloadButton)
-        
-        
     }
     
     func setupShapeLayer() {
@@ -115,12 +109,6 @@ private extension ProfileViewController {
 
         view.layer.addSublayer(totalShapeLayer)
         view.layer.addSublayer(usageShapeLayer)
-    }
-    
-    func setupWelcomeLabel() {
-        profileLable.text = "Profile"
-        profileLable.font = .Inter.bold.size(of: 40)
-        profileLable.textColor = .black
     }
     
     func setupButton() {
@@ -157,6 +145,10 @@ private extension ProfileViewController {
     }
     
     func setupConstraints() {
+        titleLabel.snp.makeConstraints { make in
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.left.equalToSuperview().inset(16)
+        }
         storageCircleView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).inset(20)
             make.centerX.equalToSuperview()
