@@ -11,9 +11,12 @@ protocol HomeViewModelProtocol: AnyObject {
     var isLoading: Observable<Bool> { get set }
 //    var cellDataSource: Observable<[Files]> { get set }
     var searchKeyword: String { get set }
+    var mapData: [Files] { get set }
+    
     
     func numbersOfRowInSection() -> Int
     func fetchData()
+    func mapModel() 
     func presentDetailVC()
     func sortData()
 }
@@ -25,10 +28,14 @@ final class HomeViewModel {
     
     var isLoading: Observable<Bool> = Observable(false)
 //    private var model: [Files]?
-    var cellDataSource: [Files] = MappedDataModel.get()
+    private var cellDataSource: [Files] = MappedDataModel.get()
+    var mapData: [Files] = []
+    
     
     init(coordinator: HomeCoordinator) {
         self.coordinator = coordinator
+        mapModel()
+        
     }
 //    
 //    private func mapModel() {
@@ -40,23 +47,21 @@ final class HomeViewModel {
 //        }
     
     
-//    func mapModel() {
-//        cellDataSource.append(contentsOf: repeatElement(CellDataModel(name: "Наименование", size: "5 кб", date: "12.12.32 33:22", icon: UIImage(resource: .file)), count: 5))
-//    }
-    
-//    func mapModel() -> [Files] {
-//        cellDataSource = MappedDataModel.get()
-//    }
+    func mapModel() {
+        mapData = cellDataSource.filter { $0.date.contains("2022") }
+    }
+
 }
     
 extension HomeViewModel: HomeViewModelProtocol {
     
     func numbersOfRowInSection() -> Int {
-        return cellDataSource.count
+        print(mapData.count)
+        return mapData.count
+       
     }
     
     func fetchData() {
-        
     }
     
     func presentDetailVC() {
