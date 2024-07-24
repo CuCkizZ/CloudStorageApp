@@ -1,11 +1,4 @@
-//
-//  titleLable.swift
-//  CloudStarageApp
-//
-//  Created by Nikita Beglov on 19.07.2024.
-//
-
-import UIKit
+import UIKit.UILabel
 
 final class TitleLabel: UILabel {
     

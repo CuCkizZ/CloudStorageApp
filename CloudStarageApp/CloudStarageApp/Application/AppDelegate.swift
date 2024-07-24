@@ -1,9 +1,3 @@
-//
-//  AppDelegate.swift
-//  CloudStarageApp
-//
-//  Created by Nikita Beglov on 11.07.2024.
-//
 
 import UIKit
 import CoreData

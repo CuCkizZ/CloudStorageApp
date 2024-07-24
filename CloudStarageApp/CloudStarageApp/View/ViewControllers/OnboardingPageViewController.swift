@@ -1,10 +1,3 @@
-//
-//  OnboardingPageViewController.swift
-//  CloudStarageApp
-//
-//  Created by Nikita Beglov on 12.07.2024.
-//
-
 import UIKit
 import SnapKit
 

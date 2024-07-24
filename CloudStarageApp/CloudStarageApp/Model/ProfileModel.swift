@@ -1,10 +1,3 @@
-//
-//  ProfileModel.swift
-//  CloudStarageApp
-//
-//  Created by Nikita Beglov on 23.07.2024.
-//
-
 import Foundation
 
 struct ProfileModel {
