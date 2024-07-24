@@ -15,6 +15,7 @@ final class OnboardingViewModel {
     
     private let userStorage = UserStorage.shared
     weak var coordinator: OnboardingCoordinator?
+    let model: [OnboardingModel] = []
     
     init(coordinator: OnboardingCoordinator) {
         self.coordinator = coordinator

@@ -12,6 +12,7 @@ enum CoordinatorType {
     case onboarding
     case login
     case home
+    case homeDetail
     case storage
     case profile
 }
@@ -50,12 +51,14 @@ class Coorditator: CoordinatorProtocol {
     var childCoordinators: [CoordinatorProtocol]
     var type: CoordinatorType
     var navigationController: UINavigationController?
+    var window: UIWindow?
     weak var finishDelegate: CoorditatorFinishDelegate?
     
-    init(childCoordinators: [CoordinatorProtocol] = [CoordinatorProtocol](), type: CoordinatorType, navigationController: UINavigationController, finishDelegate: CoorditatorFinishDelegate? = nil) {
+    init(childCoordinators: [CoordinatorProtocol] = [CoordinatorProtocol](), type: CoordinatorType, navigationController: UINavigationController,window: UIWindow? = nil,  finishDelegate: CoorditatorFinishDelegate? = nil) {
         self.childCoordinators = childCoordinators
         self.type = type
         self.navigationController = navigationController
+        self.window = window
         self.finishDelegate = finishDelegate
     }
     

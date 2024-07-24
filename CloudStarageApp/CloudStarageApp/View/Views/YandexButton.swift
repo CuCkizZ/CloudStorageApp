@@ -1,13 +1,13 @@
 //
-//  BigButtonView.swift
+//  YandexButton.swift
 //  CloudStarageApp
 //
-//  Created by Nikita Beglov on 15.07.2024.
+//  Created by Nikita Beglov on 18.07.2024.
 //
 
 import UIKit
 
-final class CSBlueButton: UIButton {
+final class YandexButton: UIButton {
     
     var action: (() -> Void)?
     
@@ -27,13 +27,13 @@ final class CSBlueButton: UIButton {
 
 // MARK: Private Setup Methods
 
-private extension CSBlueButton {
+private extension YandexButton {
     
     func setupButton() {
-        self.setTitle("Далее", for: .normal)
+        self.setTitle("ЯндекID", for: .normal)
         self.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
         self.titleLabel?.font = .Inter.light.size(of: 16)
-        self.backgroundColor = AppColors.standartBlue
+        self.backgroundColor = .black
         self.layer.cornerRadius = 12
     }
     

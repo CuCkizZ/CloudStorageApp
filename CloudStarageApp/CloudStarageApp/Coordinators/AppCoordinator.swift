@@ -7,18 +7,19 @@
 
 import UIKit
 
-class AppCoordinator: Coorditator {
+final class AppCoordinator: Coorditator {
     
     private let userStorage = UserStorage.shared
     private let factory = SceneFactory.self
+    private var tabBarController = UITabBarController()
     
     override func start() {
-        showOnboardingFlow()
-//        if userStorage.skipOnboarding {
-//            showAuthFlow()
-//        } else {
-//           showOnboardingFlow()
-//        }
+       // showMainFlow()
+        if userStorage.skipOnboarding {
+            showAuthFlow()
+        } else {
+           showOnboardingFlow()
+        }
     }
     
     override func finish() {
@@ -35,10 +36,15 @@ private extension AppCoordinator {
                                    finisDelegate: self)
     }
     
-    func showMainFlow() {
-        guard let navigationController = navigationController else { return }
+    func showMainScene() {
         let tabBarController = factory.makeMainFlow(coordinator: self, finishDelegate: self)
-        navigationController.pushViewController(tabBarController, animated: true)
+        self.tabBarController = tabBarController
+        let transition = CATransition()
+//        TODO: create transition file
+        transition.duration = 0.3
+        transition.type = .reveal
+        self.window?.layer.add(transition, forKey: kCATransition)
+        self.window?.rootViewController = self.tabBarController
     }
     func showAuthFlow() {
         guard let navigationController = navigationController else { return }
@@ -46,13 +52,22 @@ private extension AppCoordinator {
                                             navigationController: navigationController, finisDelegate: self)
         loginCoordinator.start()
     }
+    
+    func showDetailScene() {
+    }
+    
 }
 
 extension AppCoordinator {
-    func showMainScene() {
-        showMainFlow()
+    func showMainFlow() {
+        showMainScene()
+    }
+    func showDetealScene() {
+        
     }
 }
+
+// MARK: CoorditatorFinishDelegate
 
 extension AppCoordinator: CoorditatorFinishDelegate {
     func coordinatorDidFinish(childCoordinator: CoordinatorProtocol) {
@@ -66,8 +81,10 @@ extension AppCoordinator: CoorditatorFinishDelegate {
         case .app:
             return
         case .login:
-            showMainFlow()
+            showMainScene()
             navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
+        case .homeDetail:
+            showDetailScene()
         default:
             navigationController?.popToRootViewController(animated: false)
         }

@@ -47,21 +47,22 @@ struct SceneFactory {
     
     static func makeMainFlow(coordinator: AppCoordinator,
                              finishDelegate: CoorditatorFinishDelegate) -> TabBarController {
+        
         let homeNavigationController = UINavigationController()
         let homeCoordinator = HomeCoordinator(type: .home, navigationController: homeNavigationController)
-        homeNavigationController.tabBarItem = UITabBarItem(title: "Главная", image: UIImage(systemName: "house.fill"), tag: 0)
+        homeNavigationController.tabBarItem = UITabBarItem(title: nil, image: UIImage(resource: .homeTab), tag: 0)
         homeCoordinator.finishDelegate = finishDelegate
         homeCoordinator.start()
         
         let storageNavigationController = UINavigationController()
         let storageCoordinator = StorageCoordinator(type: .storage, navigationController: storageNavigationController)
-        storageNavigationController.tabBarItem = UITabBarItem(title: "Хранищиле", image: UIImage(systemName: "folder.fill"), tag: 1)
+        storageNavigationController.tabBarItem = UITabBarItem(title: nil, image: UIImage(resource: .storageTab), tag: 1)
         storageCoordinator.finishDelegate = finishDelegate
         storageCoordinator.start()
         
         let profileNavigationController = UINavigationController()
         let profileCoordinator = ProfileCoordinator(type: .profile, navigationController: profileNavigationController)
-        profileNavigationController.tabBarItem = UITabBarItem(title: "Профиль", image: UIImage(systemName: "person.fill"), tag: 2)
+        profileNavigationController.tabBarItem = UITabBarItem(title: nil, image: UIImage(resource: .profileTab), tag: 2)
         profileCoordinator.finishDelegate = finishDelegate
         profileCoordinator.start()
         
@@ -69,11 +70,8 @@ struct SceneFactory {
         coordinator.addChildCoordinator(storageCoordinator)
         coordinator.addChildCoordinator(profileCoordinator)
         
-        print("tabbar controller")
-        
         let tabBarControllers = [homeNavigationController, storageNavigationController, profileNavigationController]
         let tabBarController = TabBarController(tabBarControllers: tabBarControllers)
-        //navigationController.pushViewController(tabBarController, animated: true)
         return tabBarController
     }
     
@@ -93,6 +91,19 @@ struct SceneFactory {
         return loginCoordinator
     }
     
-    
+    static func makeHomeScene(coordinator: HomeCoordinator) -> HomeViewController {
+        let viewModel = HomeViewModel(coordinator: coordinator)
+        let homeVC = HomeViewController(viewModel: viewModel)
+        return homeVC
+    }
+    static func makeDetailScene(coordinator: DetailCoordinator) -> DetailViewController {
+        let detailVC = DetailViewController()
+        return detailVC
+    }
+    static func makeProfileScene(coordinator: ProfileCoordinator) -> ProfileViewController {
+        let viewModel = ProfileViewModel(coordinator: coordinator)
+        let view = ProfileViewController(viewModel: viewModel)
+        return view
+    }
 }
 

@@ -1,27 +1,29 @@
 //
-//  ProfileCoordinator.swift
+//  DetailCoordinator.swift
 //  CloudStarageApp
 //
-//  Created by Nikita Beglov on 11.07.2024.
+//  Created by Nikita Beglov on 17.07.2024.
 //
 
-import UIKit
+import Foundation
 
-final class ProfileCoordinator: Coorditator {
+final class DetailCoordinator: Coorditator {
     
     private let factory = SceneFactory.self
     
     override func start() {
-       showProfileScene()
-        
+        showDetailScene()
     }
     override func finish() {
         print("Im done")
     }
+}
+
+extension DetailCoordinator {
     
-    func showProfileScene() {
+    func showDetailScene() {
         guard let navigationController = navigationController else { return }
-        let loginVC = factory.makeProfileScene(coordinator: self)
+        let loginVC = factory.makeDetailScene(coordinator: self)
         navigationController.pushViewController(loginVC, animated: true)
     }
 }

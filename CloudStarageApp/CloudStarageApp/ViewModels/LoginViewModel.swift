@@ -47,6 +47,8 @@ extension LoginViewModel: LoginViewOutput {
         }
     }
     
+//    TODO: корректировать вм
+    
     func registration() {
         
     }
@@ -58,6 +60,4 @@ extension LoginViewModel: LoginViewOutput {
     func close() {
         
     }
-    
-    
 }

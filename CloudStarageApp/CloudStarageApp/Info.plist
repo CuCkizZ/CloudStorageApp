@@ -2,6 +2,22 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+       <string>primaryyandexloginsdk</string>
+       <string>secondaryyandexloginsdk</string>
+    </array>
+    <key>CFBundleURLTypes</key>
+    <array>
+       <dict>
+          <key>CFBundleURLName</key>
+          <string>YandexLoginSDK</string>
+          <key>CFBundleURLSchemes</key>
+          <array>
+             <string>yx56933db27900412f8f8dc0a8afcad6a3</string>
+          </array>
+       </dict>
+    </array>
 	<key>UIAppFonts</key>
 	<array>
 		<string>Inter-VariableFont_slnt,wght.ttf</string>
@@ -13,7 +29,15 @@
 		<string>Inter-Thin.ttf</string>
 		<string>Inter-ExtraBold.ttf</string>
 		<string>Inter-Bold.ttf</string>
-		<string>Inter-Black.ttfInter-Bold.ttfInter-ExtraBold.ttfInter-ExtraLight.ttfInter-Light.ttfInter-Medium.ttfInter-Regular.ttfInter-SemiBold.ttfInter-Thin.ttf</string>
+		<string>Inter-Black.ttf
+Inter-Bold.ttf
+Inter-ExtraBold.ttf
+Inter-ExtraLight.ttf
+Inter-Light.ttf
+Inter-Medium.ttf
+Inter-Regular.ttf
+Inter-SemiBold.ttf
+Inter-Thin.ttf</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
