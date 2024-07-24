@@ -1,11 +1,4 @@
-//
-//  YandexButton.swift
-//  CloudStarageApp
-//
-//  Created by Nikita Beglov on 18.07.2024.
-//
-
-import UIKit
+import UIKit.UIButton
 
 final class YandexButton: UIButton {
     

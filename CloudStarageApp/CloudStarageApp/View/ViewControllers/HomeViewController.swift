@@ -1,10 +1,3 @@
-//
-//  HomeViewController.swift
-//  CloudStarageApp
-//
-//  Created by Nikita Beglov on 17.07.2024.
-//
-
 import UIKit
 import SnapKit
 
@@ -20,20 +13,20 @@ final class HomeViewController: UIViewController {
     }()
     private lazy var directionButton = UIButton()
     private lazy var collectionView: UICollectionView = {
-        let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
-        layout.minimumLineSpacing = 0
-        layout.minimumInteritemSpacing = 0
-        layout.itemSize = CGSize(width: 100, height: 100)
-        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        return collection
 //        let layout = UICollectionViewFlowLayout()
-//        layout.scrollDirection = .vertical
-//        layout.minimumLineSpacing = 20
-//        layout.minimumInteritemSpacing = 20
-//        layout.itemSize = CGSize(width: view.bounds.width, height: 33)
+//        layout.scrollDirection = .horizontal
+//        layout.minimumLineSpacing = 0
+//        layout.minimumInteritemSpacing = 0
+//        layout.itemSize = CGSize(width: 100, height: 100)
 //        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
 //        return collection
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.minimumLineSpacing = 20
+        layout.minimumInteritemSpacing = 20
+        layout.itemSize = CGSize(width: view.bounds.width, height: 33)
+        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        return collection
     }()
 
     init(viewModel: HomeViewModelProtocol) {

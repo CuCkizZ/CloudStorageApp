@@ -1,10 +1,3 @@
-//
-//  LoginViewController.swift
-//  CloudStarageApp
-//
-//  Created by Nikita Beglov on 15.07.2024.
-//
-
 import UIKit
 import SnapKit
 import YandexLoginSDK
@@ -119,17 +112,6 @@ private extension LoginViewController {
             guard let self = self else { return }
             self.buttonPressed()
         }
-        
-        func setupYandex() {
-            
-        }
-    }
-        
-    @objc func yandexPress() {
-        try? yandex.activate(with: "56933db27900412f8f8dc0a8afcad6a3", authorizationStrategy: .default)
-        try? yandex.authorize(with: self)
-//        let ns = NSUserActivity()
-//        yandex.handleUserActivity(ns.)
     }
     
     @objc func buttonPressed() {

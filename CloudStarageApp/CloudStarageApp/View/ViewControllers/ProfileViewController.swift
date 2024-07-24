@@ -1,10 +1,3 @@
-//
-//  ProfileViewController.swift
-//  CloudStarageApp
-//
-//  Created by Nikita Beglov on 18.07.2024.
-//
-
 import UIKit
 import SnapKit
 
@@ -130,25 +123,7 @@ private extension ProfileViewController {
     }
     
 //    MARK: ButtonMethod
-    
-//    @objc func updateShapeLayer() {
-//        let animation = CABasicAnimation(keyPath: "strokeEnd")
-//        animation.fromValue = totalShapeLayer.strokeEnd
-//        animation.toValue = 1
-//        animation.duration = 1
-//        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-//        
-//        totalShapeLayer.strokeEnd = 1
-//        totalShapeLayer.add(animation, forKey: "strokeEnd")
-//        
-//        animation.fromValue = usageShapeLayer.strokeEnd
-//        animation.toValue = 0.5
-//        animation.duration = 1
-//        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-//        
-//        usageShapeLayer.strokeEnd = 0.5
-//        usageShapeLayer.add(animation, forKey: "strokeEnd")
-//    }
+
     
     func setupConstraints() {
         titleLabel.snp.makeConstraints { make in
