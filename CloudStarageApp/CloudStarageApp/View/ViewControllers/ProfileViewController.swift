@@ -11,6 +11,7 @@ import SnapKit
 final class ProfileViewController: UIViewController {
     
     private let viewModel: ProfileViewModelProtocol
+    private var dataSource = Profile.get()
     
     private lazy var titleLabel: TitleLabel = {
         let label = TitleLabel()
@@ -18,7 +19,7 @@ final class ProfileViewController: UIViewController {
         return label
     }()
     
-    private let totalStorageLabel = UILabel()
+    private var totalStorageLabel = UILabel()
     private let usedStorageLabel = UILabel()
     private let leftStorageLabel = UILabel()
     
@@ -42,21 +43,10 @@ final class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
        
-        storageCircleView.isHidden = true
         setupLayout()
+        updateViewLayer()
+        setupLabel()
     }
-    
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
-    }
-    */
-
 }
 
 private extension ProfileViewController {
@@ -64,7 +54,7 @@ private extension ProfileViewController {
     func setupLayout() {
         view.backgroundColor = .white
         view.addSubview(titleLabel)
-        view.addSubview(storageCircleView)
+        view.addSubview(totalStorageLabel)
         view.addSubview(usedStorageLabel)
         view.addSubview(leftStorageLabel)
         view.addSubview(usedImageView)
@@ -73,42 +63,36 @@ private extension ProfileViewController {
         setupViews()
         setupConstraints()
         setupShapeLayer()
+        configure(model: dataSource)
     }
     
     func setupViews() {
         setupButton()
-        storageCircleView.image = UIImage(resource: .storageCircle)
         leftImageView.image = UIImage(resource: .playstore)
         usedImageView.image = UIImage(resource: .playstore)
     
-        leftStorageLabel.text = "15gb - lefr"
-        usedStorageLabel.text = "5gb - used"
+        
     }
     
-    func setupShapeLayer() {
-        let center = CGPoint(x: view.bounds.midX, y: view.bounds.midY - 200)
-        let radius = min(view.bounds.width, view.bounds.height) / 4
-        let usagePath = UIBezierPath(arcCenter: center, radius: radius, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi - CGFloat.pi / 2, clockwise: true)
-        let totalPath = UIBezierPath(arcCenter: center, radius: radius, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi - CGFloat.pi / 2, clockwise: true)
+    func configure(model: ProfileModel) {
         
-        usageShapeLayer.path = usagePath.cgPath
-        usageShapeLayer.fillColor = UIColor.clear.cgColor
-        usageShapeLayer.lineJoin = .round
-        usageShapeLayer.strokeColor = AppColors.storagePink.cgColor
-        usageShapeLayer.lineWidth = 40
-        usageShapeLayer.strokeStart = 0.000001
-        usageShapeLayer.strokeEnd = 0.000000
+        let intT = Int(model.total)
+        let intL = Int(model.left)
+        let intU = Int(model.usage)
+        totalStorageLabel.text = String(describing: intT) + "гб"
+        leftStorageLabel.text = "\(intL) гб - свободно"
+        usedStorageLabel.text = "\(intU) гб - занято"
+    }
+    
+    func setupLabel() {
+        totalStorageLabel.textColor = .black
+        leftStorageLabel.textColor = .black
+        usedStorageLabel.textColor = .black
         
-
-        totalShapeLayer.path = totalPath.cgPath
-        totalShapeLayer.fillColor = UIColor.white.cgColor
-        totalShapeLayer.strokeColor = AppColors.customGray.cgColor
-        totalShapeLayer.lineWidth = 40
-        totalShapeLayer.strokeStart = 0.000001
-        totalShapeLayer.strokeEnd = 1
-
-        view.layer.addSublayer(totalShapeLayer)
-        view.layer.addSublayer(usageShapeLayer)
+        totalStorageLabel.font = .Inter.regular.size(of: 50)
+        leftStorageLabel.font = .Inter.regular.size(of: 12)
+        usedStorageLabel.font = .Inter.regular.size(of: 12)
+        totalStorageLabel.layer.zPosition = 1
     }
     
     func setupButton() {
@@ -122,10 +106,11 @@ private extension ProfileViewController {
         downloadButton.layer.shadowOpacity = 0.3
         downloadButton.layer.masksToBounds = false
         
-        downloadButton.addTarget(self, action: #selector(updateShapeLayer), for: .touchUpInside)
+        //downloadButton.addTarget(self, action: #selector(updateShapeLayer), for: .touchUpInside)
     }
     
-    @objc func updateShapeLayer() {
+    func updateViewLayer() {
+        let usageSt = CGFloat(dataSource.usage / 20)
         let animation = CABasicAnimation(keyPath: "strokeEnd")
         animation.fromValue = totalShapeLayer.strokeEnd
         animation.toValue = 1
@@ -136,28 +121,48 @@ private extension ProfileViewController {
         totalShapeLayer.add(animation, forKey: "strokeEnd")
         
         animation.fromValue = usageShapeLayer.strokeEnd
-        animation.toValue = 0.5
+        animation.toValue = usageSt
         animation.duration = 1
         animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
         
-        usageShapeLayer.strokeEnd = 0.5
+        usageShapeLayer.strokeEnd = usageSt
         usageShapeLayer.add(animation, forKey: "strokeEnd")
     }
+    
+//    MARK: ButtonMethod
+    
+//    @objc func updateShapeLayer() {
+//        let animation = CABasicAnimation(keyPath: "strokeEnd")
+//        animation.fromValue = totalShapeLayer.strokeEnd
+//        animation.toValue = 1
+//        animation.duration = 1
+//        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+//        
+//        totalShapeLayer.strokeEnd = 1
+//        totalShapeLayer.add(animation, forKey: "strokeEnd")
+//        
+//        animation.fromValue = usageShapeLayer.strokeEnd
+//        animation.toValue = 0.5
+//        animation.duration = 1
+//        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+//        
+//        usageShapeLayer.strokeEnd = 0.5
+//        usageShapeLayer.add(animation, forKey: "strokeEnd")
+//    }
     
     func setupConstraints() {
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
             make.left.equalToSuperview().inset(16)
         }
-        storageCircleView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(20)
-            make.centerX.equalToSuperview()
-            make.height.width.equalTo(200)
+        totalStorageLabel.snp.makeConstraints { make in
+            make.centerX.equalTo(view.safeAreaLayoutGuide)
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(100)
         }
         
         usedImageView.snp.makeConstraints { make in
             make.left.equalToSuperview().inset(20)
-            make.top.equalTo(storageCircleView.snp.bottom).inset(-30)
+            make.centerY.equalToSuperview()
             make.height.width.equalTo(30)
         }
         
@@ -168,7 +173,7 @@ private extension ProfileViewController {
         }
         usedStorageLabel.snp.makeConstraints { make in
             make.left.equalTo(usedImageView.snp.right).inset(-10)
-            make.top.equalTo(storageCircleView.snp.bottom).inset(-35)
+            make.centerY.equalToSuperview()
         }
         leftStorageLabel.snp.makeConstraints { make in
             make.left.equalTo(leftImageView.snp.right).inset(-10)
@@ -181,3 +186,33 @@ private extension ProfileViewController {
         }
     }
 }
+
+// MARK: ShapeLayoutSetupExtension
+
+extension ProfileViewController {
+    func setupShapeLayer() {
+        let center = CGPoint(x: view.bounds.midX, y: view.bounds.midY - 150)
+        let radius = min(view.bounds.width, view.bounds.height) / 4
+        let usagePath = UIBezierPath(arcCenter: center, radius: radius, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi - CGFloat.pi / 2, clockwise: true)
+        let totalPath = UIBezierPath(arcCenter: center, radius: radius, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi - CGFloat.pi / 2, clockwise: true)
+        
+        usageShapeLayer.path = usagePath.cgPath
+        usageShapeLayer.fillColor = UIColor.clear.cgColor
+        usageShapeLayer.lineJoin = .round
+        usageShapeLayer.strokeColor = AppColors.storagePink.cgColor
+        usageShapeLayer.lineWidth = 40
+        usageShapeLayer.strokeStart = 0.000001
+        usageShapeLayer.strokeEnd = 0.000000
+    
+        totalShapeLayer.path = totalPath.cgPath
+        totalShapeLayer.fillColor = UIColor.white.cgColor
+        totalShapeLayer.strokeColor = AppColors.customGray.cgColor
+        totalShapeLayer.lineWidth = 40
+        totalShapeLayer.strokeStart = 0.000001
+        totalShapeLayer.strokeEnd = 1
+
+        view.layer.addSublayer(totalShapeLayer)
+        view.layer.addSublayer(usageShapeLayer)
+    }
+}
+

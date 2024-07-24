@@ -7,13 +7,45 @@
 
 import UIKit
 import CoreData
+import YandexLoginSDK
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        do {
+            let clientID = "56933db27900412f8f8dc0a8afcad6a3"
+            try YandexLoginSDK.shared.activate(with: clientID)
+        } catch {
+            print("1 application func error")
+        }
+        
         return true
     }
+    
+    func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]
+       ) -> Bool {
+       
+           do {
+               try YandexLoginSDK.shared.handleOpenURL(url)
+           } catch {
+               print("2 application func error")
+           }
+           
+           return true
+       }
+    
+    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void
+     ) -> Bool {
+     
+         do {
+             try YandexLoginSDK.shared.handleUserActivity(userActivity)
+         } catch {
+             print("3td application func error")
+         }
+         
+         return true
+     }
 
     // MARK: UISceneSession Lifecycle
 

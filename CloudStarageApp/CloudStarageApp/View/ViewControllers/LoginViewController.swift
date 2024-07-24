@@ -7,6 +7,7 @@
 
 import UIKit
 import SnapKit
+import YandexLoginSDK
 
 private enum Placeholder {
     static let user = "Введите логин"
@@ -22,13 +23,15 @@ protocol LoginViewInput: AnyObject {
 final class LoginViewController: UIViewController {
     
     private let viewModel: LoginViewOutput
+    private var yandex = YandexLoginSDK.shared
+    
     
     private lazy var bottomButtomCT = NSLayoutConstraint()
     private lazy var bottomStackViewCT = NSLayoutConstraint()
     
     let activityIndicator = UIActivityIndicatorView(style: .large)
     private let loadingView = UIView()
-    private let yandexButton = YandexButton()
+    private let blackButton = YandexButton()
     
     
     private lazy var titleLabel: TitleLabel = {
@@ -65,13 +68,15 @@ final class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
+        
         setupView()
     }
     
     deinit {
         stopKeybordListener()
     }
-    
+
     func bindViewModel() {
         viewModel.isLoading.bind { [weak self] isLoading in
             guard let self = self, let isLoading = isLoading else { return }
@@ -86,8 +91,11 @@ final class LoginViewController: UIViewController {
             }
         }
     }
-    
 }
+    
+    // MARK: - YandexSDK
+
+
 
 // MARK: Private Setup Methods
 
@@ -100,7 +108,7 @@ private extension LoginViewController {
         view.addSubview(titleLabel)
         view.addSubview(stackView)
         view.addSubview(loginButton)
-        view.addSubview(yandexButton)
+        view.addSubview(blackButton)
         setupButton()
         setupConstraints()
         bindViewModel()
@@ -117,6 +125,13 @@ private extension LoginViewController {
         }
     }
         
+    @objc func yandexPress() {
+        try? yandex.activate(with: "56933db27900412f8f8dc0a8afcad6a3", authorizationStrategy: .default)
+        try? yandex.authorize(with: self)
+//        let ns = NSUserActivity()
+//        yandex.handleUserActivity(ns.)
+    }
+    
     @objc func buttonPressed() {
         print("taped")
         onSighInTapped()
@@ -154,7 +169,7 @@ private extension LoginViewController {
             make.height.equalTo(50)
         }
         
-        yandexButton.snp.makeConstraints { make in
+        blackButton.snp.makeConstraints { make in
             make.bottom.equalTo(loginButton.snp.top).inset(-16)
             make.horizontalEdges.equalToSuperview().inset(20)
             make.height.equalTo(50)
@@ -212,6 +227,7 @@ private extension LoginViewController {
 // MARK: - Protocol Methods
 
 extension LoginViewController: LoginViewInput {
+    
     func onSighInTapped() {
         viewModel.login(login: loginTextField.text ?? "", password: loginTextField.text ?? "")
     }

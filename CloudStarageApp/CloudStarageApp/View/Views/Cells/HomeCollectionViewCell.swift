@@ -10,13 +10,12 @@ import SnapKit
 
 final class HomeCollectionViewCell: UICollectionViewCell {
     
-    private let view = UIView()
-    
     private lazy var contentImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(resource: .file)
         return imageView
     }()
+    
     private lazy var nameLabel = UILabel()
     private lazy var sizeLabel = UILabel()
     private lazy var dateLabel = UILabel()
@@ -48,7 +47,7 @@ final class HomeCollectionViewCell: UICollectionViewCell {
         
     }
     
-    func configure(_ model: CellDataModel) {
+    func configure(_ model: Files) {
         nameLabel.text = model.name
         sizeLabel.text = model.size
         dateLabel.text = model.date

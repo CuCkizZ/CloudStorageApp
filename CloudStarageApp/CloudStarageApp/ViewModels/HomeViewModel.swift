@@ -9,6 +9,7 @@ import UIKit
 
 protocol HomeViewModelProtocol: AnyObject {
     var isLoading: Observable<Bool> { get set }
+//    var cellDataSource: Observable<[Files]> { get set }
     var searchKeyword: String { get set }
     
     func numbersOfRowInSection() -> Int
@@ -20,26 +21,38 @@ protocol HomeViewModelProtocol: AnyObject {
 final class HomeViewModel {
     
     private let coordinator: HomeCoordinator
-    private let model = [Int]()
     var searchKeyword: String = ""
     
     var isLoading: Observable<Bool> = Observable(false)
-    var celDataSource: [CellDataModel] = []
+//    private var model: [Files]?
+    var cellDataSource: [Files] = MappedDataModel.get()
     
     init(coordinator: HomeCoordinator) {
         self.coordinator = coordinator
-        //self.mapModel()
     }
+//    
+//    private func mapModel() {
+//        DispatchQueue.main.async { [weak self] in
+//            guard let self = self else { return }
+//            self.model = MapedDataModel.mapModel()
+//            print(model?.count)
+//            
+//        }
     
-    func mapModel() {
-        celDataSource.append(contentsOf: repeatElement(CellDataModel(name: "Наименование", size: "5 кб", date: "12.12.32 33:22", icon: UIImage(resource: .file)), count: 5))
-    }
+    
+//    func mapModel() {
+//        cellDataSource.append(contentsOf: repeatElement(CellDataModel(name: "Наименование", size: "5 кб", date: "12.12.32 33:22", icon: UIImage(resource: .file)), count: 5))
+//    }
+    
+//    func mapModel() -> [Files] {
+//        cellDataSource = MappedDataModel.get()
+//    }
 }
     
 extension HomeViewModel: HomeViewModelProtocol {
     
     func numbersOfRowInSection() -> Int {
-        celDataSource.count
+        return cellDataSource.count
     }
     
     func fetchData() {
@@ -47,7 +60,7 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func presentDetailVC() {
-        
+        coordinator.showHomeScene()
     }
     
     func sortData() {

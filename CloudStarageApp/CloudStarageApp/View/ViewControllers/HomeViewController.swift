@@ -11,21 +11,29 @@ import SnapKit
 final class HomeViewController: UIViewController {
     
     var viewModel: HomeViewModelProtocol
-    var cellDataSource: [CellDataModel] = []
+    var cellDataSource: [Files] = MappedDataModel.get()
     
     private lazy var titleLabel: TitleLabel = {
         let label = TitleLabel()
         label.text = "Last One"
         return label
     }()
+    private lazy var directionButton = UIButton()
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        layout.minimumLineSpacing = 20
-        layout.minimumInteritemSpacing = 20
-        layout.itemSize = CGSize(width: view.bounds.width, height: 33)
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 0
+        layout.minimumInteritemSpacing = 0
+        layout.itemSize = CGSize(width: 100, height: 100)
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
+//        let layout = UICollectionViewFlowLayout()
+//        layout.scrollDirection = .vertical
+//        layout.minimumLineSpacing = 20
+//        layout.minimumInteritemSpacing = 20
+//        layout.itemSize = CGSize(width: view.bounds.width, height: 33)
+//        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
+//        return collection
     }()
 
     init(viewModel: HomeViewModelProtocol) {
@@ -40,12 +48,14 @@ final class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
-        mapModel()
+        
+        // mapModel()
     }
     
-    func mapModel() {
-        cellDataSource.append(contentsOf: repeatElement(CellDataModel(name: "Наименование", size: "5 кб", date: "12.12.32 33:22", icon: UIImage(resource: .file)), count: 5))
-    }
+    
+//    func mapModel() {
+//        cellDataSource.append(contentsOf: repeatElement(CellDataModel(name: "Наименование", size: "5 кб", date: "12.12.32 33:22", icon: UIImage(resource: .file)), count: 5))
+//    }
 }
 
 // MARK: Layout
@@ -55,6 +65,7 @@ private extension HomeViewController {
     func setupLayout() {
         setupView()
         setupConstraints()
+        
     }
     
     func setupView() {
@@ -66,10 +77,11 @@ private extension HomeViewController {
     func setupCollectionView() {
         view.addSubview(collectionView)
         collectionView.backgroundColor = .white
-        collectionView.contentMode = .left
+        collectionView.contentMode = .center
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.register(HomeCollectionViewCell.self, forCellWithReuseIdentifier: "cell")
+       // collectionView.register(HomeCollectionViewCell.self, forCellWithReuseIdentifier: "vCell")
+        collectionView.register(HCollectionViewCell.self, forCellWithReuseIdentifier: "hCell")
     }
     
     func setupConstraints() {
@@ -86,17 +98,19 @@ private extension HomeViewController {
 }
 
 extension HomeViewController: UICollectionViewDelegate {
-    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        viewModel.presentDetailVC()
+    }
 }
 
 extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        cellDataSource.count
+        viewModel.numbersOfRowInSection()
         
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "cell", for: indexPath) as! HomeCollectionViewCell
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "hCell", for: indexPath) as! HCollectionViewCell
         let model = cellDataSource[indexPath.row]
         cell.configure(model)
         

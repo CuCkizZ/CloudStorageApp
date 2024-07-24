@@ -21,6 +21,7 @@ final class TitleLabel: UILabel {
     
     private func setupView() {
         self.font = .Inter.bold.size(of: 40)
+        self.backgroundColor = .white
         self.textColor = .black
     }
     
