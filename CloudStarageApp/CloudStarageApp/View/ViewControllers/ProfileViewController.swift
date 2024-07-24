@@ -15,14 +15,12 @@ final class ProfileViewController: UIViewController {
     private var totalStorageLabel = UILabel()
     private let usedStorageLabel = UILabel()
     private let leftStorageLabel = UILabel()
-    
     private let usedImageView = UIImageView()
     private let leftImageView = UIImageView()
     private let storageCircleView = UIImageView()
-    
+    private let downloadButton = UIButton()
     private lazy var totalShapeLayer = CAShapeLayer()
     private lazy var usageShapeLayer = CAShapeLayer()
-    private let downloadButton = UIButton()
     
     init(viewModel: ProfileViewModelProtocol) {
         self.viewModel = viewModel
@@ -41,6 +39,8 @@ final class ProfileViewController: UIViewController {
         setupLabel()
     }
 }
+
+// MARK: Private Methods
 
 private extension ProfileViewController {
     
@@ -63,12 +63,9 @@ private extension ProfileViewController {
         setupButton()
         leftImageView.image = UIImage(resource: .playstore)
         usedImageView.image = UIImage(resource: .playstore)
-    
-        
     }
     
     func configure(model: ProfileModel) {
-        
         let intT = Int(model.total)
         let intL = Int(model.left)
         let intU = Int(model.usage)
@@ -124,7 +121,6 @@ private extension ProfileViewController {
     
 //    MARK: ButtonMethod
 
-    
     func setupConstraints() {
         titleLabel.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide)
