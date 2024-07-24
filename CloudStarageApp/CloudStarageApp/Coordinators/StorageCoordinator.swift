@@ -9,13 +9,22 @@ import UIKit
 
 final class StorageCoordinator: Coorditator {
     
+    
+    private let factory = SceneFactory.self
+    
     override func start() {
-        let vc = StorageViewController()
-        vc.view.backgroundColor = AppColors.storagePink
-        navigationController?.pushViewController(vc, animated: true)
-        
+        showStorageScene()
     }
     override func finish() {
         print("Im done")
+    }
+}
+
+extension StorageCoordinator {
+    
+    func showStorageScene() {
+        guard let navigationController = navigationController else { return }
+        let loginVC = factory.makeStorageScene(coordinator: self)
+        navigationController.pushViewController(loginVC, animated: true)
     }
 }
