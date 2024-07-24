@@ -5,6 +5,7 @@ final class HomeViewController: UIViewController {
     
     var viewModel: HomeViewModelProtocol
     var cellDataSource: [Files] = MappedDataModel.get()
+//    var mapData: [Files] = []
     
     private lazy var titleLabel: TitleLabel = {
         let label = TitleLabel()
@@ -38,17 +39,18 @@ final class HomeViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        //viewModel.mapModel()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
+        collectionView.reloadData()
         
-        // mapModel()
+       
     }
-    
-    
-//    func mapModel() {
-//        cellDataSource.append(contentsOf: repeatElement(CellDataModel(name: "Наименование", size: "5 кб", date: "12.12.32 33:22", icon: UIImage(resource: .file)), count: 5))
-//    }
 }
 
 // MARK: Layout
@@ -73,8 +75,8 @@ private extension HomeViewController {
         collectionView.contentMode = .center
         collectionView.delegate = self
         collectionView.dataSource = self
-       // collectionView.register(HomeCollectionViewCell.self, forCellWithReuseIdentifier: "vCell")
-        collectionView.register(HCollectionViewCell.self, forCellWithReuseIdentifier: "hCell")
+        collectionView.register(HomeCollectionViewCell.self, forCellWithReuseIdentifier: "vCell")
+        //collectionView.register(HCollectionViewCell.self, forCellWithReuseIdentifier: "hCell")
     }
     
     func setupConstraints() {
@@ -103,8 +105,9 @@ extension HomeViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "hCell", for: indexPath) as! HCollectionViewCell
-        let model = cellDataSource[indexPath.row]
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "vCell", for: indexPath) as! HomeCollectionViewCell
+        //let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "vCell", for: indexPath) as! HCollectionViewCell
+        let model = viewModel.mapData[indexPath.row]
         cell.configure(model)
         
         return cell

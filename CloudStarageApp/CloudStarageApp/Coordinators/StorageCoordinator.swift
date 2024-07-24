@@ -10,7 +10,7 @@ import UIKit
 final class StorageCoordinator: Coorditator {
     
     override func start() {
-        let vc = ViewController()
+        let vc = StorageViewController()
         vc.view.backgroundColor = AppColors.storagePink
         navigationController?.pushViewController(vc, animated: true)
         
