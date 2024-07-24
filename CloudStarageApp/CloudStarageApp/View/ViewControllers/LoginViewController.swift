@@ -60,9 +60,7 @@ final class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        
-        
+     
         setupView()
     }
     
@@ -105,7 +103,7 @@ private extension LoginViewController {
         setupButton()
         setupConstraints()
         bindViewModel()
-        setupObservers()
+        //setupObservers()
     }
     
     func setupButton() {

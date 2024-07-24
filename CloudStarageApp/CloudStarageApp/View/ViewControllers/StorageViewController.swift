@@ -1,8 +1,40 @@
 import UIKit
 import SnapKit
 
+private enum PresentationStyle: String, CaseIterable {
+    case table
+    case defaultGrid
+    
+    var buttonImage: UIImage {
+        switch self {
+        case .table: return #imageLiteral(resourceName: "file")
+        case .defaultGrid: return #imageLiteral(resourceName: "profileTab")
+        }
+    }
+}
 
 final class StorageViewController: UIViewController {
+    
+    //MARK: CollectionView
+    
+    private var selectedStyle: PresentationStyle = .table {
+        didSet { updatePresentationStyle() }
+    }
+    private var styleDelegates: [PresentationStyle: CollectionViewSelectableItemDelegate] = {
+        let result: [PresentationStyle: CollectionViewSelectableItemDelegate] = [
+            .table: TabledContentCollectionViewDelegate(),
+            .defaultGrid: DefaultGriddedContentCollectionViewDelegate()
+        ]
+        result.values.forEach {
+            $0.didSelectItem = { _ in
+                print("Item selected")
+            }
+        }
+        return result
+    }()
+    
+    
+    // MARK: Model
    
     private var viewModel: StorageViewModelProtocol
     private var cellDataSource: [Files] = MappedDataModel.get()
@@ -17,10 +49,10 @@ final class StorageViewController: UIViewController {
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        layout.minimumLineSpacing = 20
-        layout.minimumInteritemSpacing = 20
-        layout.itemSize = CGSize(width: view.bounds.width, height: 33)
+        layout.minimumLineSpacing = 4
+        layout.minimumInteritemSpacing = 4
+        //layout.collectionView?.contentMode = .scaleToFill
+        //layout.itemSize = CGSize(width: view.bounds.width, height: 100)
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
@@ -40,6 +72,28 @@ final class StorageViewController: UIViewController {
         setupLayout()
         collectionView.reloadData()
 
+        
+        updatePresentationStyle()
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: selectedStyle.buttonImage, style: .plain, target: self, action: #selector(changeContentLayout))
+        
+    }
+    
+    private func updatePresentationStyle() {
+        collectionView.delegate = styleDelegates[selectedStyle]
+        collectionView.performBatchUpdates({
+            collectionView.reloadData()
+        }, completion: nil)
+
+        navigationItem.rightBarButtonItem?.image = selectedStyle.buttonImage
+    }
+    
+    @objc private func changeContentLayout() {
+        let allCases = PresentationStyle.allCases
+        guard let index = allCases.firstIndex(of: selectedStyle) else { return }
+        let nextIndex = (index + 1) % allCases.count
+        selectedStyle = allCases[nextIndex]
+        
     }
 }
 
@@ -65,7 +119,7 @@ private extension StorageViewController {
         collectionView.contentMode = .center
         collectionView.delegate = self
         collectionView.dataSource = self
-        collectionView.register(HomeCollectionViewCell.self, forCellWithReuseIdentifier: "vCell")
+        collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.reuseID)
     }
     
     func setupConstraints() {
@@ -95,8 +149,8 @@ extension StorageViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "vCell", 
-                                                            for: indexPath) as? HomeCollectionViewCell else {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID, 
+                                                            for: indexPath) as? CollectionViewCell else {
             fatalError("Wrong cell")
         }
         let model = cellDataSource[indexPath.row]
