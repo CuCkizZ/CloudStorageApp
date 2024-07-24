@@ -76,7 +76,6 @@ private extension HomeViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(HomeCollectionViewCell.self, forCellWithReuseIdentifier: "vCell")
-        //collectionView.register(HCollectionViewCell.self, forCellWithReuseIdentifier: "hCell")
     }
     
     func setupConstraints() {
@@ -105,8 +104,10 @@ extension HomeViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "vCell", for: indexPath) as! HomeCollectionViewCell
-        //let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "vCell", for: indexPath) as! HCollectionViewCell
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "vCell",
+                                                            for: indexPath) as? HomeCollectionViewCell else {
+            fatalError("Wrong cell")
+        }
         let model = viewModel.mapData[indexPath.row]
         cell.configure(model)
         

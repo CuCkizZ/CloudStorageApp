@@ -87,11 +87,6 @@ extension StorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         viewModel.presentDetailVC()
     }
-    
-    func collectionView(_ collectionView: UICollectionView, canMoveItemAt indexPath: IndexPath) -> Bool {
-        true
-    }
-    
 }
 
 extension StorageViewController: UICollectionViewDataSource {
