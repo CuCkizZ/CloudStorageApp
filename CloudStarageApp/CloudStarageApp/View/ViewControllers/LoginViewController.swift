@@ -25,14 +25,6 @@ final class LoginViewController: UIViewController {
     let activityIndicator = UIActivityIndicatorView(style: .large)
     private let loadingView = UIView()
     private let blackButton = YandexButton()
-    
-    
-    private lazy var titleLabel: TitleLabel = {
-        let label = TitleLabel()
-        label.text = "Drive in"
-        return label
-    }()
-    
     private let loginTextField = CSTextField()
     private let passwordTextFiled = CSTextField()
     private let loginButton = CSBlueButton()
@@ -60,7 +52,7 @@ final class LoginViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-     
+        
         setupView()
     }
     
@@ -96,14 +88,20 @@ private extension LoginViewController {
         view.backgroundColor = .white
         view.addSubview(loadingView)
         view.addSubview(activityIndicator)
-        view.addSubview(titleLabel)
+        //view.addSubview(titleLabel)
         view.addSubview(stackView)
         view.addSubview(loginButton)
         view.addSubview(blackButton)
         setupButton()
         setupConstraints()
         bindViewModel()
+        SetupNavBar()
         //setupObservers()
+    }
+    
+    func SetupNavBar() {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        title = "Drive In"
     }
     
     func setupButton() {
@@ -132,10 +130,6 @@ private extension LoginViewController {
 
     
     func setupConstraints() {
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide)
-            make.left.equalToSuperview().inset(16)
-        }
         stackView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.horizontalEdges.equalToSuperview().inset(20)
@@ -195,7 +189,7 @@ private extension LoginViewController {
     
     @objc func keybordWillShow(_ notification: Notification) {
                 guard let keybordFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
-                let keyboardHeight = keybordFrame.cgRectValue.height
+               // let keyboardHeight = keybordFrame.cgRectValue.height
         
     }
     

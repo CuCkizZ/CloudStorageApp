@@ -41,11 +41,6 @@ final class StorageViewController: UIViewController {
 //    var mapData: [Files] = []
     
     private lazy var directionButton = UIButton()
-    private lazy var titleLabel: TitleLabel = {
-        let label = TitleLabel()
-        label.text = "Storage"
-        return label
-    }()
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -69,32 +64,12 @@ final class StorageViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         setupLayout()
         collectionView.reloadData()
-
-        
-        updatePresentationStyle()
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: selectedStyle.buttonImage, style: .plain, target: self, action: #selector(changeContentLayout))
-        
     }
     
-    private func updatePresentationStyle() {
-        collectionView.delegate = styleDelegates[selectedStyle]
-        collectionView.performBatchUpdates({
-            collectionView.reloadData()
-        }, completion: nil)
 
-        navigationItem.rightBarButtonItem?.image = selectedStyle.buttonImage
-    }
-    
-    @objc private func changeContentLayout() {
-        let allCases = PresentationStyle.allCases
-        guard let index = allCases.firstIndex(of: selectedStyle) else { return }
-        let nextIndex = (index + 1) % allCases.count
-        selectedStyle = allCases[nextIndex]
-        
-    }
 }
 
 // MARK: Layout
@@ -103,14 +78,21 @@ private extension StorageViewController {
     
     func setupLayout() {
         setupView()
+        SetupNavBar()
+        updatePresentationStyle()
         setupConstraints()
         
     }
     
     func setupView() {
         view.backgroundColor = .white
-        view.addSubview(titleLabel)
         setupCollectionView()
+    }
+    
+    func SetupNavBar() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: selectedStyle.buttonImage, style: .plain, target: self, action: #selector(changeContentLayout))
+        navigationController?.navigationBar.prefersLargeTitles = true
+        title = "Storage"
     }
     
     func setupCollectionView() {
@@ -122,15 +104,25 @@ private extension StorageViewController {
         collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.reuseID)
     }
     
+    private func updatePresentationStyle() {
+        collectionView.delegate = styleDelegates[selectedStyle]
+        collectionView.performBatchUpdates({
+            collectionView.reloadData()
+        }, completion: nil)
+        navigationItem.rightBarButtonItem?.image = selectedStyle.buttonImage
+    }
+    
+    @objc private func changeContentLayout() {
+        let allCases = PresentationStyle.allCases
+        guard let index = allCases.firstIndex(of: selectedStyle) else { return }
+        let nextIndex = (index + 1) % allCases.count
+        selectedStyle = allCases[nextIndex]
+        
+    }
+    
     func setupConstraints() {
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide)
-            make.left.equalToSuperview().inset(16)
-        }
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(titleLabel.snp.bottom)
-            make.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.horizontalEdges.equalToSuperview()
+            make.edges.equalTo(view.safeAreaLayoutGuide)
         }
     }
 }
@@ -158,6 +150,5 @@ extension StorageViewController: UICollectionViewDataSource {
         return cell
     }
 }
-
 
 

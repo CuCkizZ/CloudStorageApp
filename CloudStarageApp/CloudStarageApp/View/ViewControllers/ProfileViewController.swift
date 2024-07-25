@@ -6,12 +6,6 @@ final class ProfileViewController: UIViewController {
     private let viewModel: ProfileViewModelProtocol
     private var dataSource = Profile.get()
     
-    private lazy var titleLabel: TitleLabel = {
-        let label = TitleLabel()
-        label.text = "Profile"
-        return label
-    }()
-    
     private var totalStorageLabel = UILabel()
     private let usedStorageLabel = UILabel()
     private let leftStorageLabel = UILabel()
@@ -46,7 +40,6 @@ private extension ProfileViewController {
     
     func setupLayout() {
         view.backgroundColor = .white
-        view.addSubview(titleLabel)
         view.addSubview(totalStorageLabel)
         view.addSubview(usedStorageLabel)
         view.addSubview(leftStorageLabel)
@@ -54,6 +47,7 @@ private extension ProfileViewController {
         view.addSubview(leftImageView)
         view.addSubview(downloadButton)
         setupViews()
+        SetupNavBar()
         setupConstraints()
         setupShapeLayer()
         configure(model: dataSource)
@@ -63,6 +57,11 @@ private extension ProfileViewController {
         setupButton()
         leftImageView.image = UIImage(resource: .playstore)
         usedImageView.image = UIImage(resource: .playstore)
+    }
+    
+    func SetupNavBar() {
+        navigationController?.navigationBar.prefersLargeTitles = true
+        title = "Profile"
     }
     
     func configure(model: ProfileModel) {
@@ -122,21 +121,15 @@ private extension ProfileViewController {
 //    MARK: ButtonMethod
 
     func setupConstraints() {
-        titleLabel.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide)
-            make.left.equalToSuperview().inset(16)
-        }
         totalStorageLabel.snp.makeConstraints { make in
             make.centerX.equalTo(view.safeAreaLayoutGuide)
             make.top.equalTo(view.safeAreaLayoutGuide).inset(100)
         }
-        
         usedImageView.snp.makeConstraints { make in
             make.left.equalToSuperview().inset(20)
             make.centerY.equalToSuperview()
             make.height.width.equalTo(30)
         }
-        
         leftImageView.snp.makeConstraints { make in
             make.left.equalToSuperview().inset(20)
             make.top.equalTo(usedImageView.snp.bottom).inset(-10)
