@@ -30,22 +30,22 @@ struct Welcome: Codable {
 struct Embedded: Codable {
     let sort: String?
     let items: [Item]
-    let limit, offset: Int?
-    let path: String?
-    let total: Int?
+    let limit, offset: Int
+    let path: String
+    let total: Int
 }
         
         
         // MARK: - Item
 struct Item: Codable {
-    let name: String?
-    let exif: Exif?
-    let created: String?
-    let resourceID: String?
-    let modified: String?
-    let path: String?
-    let type: String?
-    let revision: Int?
+    let name: String
+    let exif: Exif
+    let created: String
+    //let resourceID: String
+    let modified: String
+    let path: String
+    let type: String
+    let revision: Int
     let antivirusStatus: String?
     let size: Int?
     let mimeType: String?

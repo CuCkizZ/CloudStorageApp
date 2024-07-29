@@ -9,15 +9,21 @@ import UIKit
 
 class TabledContentCollectionViewDelegate: DefaultCollectionViewDelegate {
 //     MARK: - UICollectionViewDelegateFlowLayout
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+    func collectionView(_ collectionView: UICollectionView, 
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.bounds.width, height: 33)
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
+    func collectionView(_ collectionView: UICollectionView, 
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
         return sectionInsets
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView, 
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         return 10
     }
 }

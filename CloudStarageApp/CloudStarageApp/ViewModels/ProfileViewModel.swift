@@ -8,7 +8,7 @@
 import Foundation
 
 protocol ProfileViewModelProtocol {
-    
+    func logOut()
 }
 
 final class ProfileViewModel {
@@ -24,5 +24,7 @@ final class ProfileViewModel {
 }
 
 extension ProfileViewModel: ProfileViewModelProtocol {
-    
+    func logOut() {
+        coordinator.finish()
+    }
 }

@@ -9,9 +9,9 @@ import UIKit
 
 protocol HomeViewModelProtocol: AnyObject {
     var isLoading: Observable<Bool> { get set }
-//    var cellDataSource: Observable<[Files]> { get set }
+    var cellDataSource: Observable<[CellDataModel]> { get set }
     var searchKeyword: String { get set }
-    var mapData: [Files] { get set }
+    var model: [Item] { get set }
     
     
     func numbersOfRowInSection() -> Int
@@ -27,41 +27,45 @@ final class HomeViewModel {
     var searchKeyword: String = ""
     
     var isLoading: Observable<Bool> = Observable(false)
-//    private var model: [Files]?
-    private var cellDataSource: [Files] = MappedDataModel.get()
-    var mapData: [Files] = []
+    var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
+    internal var model: [Item] = []
     
     
     init(coordinator: HomeCoordinator) {
         self.coordinator = coordinator
-        mapModel()
-        
+        fetchData()
     }
-//    
-//    private func mapModel() {
-//        DispatchQueue.main.async { [weak self] in
-//            guard let self = self else { return }
-//            self.model = MapedDataModel.mapModel()
-//            print(model?.count)
-//            
-//        }
-    
     
     func mapModel() {
-        mapData = cellDataSource.filter { $0.date.contains("2022") }
+        cellDataSource.value = model.compactMap { CellDataModel($0) }
     }
 
 }
     
 extension HomeViewModel: HomeViewModelProtocol {
     
-    func numbersOfRowInSection() -> Int {
-        print(mapData.count)
-        return mapData.count
-       
+    func fetchData() {
+        if isLoading.value ?? true {
+            return
+        }
+        isLoading.value = true
+        NetworkManager.shared.fetchData { [weak self] result in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let file):
+                    self.model = file
+                    self.mapModel()
+                    self.isLoading.value = false
+                case .failure(let error):
+                    print("model failrue: \(error)")
+                }
+            }
+        }
     }
     
-    func fetchData() {
+    func numbersOfRowInSection() -> Int {
+        return model.count
     }
     
     func presentDetailVC() {

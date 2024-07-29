@@ -19,21 +19,6 @@ private enum Constants {
 
 class NetworkService {
     
-    func fetchData(completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlString = "https://cloud-api.yandex.net/v1/disk/resources?path=disk%3A%2F"
-        guard let url = URL(string: urlString) else { return }
-        AF.request("https://api.example.com/endpoint").responseJSON { response in
-            switch response.result {
-            case .success(let value):
-                if let json = value as? [String: Any] {
-                    print(json)
-                }
-            case .failure(let error):
-                print("Ошибка при выполнении запроса: \(error)")
-            }
-        }
-    }
-    
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, Error>) -> Void) {
         let urlParams = ["path": "disk:/",]
         

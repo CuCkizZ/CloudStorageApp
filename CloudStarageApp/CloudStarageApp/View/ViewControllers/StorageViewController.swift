@@ -37,7 +37,7 @@ final class StorageViewController: UIViewController {
     // MARK: Model
    
     private var viewModel: StorageViewModelProtocol
-    private var cellDataSource: [Files] = MappedDataModel.get()
+    private var cellDataSource: [CellDataModel] = []
 //    var mapData: [Files] = []
     
     private lazy var directionButton = UIButton()
@@ -66,10 +66,34 @@ final class StorageViewController: UIViewController {
         super.viewDidLoad()
         
         setupLayout()
-        collectionView.reloadData()
+        bindView()
+        bindViewModel()
     }
     
-
+    func bindView() {
+        viewModel.cellDataSource.bind { [weak self] files in
+            guard let self = self, let files = files else { return }
+            self.cellDataSource = files
+            collectionView.reloadData()
+        }
+    }
+    
+    func bindViewModel() {
+        viewModel.isLoading.bind { [weak self] isLoading in
+            guard let self = self, let isLoading = isLoading else { return }
+            DispatchQueue.main.async {
+                if isLoading {
+                    
+                    self.collectionView.reloadData()
+                    
+                } else {
+                    
+                    
+                }
+            }
+        }
+    }
+    
 }
 
 // MARK: Layout
@@ -85,7 +109,7 @@ private extension StorageViewController {
     }
     
     func setupView() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         setupCollectionView()
     }
     
@@ -97,7 +121,7 @@ private extension StorageViewController {
     
     func setupCollectionView() {
         view.addSubview(collectionView)
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = .systemBackground
         collectionView.contentMode = .center
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -122,7 +146,8 @@ private extension StorageViewController {
     
     func setupConstraints() {
         collectionView.snp.makeConstraints { make in
-            make.edges.equalTo(view.safeAreaLayoutGuide)
+            make.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.left.equalToSuperview().inset(16)
         }
     }
 }

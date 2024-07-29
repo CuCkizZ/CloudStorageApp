@@ -39,7 +39,7 @@ final class ProfileViewController: UIViewController {
 private extension ProfileViewController {
     
     func setupLayout() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         view.addSubview(totalStorageLabel)
         view.addSubview(usedStorageLabel)
         view.addSubview(leftStorageLabel)
@@ -60,8 +60,20 @@ private extension ProfileViewController {
     }
     
     func SetupNavBar() {
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .actions, style: .plain, target: self, action: #selector(rightBarButtonAction))
         navigationController?.navigationBar.prefersLargeTitles = true
         title = "Profile"
+    }
+    
+    @objc func rightBarButtonAction() {
+        let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+            print("Cancel")
+        }))
+        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { action in
+            self.viewModel.logOut()
+        }))
+        present(alert, animated: true)
     }
     
     func configure(model: ProfileModel) {
