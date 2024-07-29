@@ -6,7 +6,7 @@
 //
 
 import Foundation
-
+import Alamofire
 
 class NetworkManager {
     
@@ -59,4 +59,27 @@ class NetworkManager {
         }
     }
     
+    func createNewFolder(_ name: String) {
+        let headers: HTTPHeaders = [
+            "Authorization" : "OAuth y0_AgAAAAB3PvZkAADLWwAAAAELlSb3AADQZy6bNutAiZm4EhJkt3zSpFwhuQ",
+        ]
+        let urlString = "https://cloud-api.yandex.net/v1/disk/resources?path=disk:/\(name)"
+        guard let url = URL(string: urlString) else { return }
+        let urlParams = ["path": "disk:/228"]
+        
+        AF.request(url, method: .put, /*parameters: urlParams,*/ headers: headers).validate().response { response in
+            guard let statusCode = response.response?.statusCode else {
+                print("Error: no response")
+                return
+            }
+            print("status code: \(statusCode)")
+            if let error = response.error {
+                print("Error: \(error)")
+            }
+            if let data = response.data {
+                let str = String(data: data, encoding: .utf8)
+                print("Data: \(str ?? "")")
+            }
+        }
+    }
 }

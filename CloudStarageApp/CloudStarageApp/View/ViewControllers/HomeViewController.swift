@@ -24,6 +24,8 @@ final class HomeViewController: UIViewController {
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
+    
+    private lazy var uploadButton = UIButton()
 
     init(viewModel: HomeViewModelProtocol) {
         self.viewModel = viewModel
@@ -85,6 +87,7 @@ private extension HomeViewController {
     func setupView() {
         view.backgroundColor = .systemBackground
         setupCollectionView()
+        setupUploadButton()
     }
     
     func SetupNavBar() {
@@ -118,9 +121,40 @@ private extension HomeViewController {
 //        
 //    }
     
+    func setupUploadButton() {
+        view.addSubview(uploadButton)
+        uploadButton.setImage(UIImage(resource: .uploadButton), for: .normal)
+        uploadButton.clipsToBounds = true
+        uploadButton.layer.cornerRadius = 20
+        
+        uploadButton.addAction(UIAction { action in
+            let ac = UIAlertController(title: "New folder", message: nil, preferredStyle: .alert)
+            ac.addTextField { textField in
+                textField.placeholder = "Enter the name"
+            }
+
+                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned ac] _ in
+                    
+                    
+                    let answer = ac.textFields![0]
+                    self.viewModel.createNewFolder(answer.text ?? "")
+                }
+
+                ac.addAction(submitAction)
+
+            self.present(ac, animated: true)
+        },
+                               for: .touchUpInside)
+    }
+    
+    
     func setupConstraints() {
         collectionView.snp.makeConstraints { make in
             make.edges.equalTo(view.safeAreaLayoutGuide)
+        }
+        uploadButton.snp.makeConstraints { make in
+            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.height.width.equalTo(40)
         }
     }
 }
