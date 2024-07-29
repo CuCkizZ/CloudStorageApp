@@ -3,8 +3,9 @@ import SnapKit
 
 final class ProfileViewController: UIViewController {
     
-    private let viewModel: ProfileViewModelProtocol
-    private var dataSource = Profile.get()
+    private var viewModel: ProfileViewModelProtocol
+    private var dataSource: ProfileModel?
+    private let activityIndicator = UIActivityIndicatorView()
     
     private var totalStorageLabel = UILabel()
     private let usedStorageLabel = UILabel()
@@ -25,12 +26,39 @@ final class ProfileViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        viewModel.fetchData()
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
        
         setupLayout()
         updateViewLayer()
         setupLabel()
+        bindViewModel()
+        bindView()
+    }
+    
+    private func bindView() {
+        viewModel.onDataLoaded = { [weak self] in
+            guard let self = self else { return }
+            self.configure()
+        }
+    }
+    
+    private func bindViewModel() {
+        viewModel.isLoading.bind { [weak self] isLoading in
+            guard let self = self, let isLoading = isLoading else { return }
+            DispatchQueue.main.async {
+                if isLoading {
+                    self.activityIndicator.startAnimating()
+                } else {
+                    self.activityIndicator.stopAnimating()
+                }
+            }
+        }
     }
 }
 
@@ -50,7 +78,7 @@ private extension ProfileViewController {
         SetupNavBar()
         setupConstraints()
         setupShapeLayer()
-        configure(model: dataSource)
+        //configure(model: dataSource!)
     }
     
     func setupViews() {
@@ -76,10 +104,11 @@ private extension ProfileViewController {
         present(alert, animated: true)
     }
     
-    func configure(model: ProfileModel) {
-        let intT = Int(model.total)
-        let intL = Int(model.left)
-        let intU = Int(model.usage)
+    func configure() {
+        guard let model = viewModel.dataSource else { return }
+        let intT = Int((model.totalSpace) / 1000000000)
+        let intL = Float(model.leftSpace) / 1000000000
+        let intU = Float(model.usedSpace) / 1000000000
         totalStorageLabel.text = String(describing: intT) + "гб"
         leftStorageLabel.text = "\(intL) гб - свободно"
         usedStorageLabel.text = "\(intU) гб - занято"
@@ -111,7 +140,9 @@ private extension ProfileViewController {
     }
     
     func updateViewLayer() {
-        let usageSt = CGFloat(dataSource.usage / 20)
+        guard let model = viewModel.dataSource else { return }
+        let totalSpace = model.totalSpace
+        let usageSt = CGFloat(model.usedSpace / 1000000000) / 4
         let animation = CABasicAnimation(keyPath: "strokeEnd")
         animation.fromValue = totalShapeLayer.strokeEnd
         animation.toValue = 1
@@ -192,3 +223,9 @@ extension ProfileViewController {
     }
 }
 
+extension Float {
+    func rounded(toPlaces places: Int) -> Float {
+        let divisor = pow(10.0, Float(places))
+        return (self * divisor).rounded() / divisor
+    }
+}
