@@ -3,9 +3,10 @@ import SnapKit
 
 final class HomeViewController: UIViewController {
     
+    private lazy var activityIndicator = UIActivityIndicatorView()
+    
     var viewModel: HomeViewModelProtocol
-    var cellDataSource: [Files] = MappedDataModel.get()
-//    var mapData: [Files] = []
+    private lazy var cellDataSource: [CellDataModel] = []
     private lazy var directionButton = UIButton()
     private lazy var collectionView: UICollectionView = {
 //        let layout = UICollectionViewFlowLayout()
@@ -35,16 +36,38 @@ final class HomeViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        //viewModel.mapModel()
+        
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupLayout()
-        collectionView.reloadData()
-        
-       
+        bindView()
+        bindViewModel()
+    }
+    
+    func bindView() {
+        viewModel.cellDataSource.bind { [weak self] files in
+            guard let self = self, let files = files else { return }
+            self.cellDataSource = files
+            collectionView.reloadData()
+        }
+    }
+    
+    func bindViewModel() {
+        viewModel.isLoading.bind { [weak self] isLoading in
+            guard let self = self, let isLoading = isLoading else { return }
+            DispatchQueue.main.async {
+                if isLoading {
+                    self.activityIndicator.startAnimating()
+                    self.collectionView.reloadData()
+                    
+                } else {
+                    self.activityIndicator.stopAnimating()
+                    
+                }
+            }
+        }
     }
 }
 
@@ -60,7 +83,7 @@ private extension HomeViewController {
     }
     
     func setupView() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         setupCollectionView()
     }
     
@@ -72,7 +95,7 @@ private extension HomeViewController {
     
     func setupCollectionView() {
         view.addSubview(collectionView)
-        collectionView.backgroundColor = .white
+        collectionView.backgroundColor = .systemBackground
         collectionView.contentMode = .center
         collectionView.delegate = self
         collectionView.dataSource = self
@@ -119,7 +142,7 @@ extension HomeViewController: UICollectionViewDataSource {
                                                             for: indexPath) as? CollectionViewCell else {
             fatalError("Wrong cell")
         }
-        let model = viewModel.mapData[indexPath.row]
+        let model = cellDataSource[indexPath.row]
         cell.configure(model)
         
         return cell

@@ -85,10 +85,9 @@ final class LoginViewController: UIViewController {
 private extension LoginViewController {
     
     func setupView() {
-        view.backgroundColor = .white
+        view.backgroundColor = .systemBackground
         view.addSubview(loadingView)
         view.addSubview(activityIndicator)
-        //view.addSubview(titleLabel)
         view.addSubview(stackView)
         view.addSubview(loginButton)
         view.addSubview(blackButton)
@@ -158,6 +157,18 @@ private extension LoginViewController {
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
+    }
+}
+
+// MARK: Yandex
+
+extension LoginViewController {
+    private var request : URLRequest? {
+        guard var components = URLComponents(string: "https://oauth.yandex.ru/authorize") else { return nil }
+        components.queryItems = [URLQueryItem(name: "response_type", value: "token"),
+        URLQueryItem(name: "client_id", value: "your client id")]
+        guard let url = components.url else { return nil }
+        return URLRequest(url: url)
     }
 }
 

@@ -5,7 +5,7 @@ final class CollectionViewCell: UICollectionViewCell {
     static let reuseID = String(describing: CollectionViewCell.self)
     
     private lazy var contentImageView: UIImageView = {
-        let imageView = UIImageView()
+        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 33, height: 30))
         imageView.image = UIImage(resource: .file)
         imageView.clipsToBounds = true
         return imageView
@@ -16,8 +16,14 @@ final class CollectionViewCell: UICollectionViewCell {
     private lazy var dateLabel = UILabel()
     private lazy var timeLabel = UILabel()
     
-    lazy var stackView: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [contentImageView, nameLabel])
+    private lazy var stackLabel: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [nameLabel, dateLabel])
+        stack.axis = .vertical
+        return stack
+    }()
+    
+    private lazy var stackView: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [contentImageView, stackLabel])
         stack.spacing = 16
         return stack
     }()
@@ -26,9 +32,6 @@ final class CollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         setupCell()
         setupStackView()
-        clipsToBounds = true
-       
-        //setupConstraints()
     }
     
     required init?(coder: NSCoder) {
@@ -41,9 +44,7 @@ final class CollectionViewCell: UICollectionViewCell {
     
     func setupCell() {
         contentView.backgroundColor = .white
-        
         contentView.layer.masksToBounds = true
-       
         contentView.addSubview(stackView)
         stackView.backgroundColor = .white
 //        contentView.addSubview(contentImageView)
@@ -55,11 +56,11 @@ final class CollectionViewCell: UICollectionViewCell {
         
     }
     
-    func configure(_ model: Files) {
+    func configure(_ model: CellDataModel) {
         nameLabel.text = model.name
-        sizeLabel.text = model.size
-        dateLabel.text = model.date
-        contentImageView.image = model.icon
+//        sizeLabel.text = model.size
+//        dateLabel.text = model.date
+//        contentImageView.image = model.icon
     }
     
 }
@@ -93,12 +94,11 @@ extension CollectionViewCell {
         stackView.axis = newAxis
         stackView.spacing = isHorizontalStyle ? 16 : 4
         nameLabel.textAlignment = isHorizontalStyle ? .left : .center
+        dateLabel.textAlignment = isHorizontalStyle ? .left : .center
         let imageSize: CGSize
         if isHorizontalStyle {
-            // horizontal orientation
-            imageSize = CGSize(width: 25, height: 22)
+            imageSize = CGSize(width: 33, height: 30)
         } else {
-            // vertical orientation
             imageSize = CGSize(width: 78, height: 75)
         }
         self.contentImageView.snp.remakeConstraints { make in
@@ -110,7 +110,7 @@ extension CollectionViewCell {
         
         UIView.animate(withDuration: 0.3) {
             self.nameLabel.transform = fontTransform
-            
+            self.dateLabel.transform = fontTransform
             self.layoutIfNeeded()
     }
 }

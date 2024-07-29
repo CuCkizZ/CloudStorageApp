@@ -52,6 +52,14 @@ private extension AppCoordinator {
                                             navigationController: navigationController, finisDelegate: self)
         loginCoordinator.start()
     }
+    func logOut() {
+        guard let navigationController = navigationController else { return }
+        let loginCoordinator = factory.makeLoginFlow(coordinator: self, navigationController: navigationController, finisDelegate: self)
+        let tabBarController = factory.makeMainFlow(coordinator: self, finishDelegate: self)
+        self.tabBarController = tabBarController
+        tabBarController.finish()
+        loginCoordinator.start()
+    }
     
     func showDetailScene() {
     }
@@ -85,6 +93,8 @@ extension AppCoordinator: CoorditatorFinishDelegate {
             navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         case .homeDetail:
             showDetailScene()
+        case.profile:
+            logOut()
         default:
             navigationController?.popToRootViewController(animated: false)
         }

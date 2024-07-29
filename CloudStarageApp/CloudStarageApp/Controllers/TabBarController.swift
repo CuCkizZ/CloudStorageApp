@@ -32,4 +32,8 @@ final class TabBarController: UITabBarController {
         let shadowImage = UIImage(named: "tabBarShadow")
         tabBar.shadowImage = shadowImage
     }
+    
+    func finish() {
+        self.tabBar.items?.removeAll()
+    }
 }
