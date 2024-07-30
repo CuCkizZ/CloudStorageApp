@@ -25,11 +25,6 @@ final class StorageViewController: UIViewController {
             .table: TabledContentCollectionViewDelegate(),
             .defaultGrid: DefaultGriddedContentCollectionViewDelegate()
         ]
-        result.values.forEach {
-            $0.didSelectItem = { _ in
-                print("Item selected")
-            }
-        }
         return result
     }()
     
@@ -38,17 +33,13 @@ final class StorageViewController: UIViewController {
    
     private var viewModel: StorageViewModelProtocol
     private var cellDataSource: [CellDataModel] = []
-//    var mapData: [Files] = []
-    
-    private lazy var directionButton = UIButton()
+
     private lazy var uploadButton = CSUploadButton(target: self, action: #selector(uploadButtonPressed))
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.minimumLineSpacing = 4
         layout.minimumInteritemSpacing = 4
-        //layout.collectionView?.contentMode = .scaleToFill
-        //layout.itemSize = CGSize(width: view.bounds.width, height: 100)
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
@@ -178,6 +169,23 @@ private extension StorageViewController {
 extension StorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         viewModel.presentDetailVC()
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+        guard let indexPath = indexPaths.first else { return nil }
+        let name = cellDataSource[indexPath.item].name
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
+                self.viewModel.deleteFile(name)
+            }
+            let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+                // Handle share action
+            }
+            let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
+                // viewmodel
+            }
+            return UIMenu(title: "", children: [deleteAction, shareAction, renameAction])
+        }
     }
 }
 

@@ -20,6 +20,7 @@ protocol StorageViewModelProtocol: AnyObject {
     func presentDetailVC()
     func sortData()
     func createNewFolder(_ name: String)
+    func deleteFile(_ name: String)
 }
 
 final class StorageViewModel {
@@ -63,6 +64,10 @@ extension StorageViewModel: StorageViewModelProtocol {
                 }
             }
         }
+    }
+    
+    func deleteFile(_ name: String) {
+        NetworkManager.shared.deleteReqest(name: name)
     }
     
     func createNewFolder(_ name: String) {

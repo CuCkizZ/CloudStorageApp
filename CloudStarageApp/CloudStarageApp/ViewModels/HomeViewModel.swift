@@ -20,7 +20,7 @@ protocol HomeViewModelProtocol: AnyObject {
     func presentDetailVC()
     func sortData()
     func createNewFolder(_ name: String)
-    func deleteReqeust(_ name: String)
+    func deleteFile(_ name: String)
 }
 
 final class HomeViewModel {
@@ -66,7 +66,7 @@ extension HomeViewModel: HomeViewModelProtocol {
         }
     }
     
-    func deleteReqeust(_ name: String) {
+    func deleteFile(_ name: String) {
         NetworkManager.shared.deleteReqest(name: name)
     }
     

@@ -1,29 +1,46 @@
 import UIKit
 import SnapKit
 
+private enum PresentationStyle: String, CaseIterable {
+    case table
+    case defaultGrid
+    
+    var buttonImage: UIImage {
+        switch self {
+        case .table: return #imageLiteral(resourceName: "file")
+        case .defaultGrid: return #imageLiteral(resourceName: "profileTab")
+        }
+    }
+}
+
 final class HomeViewController: UIViewController {
     
     private lazy var activityIndicator = UIActivityIndicatorView()
     
     var viewModel: HomeViewModelProtocol
     private lazy var cellDataSource: [CellDataModel] = []
-    private lazy var directionButton = UIButton()
+    
+    //MARK: CollectionView
+    
+    private var selectedStyle: PresentationStyle = .table {
+        didSet { updatePresentationStyle() }
+    }
+    private var styleDelegates: [PresentationStyle: CollectionViewSelectableItemDelegate] = {
+        let result: [PresentationStyle: CollectionViewSelectableItemDelegate] = [
+            .table: TabledContentCollectionViewDelegate(),
+            .defaultGrid: DefaultGriddedContentCollectionViewDelegate()
+        ]
+        return result
+    }()
+    
     private lazy var collectionView: UICollectionView = {
-//        let layout = UICollectionViewFlowLayout()
-//        layout.scrollDirection = .horizontal
-//        layout.minimumLineSpacing = 0
-//        layout.minimumInteritemSpacing = 0
-//        layout.itemSize = CGSize(width: 100, height: 100)
-//        let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
-//        return collection
         let layout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .vertical
-        layout.minimumLineSpacing = 20
-        layout.minimumInteritemSpacing = 20
-        layout.itemSize = CGSize(width: view.bounds.width, height: 33)
+        layout.minimumLineSpacing = 5
+        layout.minimumInteritemSpacing = 5
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
+
     
     private lazy var uploadButton = CSUploadButton(target: self, action: #selector(uploadButtonPressed))
 
@@ -80,7 +97,7 @@ private extension HomeViewController {
     func setupLayout() {
         setupView()
         SetupNavBar()
-       // updatePresentationStyle()
+        updatePresentationStyle()
         setupConstraints()
     }
     
@@ -92,13 +109,13 @@ private extension HomeViewController {
     }
     
     func SetupNavBar() {
-//        navigationItem.rightBarButtonItem = UIBarButtonItem(image: selectedStyle.buttonImage, style: .plain, target: self, action: #selector(changeContentLayout))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: selectedStyle.buttonImage, style: .plain, target: self, action: #selector(changeContentLayout))
         navigationController?.navigationBar.prefersLargeTitles = true
         title = "Last one"
     }
     
+    
     func setupCollectionView() {
-        
         collectionView.backgroundColor = .systemBackground
         collectionView.contentMode = .center
         collectionView.delegate = self
@@ -106,21 +123,22 @@ private extension HomeViewController {
         collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.reuseID)
     }
     
-//    private func updatePresentationStyle() {
-//        collectionView.delegate = styleDelegates[selectedStyle]
-//        collectionView.performBatchUpdates({
-//            collectionView.reloadData()
-//        }, completion: nil)
-//        navigationItem.rightBarButtonItem?.image = selectedStyle.buttonImage
-//    }
-//    
-//    @objc private func changeContentLayout() {
-//        let allCases = PresentationStyle.allCases
-//        guard let index = allCases.firstIndex(of: selectedStyle) else { return }
-//        let nextIndex = (index + 1) % allCases.count
-//        selectedStyle = allCases[nextIndex]
-//        
-//    }
+    private func updatePresentationStyle() {
+        collectionView.delegate = styleDelegates[selectedStyle]
+        collectionView.performBatchUpdates({
+            collectionView.reloadData()
+        }, completion: nil)
+        navigationItem.rightBarButtonItem?.image = selectedStyle.buttonImage
+    }
+    
+//   MARK: Objc Methods
+    
+    @objc private func changeContentLayout() {
+        let allCases = PresentationStyle.allCases
+        guard let index = allCases.firstIndex(of: selectedStyle) else { return }
+        let nextIndex = (index + 1) % allCases.count
+        selectedStyle = allCases[nextIndex]
+    }
     
     @objc private func uploadButtonPressed() {
         uploadButton.addAction(UIAction { action in
@@ -129,8 +147,8 @@ private extension HomeViewController {
                 textField.placeholder = "Enter the name"
             }
                 let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned ac] _ in
-                    let answer = ac.textFields![0]
-                    self.viewModel.createNewFolder(answer.text ?? "")
+                    let answer = ac.textFields?[0]
+                    self.viewModel.createNewFolder(answer?.text ?? "")
                 }
                 ac.addAction(submitAction)
             self.present(ac, animated: true)
@@ -141,7 +159,8 @@ private extension HomeViewController {
     
     func setupConstraints() {
         collectionView.snp.makeConstraints { make in
-            make.edges.equalTo(view.safeAreaLayoutGuide)
+            make.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.left.equalToSuperview().inset(16)
         }
         uploadButton.snp.makeConstraints { make in
             make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
@@ -149,6 +168,8 @@ private extension HomeViewController {
         }
     }
 }
+
+
 
 extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -160,14 +181,18 @@ extension HomeViewController: UICollectionViewDelegate {
         let name = cellDataSource[indexPath.item].name
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
             let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-                self.viewModel.deleteReqeust(name)
+                self.viewModel.deleteFile(name)
             }
             let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
                 // Handle share action
             }
-            return UIMenu(title: "", children: [deleteAction, shareAction])
+            let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
+                // viewmodel
+            }
+            return UIMenu(title: "", children: [deleteAction, shareAction, renameAction])
         }
-    }}
+    }
+}
 extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         viewModel.numbersOfRowInSection()

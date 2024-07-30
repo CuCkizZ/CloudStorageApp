@@ -2,11 +2,13 @@ import UIKit
 import SnapKit
 
 final class CollectionViewCell: UICollectionViewCell {
+    
     static let reuseID = String(describing: CollectionViewCell.self)
     
     private lazy var contentImageView: UIImageView = {
         let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 33, height: 30))
         imageView.image = UIImage(resource: .file)
+        imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         return imageView
     }()
@@ -81,6 +83,9 @@ private extension CollectionViewCell {
         stackView.snp.makeConstraints { make in
             make.left.top.equalTo(contentView)
         }
+        contentImageView.snp.makeConstraints { make in
+            make.height.width.equalTo(33)
+        }
     }
 }
     
@@ -97,7 +102,7 @@ extension CollectionViewCell {
         dateLabel.textAlignment = isHorizontalStyle ? .left : .center
         let imageSize: CGSize
         if isHorizontalStyle {
-            imageSize = CGSize(width: 33, height: 30)
+            imageSize = CGSize(width: 33, height: 33)
         } else {
             imageSize = CGSize(width: 78, height: 75)
         }
