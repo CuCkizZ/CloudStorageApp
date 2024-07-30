@@ -41,6 +41,7 @@ final class StorageViewController: UIViewController {
 //    var mapData: [Files] = []
     
     private lazy var directionButton = UIButton()
+    private lazy var uploadButton = CSUploadButton(target: self, action: #selector(uploadButtonPressed))
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -141,6 +142,9 @@ private extension StorageViewController {
         guard let index = allCases.firstIndex(of: selectedStyle) else { return }
         let nextIndex = (index + 1) % allCases.count
         selectedStyle = allCases[nextIndex]
+    }
+    
+    @objc private func uploadButtonPressed() {
         
     }
     
