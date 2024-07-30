@@ -141,7 +141,7 @@ private extension ProfileViewController {
     
     func updateViewLayer() {
         guard let model = viewModel.dataSource else { return }
-        let totalSpace = model.totalSpace
+        _ = model.totalSpace
         let usageSt = CGFloat(model.usedSpace / 1000000000) / 4
         let animation = CABasicAnimation(keyPath: "strokeEnd")
         animation.fromValue = totalShapeLayer.strokeEnd
