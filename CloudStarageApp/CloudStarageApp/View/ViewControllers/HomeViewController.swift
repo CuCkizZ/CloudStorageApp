@@ -25,7 +25,7 @@ final class HomeViewController: UIViewController {
         return collection
     }()
     
-    private lazy var uploadButton = UIButton()
+    private lazy var uploadButton = CSUploadButton(target: self, action: #selector(uploadButtonPressed))
 
     init(viewModel: HomeViewModelProtocol) {
         self.viewModel = viewModel
@@ -85,9 +85,10 @@ private extension HomeViewController {
     }
     
     func setupView() {
+        view.addSubview(collectionView)
+        view.addSubview(uploadButton)
         view.backgroundColor = .systemBackground
         setupCollectionView()
-        setupUploadButton()
     }
     
     func SetupNavBar() {
@@ -97,7 +98,7 @@ private extension HomeViewController {
     }
     
     func setupCollectionView() {
-        view.addSubview(collectionView)
+        
         collectionView.backgroundColor = .systemBackground
         collectionView.contentMode = .center
         collectionView.delegate = self
@@ -121,12 +122,7 @@ private extension HomeViewController {
 //        
 //    }
     
-    func setupUploadButton() {
-        view.addSubview(uploadButton)
-        uploadButton.setImage(UIImage(resource: .uploadButton), for: .normal)
-        uploadButton.clipsToBounds = true
-        uploadButton.layer.cornerRadius = 20
-        
+    @objc private func uploadButtonPressed() {
         uploadButton.addAction(UIAction { action in
             let ac = UIAlertController(title: "New folder", message: nil, preferredStyle: .alert)
             ac.addTextField { textField in

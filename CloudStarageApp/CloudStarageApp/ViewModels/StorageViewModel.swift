@@ -19,6 +19,7 @@ protocol StorageViewModelProtocol: AnyObject {
     func mapModel()
     func presentDetailVC()
     func sortData()
+    func createNewFolder(_ name: String)
 }
 
 final class StorageViewModel {
@@ -62,6 +63,10 @@ extension StorageViewModel: StorageViewModelProtocol {
                 }
             }
         }
+    }
+    
+    func createNewFolder(_ name: String) {
+        NetworkManager.shared.createNewFolder(name)
     }
     
     func numbersOfRowInSection() -> Int {
