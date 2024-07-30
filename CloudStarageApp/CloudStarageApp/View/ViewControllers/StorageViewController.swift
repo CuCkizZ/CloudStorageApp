@@ -110,6 +110,8 @@ private extension StorageViewController {
     }
     
     func setupView() {
+        view.addSubview(collectionView)
+        view.addSubview(uploadButton)
         view.backgroundColor = .systemBackground
         setupCollectionView()
     }
@@ -121,7 +123,6 @@ private extension StorageViewController {
     }
     
     func setupCollectionView() {
-        view.addSubview(collectionView)
         collectionView.backgroundColor = .systemBackground
         collectionView.contentMode = .center
         collectionView.delegate = self
@@ -145,13 +146,29 @@ private extension StorageViewController {
     }
     
     @objc private func uploadButtonPressed() {
-        
+        uploadButton.addAction(UIAction { action in
+            let ac = UIAlertController(title: "New folder", message: nil, preferredStyle: .alert)
+            ac.addTextField { textField in
+                textField.placeholder = "Enter the name"
+            }
+                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned ac] _ in
+                    let answer = ac.textFields![0]
+                    self.viewModel.createNewFolder(answer.text ?? "")
+                }
+                ac.addAction(submitAction)
+            self.present(ac, animated: true)
+        },
+                               for: .touchUpInside)
     }
     
     func setupConstraints() {
         collectionView.snp.makeConstraints { make in
             make.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
             make.left.equalToSuperview().inset(16)
+        }
+        uploadButton.snp.makeConstraints { make in
+            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.height.width.equalTo(40)
         }
     }
 }
