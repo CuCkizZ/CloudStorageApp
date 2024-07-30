@@ -40,10 +40,10 @@ final class HomeViewController: UIViewController {
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
-
+    
     
     private lazy var uploadButton = CSUploadButton(target: self, action: #selector(uploadButtonPressed))
-
+    
     init(viewModel: HomeViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -131,7 +131,7 @@ private extension HomeViewController {
         navigationItem.rightBarButtonItem?.image = selectedStyle.buttonImage
     }
     
-//   MARK: Objc Methods
+    //   MARK: Objc Methods
     
     @objc private func changeContentLayout() {
         let allCases = PresentationStyle.allCases
@@ -146,11 +146,11 @@ private extension HomeViewController {
             ac.addTextField { textField in
                 textField.placeholder = "Enter the name"
             }
-                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned ac] _ in
-                    let answer = ac.textFields?[0]
-                    self.viewModel.createNewFolder(answer?.text ?? "")
-                }
-                ac.addAction(submitAction)
+            let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned ac] _ in
+                let answer = ac.textFields?[0]
+                self.viewModel.createNewFolder(answer?.text ?? "")
+            }
+            ac.addAction(submitAction)
             self.present(ac, animated: true)
         },
                                for: .touchUpInside)
@@ -193,6 +193,7 @@ extension HomeViewController: UICollectionViewDelegate {
         }
     }
 }
+
 extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         viewModel.numbersOfRowInSection()
@@ -206,7 +207,6 @@ extension HomeViewController: UICollectionViewDataSource {
         }
         let model = cellDataSource[indexPath.row]
         cell.configure(model)
-        
         return cell
     }
 }

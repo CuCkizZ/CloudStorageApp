@@ -109,8 +109,7 @@ extension CollectionViewCell {
         self.contentImageView.snp.remakeConstraints { make in
             make.size.equalTo(imageSize)
         }
-    
-        
+
         let fontTransform: CGAffineTransform = isHorizontalStyle ? .identity : CGAffineTransform(scaleX: 0.8, y: 0.8)
         
         UIView.animate(withDuration: 0.3) {

@@ -5,7 +5,7 @@
 //  Created by Nikita Beglov on 17.07.2024.
 //
 
-import UIKit
+import Foundation
 
 protocol HomeViewModelProtocol: AnyObject {
     var isLoading: Observable<Bool> { get set }
@@ -71,7 +71,11 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func createNewFolder(_ name: String) {
-        NetworkManager.shared.createNewFolder(name)
+            NetworkManager.shared.createNewFolder(name)
+            DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                guard let self = self else { return }
+                self.fetchData()
+            }
     }
     
     func numbersOfRowInSection() -> Int {
