@@ -132,16 +132,11 @@ private extension HomeViewController {
             ac.addTextField { textField in
                 textField.placeholder = "Enter the name"
             }
-
                 let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned ac] _ in
-                    
-                    
                     let answer = ac.textFields![0]
                     self.viewModel.createNewFolder(answer.text ?? "")
                 }
-
                 ac.addAction(submitAction)
-
             self.present(ac, animated: true)
         },
                                for: .touchUpInside)
@@ -163,8 +158,20 @@ extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         viewModel.presentDetailVC()
     }
-}
-
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+        guard let indexPath = indexPaths.first else { return nil }
+        let name = cellDataSource[indexPath.item].name
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
+                self.viewModel.deleteReqeust(name)
+            }
+            let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+                // Handle share action
+            }
+            return UIMenu(title: "", children: [deleteAction, shareAction])
+        }
+    }}
 extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         viewModel.numbersOfRowInSection()

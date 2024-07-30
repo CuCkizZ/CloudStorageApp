@@ -65,7 +65,7 @@ class NetworkManager {
         ]
         let urlString = "https://cloud-api.yandex.net/v1/disk/resources?path=disk:/\(name)"
         guard let url = URL(string: urlString) else { return }
-        let urlParams = ["path": "disk:/228"]
+//        let urlParams = ["path": "disk:/228"]
         
         AF.request(url, method: .put, /*parameters: urlParams,*/ headers: headers).validate().response { response in
             guard let statusCode = response.response?.statusCode else {
@@ -82,4 +82,10 @@ class NetworkManager {
             }
         }
     }
+    
+    func deleteReqest(name: String) {
+        let urlString = "https://cloud-api.yandex.net/v1/disk/resources?path=disk:/\(name)"
+        client.deleteFolder(urlString: urlString, name: name)
+    }
+    
 }

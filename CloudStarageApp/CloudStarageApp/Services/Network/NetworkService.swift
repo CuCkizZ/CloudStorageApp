@@ -13,6 +13,7 @@ protocol NetworkServiceProtocol {
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, Error>) -> Void)
     func fetchAccountData(completion: @escaping (Result<Data, Error>) -> Void)
     func createNewFolder(_ name: String)
+    func deleteFolder(urlString: String, name: String)
 }
 
 private enum Constants {
@@ -69,6 +70,15 @@ final class NetworkService: NetworkServiceProtocol {
         
         
         AF.request(url, method: .put, parameters: urlParams, headers: headers).response { response in
+            guard let statusCode = response.response?.statusCode else { return }
+            print("status code: \(statusCode)")
+        }
+    }
+    
+    func deleteFolder(urlString: String, name: String) {
+        guard let url = URL(string: urlString) else { return }
+        
+        AF.request(url, method: .delete, headers: headers).response { response in
             guard let statusCode = response.response?.statusCode else { return }
             print("status code: \(statusCode)")
         }
