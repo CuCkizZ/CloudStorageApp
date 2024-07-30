@@ -88,4 +88,8 @@ class NetworkManager {
         client.deleteFolder(urlString: urlString, name: name)
     }
     
+    func renameFile(oldName: String, newName: String) {
+        client.renameFile(from: oldName, to: newName)
+    }
+    
 }

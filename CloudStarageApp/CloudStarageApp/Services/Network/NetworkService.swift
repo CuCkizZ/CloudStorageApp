@@ -14,6 +14,7 @@ protocol NetworkServiceProtocol {
     func fetchAccountData(completion: @escaping (Result<Data, Error>) -> Void)
     func createNewFolder(_ name: String)
     func deleteFolder(urlString: String, name: String)
+    func renameFile(from oldName: String, to newName: String)
 }
 
 private enum Constants {
@@ -81,6 +82,25 @@ final class NetworkService: NetworkServiceProtocol {
         AF.request(url, method: .delete, headers: headers).response { response in
             guard let statusCode = response.response?.statusCode else { return }
             print("status code: \(statusCode)")
+        }
+    }
+    
+    func renameFile(from name: String, to newName: String) {
+        let headers: HTTPHeaders = [
+            "Authorization": "OAuth your_access_token"
+        ]
+        let urlString = "https://cloud-api.yandex.net/v1/disk/resources/disk=\(name)"
+        let body: [String: String] = [
+            "name": newName
+        ]
+
+        AF.request(urlString, method: .patch, parameters: body, encoding: JSONEncoding.default, headers: headers).validate().response { response in
+            switch response.result {
+            case .success:
+                print("File renamed successfully")
+            case .failure(let error):
+                print("Error: \(error)")
+            }
         }
     }
     
