@@ -22,19 +22,11 @@ final class HomeViewController: UIViewController {
     
     //MARK: CollectionView
     
-    private var selectedStyle: PresentationStyle = .table {
-        didSet { updatePresentationStyle() }
-    }
-    private var styleDelegates: [PresentationStyle: CollectionViewSelectableItemDelegate] = {
-        let result: [PresentationStyle: CollectionViewSelectableItemDelegate] = [
-            .table: TabledContentCollectionViewDelegate(),
-            .defaultGrid: DefaultGriddedContentCollectionViewDelegate()
-        ]
-        return result
-    }()
+    private var selectedStyle: PresentationStyle = .table
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(width: view.bounds.width, height: 33)
         layout.minimumLineSpacing = 5
         layout.minimumInteritemSpacing = 5
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -80,9 +72,9 @@ final class HomeViewController: UIViewController {
                 if isLoading {
                     self.activityIndicator.startAnimating()
                     self.collectionView.reloadData()
-                    
                 } else {
                     self.activityIndicator.stopAnimating()
+                    self.activityIndicator.isHidden = true
                 }
             }
         }
@@ -96,12 +88,12 @@ private extension HomeViewController {
     func setupLayout() {
         setupView()
         SetupNavBar()
-        updatePresentationStyle()
         setupButtonUp()
         setupConstraints()
     }
     
     func setupView() {
+        view.addSubview(activityIndicator)
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
         view.backgroundColor = .systemBackground
@@ -117,27 +109,26 @@ private extension HomeViewController {
     
     func setupCollectionView() {
         collectionView.backgroundColor = .systemBackground
-        collectionView.contentMode = .center
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.reuseID)
     }
     
-    private func updatePresentationStyle() {
-        collectionView.delegate = styleDelegates[selectedStyle]
-        collectionView.performBatchUpdates({
-            collectionView.reloadData()
-        }, completion: nil)
-        navigationItem.rightBarButtonItem?.image = selectedStyle.buttonImage
-    }
-    
     //   MARK: Objc Methods
     
     @objc private func changeContentLayout() {
-        let allCases = PresentationStyle.allCases
-        guard let index = allCases.firstIndex(of: selectedStyle) else { return }
-        let nextIndex = (index + 1) % allCases.count
-        selectedStyle = allCases[nextIndex]
+        if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            if layout.itemSize == CGSize(width: view.bounds.width, height: 33) {
+                layout.itemSize = CGSize(width: 100, height: 100)
+                navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "file")
+                
+            } else {
+                layout.itemSize = CGSize(width: view.bounds.width, height: 33)
+                navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "profileTab")
+            }
+            collectionView.collectionViewLayout.invalidateLayout()
+            
+        }
     }
     
     func setupButtonUp() {
@@ -180,6 +171,9 @@ private extension HomeViewController {
     }
     
     func setupConstraints() {
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
         collectionView.snp.makeConstraints { make in
             make.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
             make.left.equalToSuperview().inset(16)
@@ -227,6 +221,14 @@ extension HomeViewController: UICollectionViewDataSource {
         let model = cellDataSource[indexPath.row]
         cell.configure(model)
         return cell
+    }
+}
+
+extension HomeViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
+        UIEdgeInsets(top: 0, left: 30.0, bottom: 0, right: 16.0)
     }
 }
 
