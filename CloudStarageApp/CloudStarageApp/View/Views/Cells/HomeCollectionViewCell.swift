@@ -1,6 +1,7 @@
 import UIKit
 import SnapKit
 import Kingfisher
+import SDWebImage
 
 final class CollectionViewCell: UICollectionViewCell {
     
@@ -63,17 +64,7 @@ final class CollectionViewCell: UICollectionViewCell {
         nameLabel.text = model.name
 //        sizeLabel.text = model.size
         dateLabel.text = model.date
-        DispatchQueue.main.async {
-            if let url = model.previewImage {
-                self.contentImageView.load(url: url)
-            }
-        }
-       
-      
-       
-//        if contentImageView.image == nil {
-//            contentImageView.image = UIImage(resource: .file)
-//        }
+        contentImageView.sd_setImage(with: model.previewImage, placeholderImage: UIImage(resource: .file))
     }
     
 }
