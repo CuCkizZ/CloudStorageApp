@@ -15,6 +15,7 @@ protocol NetworkServiceProtocol {
     func createNewFolder(_ name: String)
     func deleteFolder(urlString: String, name: String)
     func renameFile(from oldName: String, to newName: String)
+    func fetchLastData(completion: @escaping (Result<Data, Error>) -> Void)
 }
 
 private enum Constants {
@@ -31,11 +32,27 @@ final class NetworkService: NetworkServiceProtocol {
     ]
     
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlParams = ["path": "disk:/",]
+        let urlParams = ["path": "disk:/"]
         let urlString = "https://cloud-api.yandex.net/v1/disk/resources?path=disk%3A%2F"
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
+            if let error = response.error {
+                completion(.failure(error))
+                print("Url error")
+                return
+            }
+            guard let data = response.data else { return }
+            completion(.success(data))
+        }
+    }
+    
+    func fetchLastData(completion: @escaping (Result<Data, Error>) -> Void) {
+//        let urlParams = ["path": "disk:/"]
+        let urlString = "hhttps://cloud-api.yandex.net/v1/disk/resources/last-uploaded"
+        guard let url = URL(string: urlString) else { return }
+        
+        AF.request(url, method: .get, /*parameters: urlParams,*/ headers: headers).validate().response {  response in
             if let error = response.error {
                 completion(.failure(error))
                 print("Url error")

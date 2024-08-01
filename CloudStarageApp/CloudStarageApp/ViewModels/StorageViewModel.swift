@@ -30,7 +30,7 @@ final class StorageViewModel {
     
     var isLoading: Observable<Bool> = Observable(false)
     var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
-    internal var model: [Item] = []
+    var model: [Item] = []
     
     
     init(coordinator: StorageCoordinator) {
@@ -71,7 +71,11 @@ extension StorageViewModel: StorageViewModelProtocol {
     }
     
     func createNewFolder(_ name: String) {
-        NetworkManager.shared.createNewFolder(name)
+            NetworkManager.shared.createNewFolder(name)
+            DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                guard let self = self else { return }
+                self.fetchData()
+            }
     }
     
     func numbersOfRowInSection() -> Int {

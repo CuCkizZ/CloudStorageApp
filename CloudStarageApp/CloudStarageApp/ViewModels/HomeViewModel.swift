@@ -79,7 +79,7 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func numbersOfRowInSection() -> Int {
-        return model.count
+        5
     }
     
     func presentDetailVC() {

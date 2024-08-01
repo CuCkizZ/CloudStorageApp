@@ -141,8 +141,9 @@ private extension ProfileViewController {
     
     func updateViewLayer() {
         guard let model = viewModel.dataSource else { return }
-        _ = model.totalSpace
+        let totalSpace = (model.totalSpace / 1000000000) 
         let usageSt = CGFloat(model.usedSpace / 1000000000) / 4
+        print(totalSpace)
         let animation = CABasicAnimation(keyPath: "strokeEnd")
         animation.fromValue = totalShapeLayer.strokeEnd
         animation.toValue = 1
@@ -166,7 +167,7 @@ private extension ProfileViewController {
     func setupConstraints() {
         totalStorageLabel.snp.makeConstraints { make in
             make.centerX.equalTo(view.safeAreaLayoutGuide)
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(100)
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(110)
         }
         usedImageView.snp.makeConstraints { make in
             make.left.equalToSuperview().inset(20)
@@ -223,9 +224,9 @@ extension ProfileViewController {
     }
 }
 
-extension Float {
-    func rounded(toPlaces places: Int) -> Float {
-        let divisor = pow(10.0, Float(places))
-        return (self * divisor).rounded() / divisor
-    }
-}
+//extension Float {
+//    func rounded(toPlaces places: Int) -> Float {
+//        let divisor = pow(10.0, Float(places))
+//        return (self * divisor).rounded() / divisor
+//    }
+

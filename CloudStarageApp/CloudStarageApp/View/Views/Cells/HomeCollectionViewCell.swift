@@ -1,12 +1,13 @@
 import UIKit
 import SnapKit
+import Kingfisher
 
 final class CollectionViewCell: UICollectionViewCell {
     
     static let reuseID = String(describing: CollectionViewCell.self)
     
     private lazy var contentImageView: UIImageView = {
-        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 33, height: 30))
+        let imageView = UIImageView()
         imageView.image = UIImage(resource: .file)
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
@@ -61,8 +62,18 @@ final class CollectionViewCell: UICollectionViewCell {
     func configure(_ model: CellDataModel) {
         nameLabel.text = model.name
 //        sizeLabel.text = model.size
-//        dateLabel.text = model.date
-//        contentImageView.image = model.icon
+        dateLabel.text = model.date
+        DispatchQueue.main.async {
+            if let url = model.previewImage {
+                self.contentImageView.load(url: url)
+            }
+        }
+       
+      
+       
+//        if contentImageView.image == nil {
+//            contentImageView.image = UIImage(resource: .file)
+//        }
     }
     
 }
@@ -141,4 +152,18 @@ extension CollectionViewCell {
 //        }
 //    }
     
+}
+
+extension UIImageView {
+    func load(url: URL) {
+        DispatchQueue.global().async { [weak self] in
+            if let data = try? Data(contentsOf: url) {
+                if let image = UIImage(data: data) {
+                    DispatchQueue.main.async {
+                        self?.image = image
+                    }
+                }
+            }
+        }
+    }
 }

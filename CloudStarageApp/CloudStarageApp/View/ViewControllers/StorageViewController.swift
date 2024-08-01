@@ -34,7 +34,7 @@ final class StorageViewController: UIViewController {
     private var viewModel: StorageViewModelProtocol
     private var cellDataSource: [CellDataModel] = []
 
-    private lazy var uploadButton = CSUploadButton(target: self, action: #selector(uploadButtonPressed))
+    private lazy var uploadButton = CSUploadButton()
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -95,6 +95,7 @@ private extension StorageViewController {
     func setupLayout() {
         setupView()
         SetupNavBar()
+        setupButtonTap()
         updatePresentationStyle()
         setupConstraints()
         
@@ -136,7 +137,18 @@ private extension StorageViewController {
         selectedStyle = allCases[nextIndex]
     }
     
-    @objc private func uploadButtonPressed() {
+    func setupButtonTap() {
+        uploadButton.action = { [weak self] in
+            guard let self = self else { return }
+            self.tap()
+        }
+    }
+    
+    func tap() {
+        uploadButtonPressed()
+    }
+    
+    private func uploadButtonPressed() {
         uploadButton.addAction(UIAction { action in
             let ac = UIAlertController(title: "New folder", message: nil, preferredStyle: .alert)
             ac.addTextField { textField in

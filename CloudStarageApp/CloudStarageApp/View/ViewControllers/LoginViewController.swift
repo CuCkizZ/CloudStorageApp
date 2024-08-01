@@ -75,10 +75,6 @@ final class LoginViewController: UIViewController {
         }
     }
 }
-    
-    // MARK: - YandexSDK
-
-
 
 // MARK: Private Setup Methods
 

@@ -152,9 +152,9 @@ private extension HomeViewController {
     }
     
     private func uploadButtonPressed() {
-        uploadButton.addAction(UIAction { action in
-            
-            let actionSheet = UIAlertController(title: "What to do", message: "", preferredStyle: .actionSheet)
+        uploadButton.addAction(UIAction { [weak self] action in
+            guard let self = self else { return }
+            let actionSheet = UIAlertController(title: "What to do", message: nil, preferredStyle: .actionSheet)
             let newFolder = UIAlertAction(title: "New Folde", style: .default) { _ in
                 
                 let enterNameAlert = UIAlertController(title: "New folder", message: nil, preferredStyle: .alert)
