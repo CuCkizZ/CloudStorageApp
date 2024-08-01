@@ -42,7 +42,7 @@ final class HomeViewController: UIViewController {
     }()
     
     
-    private lazy var uploadButton = CSUploadButton(target: self, action: #selector(uploadButtonPressed))
+    private lazy var uploadButton = CSUploadButton()
     
     init(viewModel: HomeViewModelProtocol) {
         self.viewModel = viewModel
@@ -83,7 +83,6 @@ final class HomeViewController: UIViewController {
                     
                 } else {
                     self.activityIndicator.stopAnimating()
-                    
                 }
             }
         }
@@ -98,6 +97,7 @@ private extension HomeViewController {
         setupView()
         SetupNavBar()
         updatePresentationStyle()
+        setupButtonUp()
         setupConstraints()
     }
     
@@ -140,22 +140,44 @@ private extension HomeViewController {
         selectedStyle = allCases[nextIndex]
     }
     
-    @objc private func uploadButtonPressed() {
+    func setupButtonUp() {
+        uploadButton.action = { [weak self] in
+            guard let self = self else { return }
+            self.tap()
+        }
+    }
+    
+    @objc func tap() {
+        uploadButtonPressed()
+    }
+    
+    private func uploadButtonPressed() {
         uploadButton.addAction(UIAction { action in
-            let ac = UIAlertController(title: "New folder", message: nil, preferredStyle: .alert)
-            ac.addTextField { textField in
-                textField.placeholder = "Enter the name"
+            
+            let actionSheet = UIAlertController(title: "What to do", message: "", preferredStyle: .actionSheet)
+            let newFolder = UIAlertAction(title: "New Folde", style: .default) { _ in
+                
+                let enterNameAlert = UIAlertController(title: "New folder", message: nil, preferredStyle: .alert)
+                enterNameAlert.addTextField { textField in
+                    textField.placeholder = "Enter the name"
+                }
+                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned enterNameAlert] _ in
+                    let answer = enterNameAlert.textFields?[0]
+                    self.viewModel.createNewFolder(answer?.text ?? "")
+                }
+                enterNameAlert.addAction(submitAction)
+                self.present(enterNameAlert, animated: true)
             }
-            let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned ac] _ in
-                let answer = ac.textFields?[0]
-                self.viewModel.createNewFolder(answer?.text ?? "")
-            }
-            ac.addAction(submitAction)
-            self.present(ac, animated: true)
+            let newFile = UIAlertAction(title: "New File", style: .default)
+            let cancle = UIAlertAction(title: "Cancle", style: .cancel)
+            
+            actionSheet.addAction(newFolder)
+            actionSheet.addAction(newFile)
+            actionSheet.addAction(cancle)
+            self.present(actionSheet, animated: true)
         },
                                for: .touchUpInside)
     }
-    
     
     func setupConstraints() {
         collectionView.snp.makeConstraints { make in
@@ -169,9 +191,7 @@ private extension HomeViewController {
     }
 }
 
-
-
-extension HomeViewController: UICollectionViewDelegate {
+extension HomeViewController: CollectionViewSelectableItemDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         viewModel.presentDetailVC()
     }
@@ -196,8 +216,7 @@ extension HomeViewController: UICollectionViewDelegate {
 
 extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.numbersOfRowInSection()
-        
+        min(cellDataSource.count, 5)
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
