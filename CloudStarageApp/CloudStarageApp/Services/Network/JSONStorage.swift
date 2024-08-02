@@ -30,9 +30,9 @@ struct Welcome: Codable {
 struct Embedded: Codable {
     let sort: String?
     let items: [Item]
-    let limit, offset: Int
-    let path: String
-    let total: Int
+    let limit, offset: Int?
+    let path: String?
+    let total: Int?
 }
         
         

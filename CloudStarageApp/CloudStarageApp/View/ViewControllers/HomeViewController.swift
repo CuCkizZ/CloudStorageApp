@@ -71,7 +71,7 @@ final class HomeViewController: UIViewController {
             DispatchQueue.main.async {
                 if isLoading {
                     self.activityIndicator.startAnimating()
-                    self.collectionView.reloadData()
+                    //self.collectionView.reloadData()
                 } else {
                     self.activityIndicator.stopAnimating()
                     self.activityIndicator.isHidden = true
@@ -121,13 +121,11 @@ private extension HomeViewController {
             if layout.itemSize == CGSize(width: view.bounds.width, height: 33) {
                 layout.itemSize = CGSize(width: 100, height: 100)
                 navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "file")
-                
             } else {
                 layout.itemSize = CGSize(width: view.bounds.width, height: 33)
                 navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "profileTab")
             }
             collectionView.collectionViewLayout.invalidateLayout()
-            
         }
     }
     
@@ -185,9 +183,9 @@ private extension HomeViewController {
     }
 }
 
-extension HomeViewController: CollectionViewSelectableItemDelegate {
+extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        viewModel.presentDetailVC()
+       // viewModel.presentDetailVC(path: "")
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
@@ -198,7 +196,7 @@ extension HomeViewController: CollectionViewSelectableItemDelegate {
                 self.viewModel.deleteFile(name)
             }
             let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                // Handle share action
+                // viewmodel
             }
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
                 // viewmodel
@@ -210,7 +208,7 @@ extension HomeViewController: CollectionViewSelectableItemDelegate {
 
 extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        min(cellDataSource.count, 5)
+        min(cellDataSource.count, 10)
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -219,7 +217,9 @@ extension HomeViewController: UICollectionViewDataSource {
             fatalError("Wrong cell")
         }
         let model = cellDataSource[indexPath.row]
-        cell.configure(model)
+        
+        let url = model.sizes.first?.url ?? ""
+        cell.configure(model, url: url)
         return cell
     }
 }

@@ -17,14 +17,13 @@ protocol HomeViewModelProtocol: AnyObject {
     func numbersOfRowInSection() -> Int
     func fetchData()
     func mapModel() 
-    func presentDetailVC()
+    func presentDetailVC(path: String)
     func sortData()
     func createNewFolder(_ name: String)
     func deleteFile(_ name: String)
 }
 
 final class HomeViewModel {
-    
     private let coordinator: HomeCoordinator
     var searchKeyword: String = ""
     
@@ -51,7 +50,7 @@ extension HomeViewModel: HomeViewModelProtocol {
             return
         }
         isLoading.value = true
-        NetworkManager.shared.fetchData { [weak self] result in
+        NetworkManager.shared.fetchLastData { [weak self] result in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 switch result {
@@ -82,8 +81,22 @@ extension HomeViewModel: HomeViewModelProtocol {
         5
     }
     
-    func presentDetailVC() {
-        coordinator.showHomeScene()
+    func presentDetailVC(path: String) {
+        //coordinator.showHomeScene()
+        coordinator.presentImage()
+//        NetworkManager.shared.fetchCurentData(path: path) { [weak self] result in
+//            guard let self = self else { return }
+//            DispatchQueue.main.async {
+//                switch result {
+//                case .success(let file):
+//                    self.model = file
+//                    self.mapModel()
+//                    self.isLoading.value = false
+//                case .failure(let error):
+//                    print("model failrue: \(error)")
+//                }
+//            }
+//        }
     }
     
     func sortData() {

@@ -12,7 +12,7 @@ enum CoordinatorType {
     case onboarding
     case login
     case home
-    case homeDetail
+    case imagePresent
     case storage
     case profile
 }
@@ -76,5 +76,8 @@ class Coorditator: CoordinatorProtocol {
         print("Coordinator finished")
     }
     
+    func present(from: UIViewController, to: UIViewController) {
+        from.present(to, animated: true)
+    }
     
 }

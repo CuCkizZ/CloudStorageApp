@@ -29,13 +29,4 @@ extension LoginCoordinator {
         navigationController.pushViewController(loginVC, animated: true)
     }
     
-    func setupLogin() {
-        
-//        Если вдруг будут ещё экраны
-        
-//            guard let navigationController = navigationController else { return }
-//            let loginVC = factory.makeLoginScene(coordinator: self)
-//            navigationController.pushViewController(loginVC, animated: true)
-    }
-    
 }

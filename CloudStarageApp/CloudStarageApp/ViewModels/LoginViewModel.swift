@@ -7,6 +7,7 @@ protocol LoginViewOutput: AnyObject {
     func registration()
     func openHomeVC()
     func close()
+    func getToken()
 }
 
 final class LoginViewModel {
@@ -35,12 +36,17 @@ extension LoginViewModel: LoginViewOutput {
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 self.isLoading.value = false
+                //self.getToken()
                 self.goToMainScreen()
             }
         }
     }
     
 //    TODO: корректировать вм
+    
+    func getToken() {
+        NetworkManager.shared.getToken()
+    }
     
     func registration() {
         

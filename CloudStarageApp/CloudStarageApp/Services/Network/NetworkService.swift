@@ -10,30 +10,70 @@ import YandexLoginSDK
 import Alamofire
 
 protocol NetworkServiceProtocol {
+    func getToket()
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, Error>) -> Void)
     func fetchAccountData(completion: @escaping (Result<Data, Error>) -> Void)
     func createNewFolder(_ name: String)
     func deleteFolder(urlString: String, name: String)
     func renameFile(from oldName: String, to newName: String)
     func fetchLastData(completion: @escaping (Result<Data, Error>) -> Void)
+    func fetchCurrentData(path: String, completion: @escaping (Result<Data, Error>) -> Void)
 }
 
 private enum Constants {
     static let token = "OAuth y0_AgAAAAB3PvZkAADLWwAAAAELlSb3AADQZy6bNutAiZm4EhJkt3zSpFwhuQ"
     static let header = "Authorization"
+    static let idClient = "56933db27900412f8f8dc0a8afcad6a3"
 }
 
 
 
 final class NetworkService: NetworkServiceProtocol {
-    let headers: HTTPHeaders = [
-        "Accept" : "application/json",
-        "Authorization" : "OAuth y0_AgAAAAB3PvZkAADLWwAAAAELlSb3AADQZy6bNutAiZm4EhJkt3zSpFwhuQ"
-    ]
+    private var newtoken = ""
+    var headers: HTTPHeaders = [:]
+    
+    init() {
+        self.headers = [
+               "Accept" : "application/json",
+               "Authorization" : "OAuth y0_AgAAAAB3PvZkAADLWwAAAAELlSb3AADQZy6bNutAiZm4EhJkt3zSpFwhuQ"
+           ]
+       }
+    
+    func getToket() {
+        let urlString = "https://oauth.yandex.ru/authorize?response_type=token&client_id="+Constants.idClient
+        guard let url = URL(string: urlString) else { return }
+        
+        AF.request(url).response { response in
+            if let error = response.error {
+                print("token error", error)
+            }
+            if let data = response.data {
+                self.newtoken = String(describing: data)
+                print("newtoket: \(self.newtoken)")
+            }
+        }
+        print(self.newtoken)
+    }
     
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, Error>) -> Void) {
         let urlParams = ["path": "disk:/"]
-        let urlString = "https://cloud-api.yandex.net/v1/disk/resources?path=disk%3A%2F"
+        let urlString = "https://cloud-api.yandex.net/v1/disk/resources"
+        guard let url = URL(string: urlString) else { return }
+        
+        AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
+            if let error = response.error {
+                completion(.failure(error))
+                print("Url error")
+                return
+            }
+            guard let data = response.data else { return }
+            completion(.success(data))
+        }
+    }
+    
+    func fetchCurrentData(path: String, completion: @escaping (Result<Data, Error>) -> Void) {
+        let urlParams = ["path": "disk:/" + path]
+        let urlString = "https://cloud-api.yandex.net/v1/disk/resources"
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
@@ -48,11 +88,11 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchLastData(completion: @escaping (Result<Data, Error>) -> Void) {
-//        let urlParams = ["path": "disk:/"]
-        let urlString = "hhttps://cloud-api.yandex.net/v1/disk/resources/last-uploaded"
+        let urlParams = ["path": "disk:/"]
+        let urlString = "https://cloud-api.yandex.net/v1/disk/resources/last-uploaded"
         guard let url = URL(string: urlString) else { return }
         
-        AF.request(url, method: .get, /*parameters: urlParams,*/ headers: headers).validate().response {  response in
+        AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
             if let error = response.error {
                 completion(.failure(error))
                 print("Url error")

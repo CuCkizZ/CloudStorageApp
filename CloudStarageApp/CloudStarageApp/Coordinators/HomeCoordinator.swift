@@ -23,7 +23,17 @@ extension HomeCoordinator {
     
     func showHomeScene() {
         guard let navigationController = navigationController else { return }
-        let loginVC = factory.makeHomeScene(coordinator: self)
-        navigationController.pushViewController(loginVC, animated: true)
+        let vc = factory.makeHomeScene(coordinator: self)
+        navigationController.pushViewController(vc, animated: true)
     }
+    
+    func presentImage() {
+        let coordinator = self
+        guard let navigationController = navigationController else { return }
+        let homeVC = factory.makeHomeScene(coordinator: self)
+        
+        
+        coordinator.present(from: homeVC, to: homeVC)
+    }
+    
 }

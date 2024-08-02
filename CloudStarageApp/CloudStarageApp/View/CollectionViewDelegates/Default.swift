@@ -18,7 +18,7 @@ class DefaultCollectionViewDelegate: NSObject, CollectionViewSelectableItemDeleg
     var cellDataSource = [CellDataModel]()
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
-        guard let indexPath = indexPaths.first else { return nil }
+       // guard let indexPath = indexPaths.first else { return nil }
         //let name = cellDataSource[indexPath.item].name
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
             let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in

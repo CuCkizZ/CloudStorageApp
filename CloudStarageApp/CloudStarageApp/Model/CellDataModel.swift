@@ -3,14 +3,19 @@ import UIKit
 struct CellDataModel {
     
     let name: String
-//    let size: Int
+    //    let size: Int
     let date: String
-    let previewImage: URL?
+    let type: String?
+    let previewImage: String?
+    let sizes: [Size]
     
     init(_ item: Item) {
-       
         self.name = item.name
-//        self.size = item.size ?? 0
+        //        self.size = item.size ?? 0
         self.date = item.created
-        self.previewImage = item.preview.flatMap { URL(string: $0) } }
+        self.type = item.type
+        self.previewImage = item.preview
+        let sizes: [Size] = []
+        self.sizes = sizes
+    }
 }

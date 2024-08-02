@@ -21,8 +21,30 @@ class NetworkManager {
     private let client = NetworkService()
     static let shared = NetworkManager()
     
+    func getToken() {
+        client.getToket()
+    }
+    
     func fetchLastData(completion: @escaping (Result<[Item], Error>) -> Void) {
         client.fetchLastData { result in
+            switch result {
+            case .success(let data):
+                do {
+                    let result = try self.decoder.decode(Embedded.self, from: data)
+                    completion(.success(result.items))
+                } catch {
+                    completion(.failure(error))
+                    print("Ошибка при парсе: \(error.localizedDescription)")
+                }
+            case .failure(let error):
+                completion(.failure(error))
+                print("Нечего парсить")
+            }
+        }
+    }
+    
+    func fetchData(completion: @escaping (Result<[Item], Error>) -> Void) {
+        client.fetchDataWithAlamofire { result in
             switch result {
             case .success(let data):
                 do {
@@ -39,8 +61,8 @@ class NetworkManager {
         }
     }
     
-    func fetchData(completion: @escaping (Result<[Item], Error>) -> Void) {
-        client.fetchDataWithAlamofire { result in
+    func fetchCurentData(path: String, completion: @escaping (Result<[Item], Error>) -> Void) {
+        client.fetchCurrentData(path: path) { result in
             switch result {
             case .success(let data):
                 do {

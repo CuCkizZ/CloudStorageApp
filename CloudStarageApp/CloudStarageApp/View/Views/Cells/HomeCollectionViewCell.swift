@@ -9,7 +9,8 @@ final class CollectionViewCell: UICollectionViewCell {
     
     private lazy var contentImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(resource: .file)
+        imageView.backgroundColor = .red
+        //imageView.image = UIImage(resource: .file)
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         return imageView
@@ -60,11 +61,17 @@ final class CollectionViewCell: UICollectionViewCell {
         
     }
     
-    func configure(_ model: CellDataModel) {
+    func configure(_ model: CellDataModel, url: String) {
         nameLabel.text = model.name
 //        sizeLabel.text = model.size
         dateLabel.text = model.date
-        contentImageView.sd_setImage(with: model.previewImage, placeholderImage: UIImage(resource: .file))
+            guard let db = URL(string: url) else { return }
+            contentImageView.sd_setImage(with: db, placeholderImage: UIImage(resource: .file)) { image, error, _, _  in
+                if let error = error {
+                    print(error,"sd error")
+                
+            }
+        }
     }
     
 }

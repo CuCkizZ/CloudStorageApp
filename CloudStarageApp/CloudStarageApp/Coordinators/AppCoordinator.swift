@@ -46,12 +46,14 @@ private extension AppCoordinator {
         self.window?.layer.add(transition, forKey: kCATransition)
         self.window?.rootViewController = self.tabBarController
     }
+    
     func showAuthFlow() {
         guard let navigationController = navigationController else { return }
         let loginCoordinator = factory.makeLoginFlow(coordinator: self,
                                             navigationController: navigationController, finisDelegate: self)
         loginCoordinator.start()
     }
+    
     func logOut() {
         guard let navigationController = navigationController else { return }
         let loginCoordinator = factory.makeLoginFlow(coordinator: self, navigationController: navigationController, finisDelegate: self)
@@ -60,18 +62,18 @@ private extension AppCoordinator {
         tabBarController.finish()
         loginCoordinator.start()
     }
-    
-    func showDetailScene() {
-    }
-    
 }
 
 extension AppCoordinator {
+    
     func showMainFlow() {
         showMainScene()
     }
-    func showDetealScene() {
-        
+    
+    func showPresentScene() {
+        guard let navigationController = navigationController else { return }
+        let presenterCoordinator = factory.makePresentFlow(coordinator: self, navigationController: navigationController, finisDelegate: self)
+        presenterCoordinator.start()
     }
 }
 
@@ -91,10 +93,11 @@ extension AppCoordinator: CoorditatorFinishDelegate {
         case .login:
             showMainScene()
             navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
-        case .homeDetail:
-            showDetailScene()
-        case.profile:
+        case .profile:
             logOut()
+        case .imagePresent:
+           // showPresentScene()
+            navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         default:
             navigationController?.popToRootViewController(animated: false)
         }

@@ -75,12 +75,9 @@ final class StorageViewController: UIViewController {
             guard let self = self, let isLoading = isLoading else { return }
             DispatchQueue.main.async {
                 if isLoading {
-                    
                     self.collectionView.reloadData()
                     
                 } else {
-                    
-                    
                 }
             }
         }
@@ -212,7 +209,7 @@ extension StorageViewController: UICollectionViewDataSource {
             fatalError("Wrong cell")
         }
         let model = cellDataSource[indexPath.row]
-        cell.configure(model)
+        //cell.configure(model)
         return cell
     }
 }

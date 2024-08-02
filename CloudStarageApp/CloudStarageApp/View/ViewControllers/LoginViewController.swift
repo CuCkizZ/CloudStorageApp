@@ -158,16 +158,6 @@ private extension LoginViewController {
 
 // MARK: Yandex
 
-extension LoginViewController {
-    private var request : URLRequest? {
-        guard var components = URLComponents(string: "https://oauth.yandex.ru/authorize") else { return nil }
-        components.queryItems = [URLQueryItem(name: "response_type", value: "token"),
-        URLQueryItem(name: "client_id", value: "your client id")]
-        guard let url = components.url else { return nil }
-        return URLRequest(url: url)
-    }
-}
-
 // MARK: Keybord
 
 private extension LoginViewController {

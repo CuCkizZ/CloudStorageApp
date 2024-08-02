@@ -96,6 +96,14 @@ struct SceneFactory {
         return loginCoordinator
     }
     
+    static func makePresentFlow(coordinator: AppCoordinator,
+                                navigationController: UINavigationController,
+                                finisDelegate: CoorditatorFinishDelegate) -> PresentImageCoordinator {
+        let presentCoordinator = PresentImageCoordinator(type: .imagePresent, navigationController: navigationController, finishDelegate: finisDelegate)
+        coordinator.addChildCoordinator(presentCoordinator)
+        return presentCoordinator
+    }
+    
     static func makeHomeScene(coordinator: HomeCoordinator) -> HomeViewController {
         let viewModel = HomeViewModel(coordinator: coordinator)
         let homeVC = HomeViewController(viewModel: viewModel)
@@ -108,14 +116,16 @@ struct SceneFactory {
         return vc
     }
     
-    static func makeDetailScene(coordinator: DetailCoordinator) -> DetailViewController {
-        let detailVC = DetailViewController()
-        return detailVC
-    }
     static func makeProfileScene(coordinator: ProfileCoordinator) -> ProfileViewController {
         let viewModel = ProfileViewModel(coordinator: coordinator)
         let view = ProfileViewController(viewModel: viewModel)
         return view
+    }
+    
+    static func makePresentScene(coordinator: PresentImageCoordinator) -> PresentImageViewController {
+        let vm = PresentImageViewModel(coordinator: coordinator)
+        let vc = PresentImageViewController(viewModel: vm)
+        return vc
     }
 }
 
