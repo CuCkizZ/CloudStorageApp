@@ -50,10 +50,10 @@ final class CollectionViewCell: UICollectionViewCell {
         contentView.layer.masksToBounds = true
         contentView.addSubview(stackView)
         stackView.backgroundColor = .white
-//        contentView.addSubview(contentImageView)
-//        contentView.addSubview(nameLabel)
-//        contentView.addSubview(sizeLabel)
-//        contentView.addSubview(dateLabel)
+        //        contentView.addSubview(contentImageView)
+        //        contentView.addSubview(nameLabel)
+        //        contentView.addSubview(sizeLabel)
+        //        contentView.addSubview(dateLabel)
         
         setupLabels()
         
@@ -61,16 +61,11 @@ final class CollectionViewCell: UICollectionViewCell {
     
     func configure(_ model: CellDataModel, url: String) {
         nameLabel.text = model.name
-//        sizeLabel.text = model.size
+        //        sizeLabel.text = model.size
         dateLabel.text = model.date
-            guard let db = URL(string: url) else { return }
-            contentImageView.sd_setImage(with: db, placeholderImage: UIImage(resource: .file)) { image, error, _, _  in
-                if let error = error {
-                    print(error,"sd error")
-            }
-        }
+        guard let urld = URL(string: model.previewImage ?? "") else { return }
+        contentImageView.sd_setImage(with: urld, placeholderImage: UIImage(resource: .file))
     }
-    
 }
 
 private extension CollectionViewCell {

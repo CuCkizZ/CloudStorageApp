@@ -123,7 +123,7 @@ struct SceneFactory {
     }
     
     static func makePresentScene(coordinator: PresentImageCoordinator) -> PresentImageViewController {
-        let vm = PresentImageViewModel(coordinator: coordinator)
+        let vm = PresentImageViewModel()
         let vc = PresentImageViewController(viewModel: vm)
         return vc
     }

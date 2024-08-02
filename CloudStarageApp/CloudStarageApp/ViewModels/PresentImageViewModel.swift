@@ -13,11 +13,11 @@ protocol PresentImageViewModelProtocol {
 
 final class PresentImageViewModel {
     
-    private let coordinator: PresentImageCoordinator
-    
-    init(coordinator: PresentImageCoordinator) {
-        self.coordinator = coordinator
-    }
+//    private let coordinator: PresentImageCoordinator
+//    
+//    init(coordinator: PresentImageCoordinator) {
+//        self.coordinator = coordinator
+//    }
     
 }
 

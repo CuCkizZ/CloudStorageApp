@@ -201,7 +201,7 @@ private extension HomeViewController {
 
 extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-       // viewModel.presentDetailVC(path: "")
+        viewModel.presentDetailVC(path: "")
     }
     
     
