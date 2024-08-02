@@ -14,7 +14,7 @@ private enum PresentationStyle: String, CaseIterable {
 }
 
 final class HomeViewController: UIViewController {
-    var refresher = UIRefreshControl()
+    private var refresher = UIRefreshControl()
     
     private lazy var activityIndicator = UIActivityIndicatorView()
     private var viewModel: HomeViewModelProtocol
@@ -52,10 +52,10 @@ final class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.refresher = UIRefreshControl()
+        collectionView.refreshControl = refresher
         self.collectionView.alwaysBounceVertical = true
-        self.refresher.tintColor = UIColor.red
-       // self.refresher.addTarget(self, action: #selector(collectionView.reloadData), for: .valueChanged)
+        self.refresher.tintColor = AppColors.customGray
+        self.refresher.addTarget(self, action: #selector(pullToRefresh), for: .valueChanged)
         self.collectionView.addSubview(refresher)
         
         setupLayout()
@@ -118,9 +118,19 @@ private extension HomeViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.reuseID)
+        collectionView.refreshControl = refresher
+        collectionView.alwaysBounceVertical = true
+        refresher.tintColor = AppColors.customGray
+        refresher.addTarget(self, action: #selector(pullToRefresh), for: .valueChanged)
+        collectionView.addSubview(refresher)
     }
     
     //   MARK: Objc Methods
+    
+    @objc func pullToRefresh() {
+        viewModel.fetchData()
+        refresher.endRefreshing()
+    }
     
     @objc private func changeContentLayout() {
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {

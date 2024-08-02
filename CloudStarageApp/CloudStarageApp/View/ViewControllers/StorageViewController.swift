@@ -15,6 +15,7 @@ private enum PresentationStyle: String, CaseIterable {
 
 final class StorageViewController: UIViewController {
     // MARK: Model
+    private var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
     private var viewModel: StorageViewModelProtocol
     private var cellDataSource: [CellDataModel] = []
@@ -106,6 +107,16 @@ private extension StorageViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.reuseID)
+        collectionView.refreshControl = refresher
+        collectionView.alwaysBounceVertical = true
+        refresher.tintColor = AppColors.customGray
+        refresher.addTarget(self, action: #selector(pullToRefresh), for: .valueChanged)
+        collectionView.addSubview(refresher)
+    }
+    
+    @objc func pullToRefresh() {
+        viewModel.fetchData()
+        refresher.endRefreshing()
     }
     
     @objc private func changeContentLayout() {
