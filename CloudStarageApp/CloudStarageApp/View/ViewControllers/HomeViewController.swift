@@ -14,6 +14,7 @@ private enum PresentationStyle: String, CaseIterable {
 }
 
 final class HomeViewController: UIViewController {
+    var refresher = UIRefreshControl()
     
     private lazy var activityIndicator = UIActivityIndicatorView()
     private var viewModel: HomeViewModelProtocol
@@ -50,6 +51,13 @@ final class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        self.refresher = UIRefreshControl()
+        self.collectionView.alwaysBounceVertical = true
+        self.refresher.tintColor = UIColor.red
+       // self.refresher.addTarget(self, action: #selector(collectionView.reloadData), for: .valueChanged)
+        self.collectionView.addSubview(refresher)
+        
         setupLayout()
         bindView()
         bindViewModel()
