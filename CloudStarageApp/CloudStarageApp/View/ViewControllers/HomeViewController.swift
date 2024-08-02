@@ -16,14 +16,13 @@ private enum PresentationStyle: String, CaseIterable {
 final class HomeViewController: UIViewController {
     
     private lazy var activityIndicator = UIActivityIndicatorView()
-    
-    var viewModel: HomeViewModelProtocol
+    private var viewModel: HomeViewModelProtocol
     private lazy var cellDataSource: [CellDataModel] = []
     
     //MARK: CollectionView
+    private lazy var uploadButton = CSUploadButton()
     
     private var selectedStyle: PresentationStyle = .table
-    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: view.bounds.width, height: 33)
@@ -34,7 +33,6 @@ final class HomeViewController: UIViewController {
     }()
     
     
-    private lazy var uploadButton = CSUploadButton()
     
     init(viewModel: HomeViewModelProtocol) {
         self.viewModel = viewModel
@@ -187,6 +185,8 @@ extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
        // viewModel.presentDetailVC(path: "")
     }
+    
+    
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }

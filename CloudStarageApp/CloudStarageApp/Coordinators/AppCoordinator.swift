@@ -56,11 +56,9 @@ private extension AppCoordinator {
     
     func logOut() {
         guard let navigationController = navigationController else { return }
-        let loginCoordinator = factory.makeLoginFlow(coordinator: self, navigationController: navigationController, finisDelegate: self)
-        let tabBarController = factory.makeMainFlow(coordinator: self, finishDelegate: self)
-        self.tabBarController = tabBarController
-        tabBarController.finish()
+        let loginCoordinator = factory.logout(coordinator: self, navigationController: navigationController, finishDelegate: self)
         loginCoordinator.start()
+        
     }
 }
 
@@ -95,6 +93,7 @@ extension AppCoordinator: CoorditatorFinishDelegate {
             navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         case .profile:
             logOut()
+            tabBarController.viewControllers?.removeAll()
         case .imagePresent:
            // showPresentScene()
             navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]

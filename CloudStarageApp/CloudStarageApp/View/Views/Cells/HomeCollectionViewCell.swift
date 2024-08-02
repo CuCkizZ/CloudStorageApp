@@ -9,8 +9,6 @@ final class CollectionViewCell: UICollectionViewCell {
     
     private lazy var contentImageView: UIImageView = {
         let imageView = UIImageView()
-        imageView.backgroundColor = .red
-        //imageView.image = UIImage(resource: .file)
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         return imageView
@@ -69,7 +67,6 @@ final class CollectionViewCell: UICollectionViewCell {
             contentImageView.sd_setImage(with: db, placeholderImage: UIImage(resource: .file)) { image, error, _, _  in
                 if let error = error {
                     print(error,"sd error")
-                
             }
         }
     }
@@ -118,38 +115,15 @@ extension CollectionViewCell {
         self.contentImageView.snp.remakeConstraints { make in
             make.size.equalTo(imageSize)
         }
-
+        
         let fontTransform: CGAffineTransform = isHorizontalStyle ? .identity : CGAffineTransform(scaleX: 0.8, y: 0.8)
         
         UIView.animate(withDuration: 0.3) {
             self.nameLabel.transform = fontTransform
             self.dateLabel.transform = fontTransform
             self.layoutIfNeeded()
+        }
     }
-}
-    
-//    func setupConstraints() {
-//        
-//        contentImageView.snp.makeConstraints { make in
-//            make.centerY.equalToSuperview()
-//            make.left.equalToSuperview().inset(16)
-//            make.height.equalTo(22)
-//            make.width.equalTo(25)
-//        }
-//        nameLabel.snp.makeConstraints { make in
-//            make.top.equalToSuperview()
-//            make.left.equalTo(contentImageView.snp.right).inset(-16)
-//        }
-//        sizeLabel.snp.makeConstraints { make in
-//            make.bottom.equalToSuperview().inset(1)
-//            make.left.equalTo(contentImageView.snp.right).inset(-16)
-//        }
-//        dateLabel.snp.makeConstraints { make in
-//            make.bottom.equalToSuperview().inset(1)
-//            make.left.equalTo(sizeLabel.snp.right).inset(-5)
-//        }
-//    }
-    
 }
 
 extension UIImageView {

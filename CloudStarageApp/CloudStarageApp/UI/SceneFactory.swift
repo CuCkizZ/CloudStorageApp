@@ -127,5 +127,19 @@ struct SceneFactory {
         let vc = PresentImageViewController(viewModel: vm)
         return vc
     }
+    
+    static func makePageScene(coordinator: PathPageCoordinator) -> PathPageViewController {
+        let vm = PathPageViewModel(coordinator: coordinator)
+        let vc = PathPageViewController(viewModel: vm)
+        return vc
+    }
+    
+    static func logout(coordinator: AppCoordinator,
+                       navigationController: UINavigationController,
+                       finishDelegate: CoorditatorFinishDelegate) -> LoginCoordinator {
+        coordinator.childCoordinators.removeAll()
+        return makeLoginFlow(coordinator: coordinator, navigationController: navigationController, finisDelegate: finishDelegate)
+        
+    }
 }
 

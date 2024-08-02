@@ -29,7 +29,7 @@ extension HomeCoordinator {
     
     func presentImage() {
         let coordinator = self
-        guard let navigationController = navigationController else { return }
+        //guard let navigationController = navigationController else { return }
         let homeVC = factory.makeHomeScene(coordinator: self)
         
         

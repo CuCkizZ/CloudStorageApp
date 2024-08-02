@@ -14,30 +14,19 @@ private enum PresentationStyle: String, CaseIterable {
 }
 
 final class StorageViewController: UIViewController {
+    // MARK: Model
+    private lazy var activityIndicator = UIActivityIndicatorView()
+    private var viewModel: StorageViewModelProtocol
+    private var cellDataSource: [CellDataModel] = []
     
     //MARK: CollectionView
     
-    private var selectedStyle: PresentationStyle = .table {
-        didSet { updatePresentationStyle() }
-    }
-    private var styleDelegates: [PresentationStyle: CollectionViewSelectableItemDelegate] = {
-        let result: [PresentationStyle: CollectionViewSelectableItemDelegate] = [
-            .table: TabledContentCollectionViewDelegate(),
-            .defaultGrid: DefaultGriddedContentCollectionViewDelegate()
-        ]
-        return result
-    }()
-    
-    
-    // MARK: Model
-   
-    private var viewModel: StorageViewModelProtocol
-    private var cellDataSource: [CellDataModel] = []
-
+    private var selectedStyle: PresentationStyle = .table
     private lazy var uploadButton = CSUploadButton()
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
+        layout.itemSize = CGSize(width: view.bounds.width, height: 33)
         layout.minimumLineSpacing = 4
         layout.minimumInteritemSpacing = 4
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -53,7 +42,6 @@ final class StorageViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -75,9 +63,11 @@ final class StorageViewController: UIViewController {
             guard let self = self, let isLoading = isLoading else { return }
             DispatchQueue.main.async {
                 if isLoading {
+                    self.activityIndicator.startAnimating()
                     self.collectionView.reloadData()
-                    
                 } else {
+                    self.activityIndicator.stopAnimating()
+                    self.activityIndicator.isHidden = true
                 }
             }
         }
@@ -93,12 +83,12 @@ private extension StorageViewController {
         setupView()
         SetupNavBar()
         setupButtonTap()
-        updatePresentationStyle()
         setupConstraints()
         
     }
     
     func setupView() {
+        view.addSubview(activityIndicator)
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
         view.backgroundColor = .systemBackground
@@ -113,25 +103,22 @@ private extension StorageViewController {
     
     func setupCollectionView() {
         collectionView.backgroundColor = .systemBackground
-        collectionView.contentMode = .center
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.reuseID)
     }
     
-    private func updatePresentationStyle() {
-        collectionView.delegate = styleDelegates[selectedStyle]
-        collectionView.performBatchUpdates({
-            collectionView.reloadData()
-        }, completion: nil)
-        navigationItem.rightBarButtonItem?.image = selectedStyle.buttonImage
-    }
-    
     @objc private func changeContentLayout() {
-        let allCases = PresentationStyle.allCases
-        guard let index = allCases.firstIndex(of: selectedStyle) else { return }
-        let nextIndex = (index + 1) % allCases.count
-        selectedStyle = allCases[nextIndex]
+        if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            if layout.itemSize == CGSize(width: view.bounds.width, height: 33) {
+                layout.itemSize = CGSize(width: 100, height: 100)
+                navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "file")
+            } else {
+                layout.itemSize = CGSize(width: view.bounds.width, height: 33)
+                navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "profileTab")
+            }
+            collectionView.collectionViewLayout.invalidateLayout()
+        }
     }
     
     func setupButtonTap() {
@@ -146,22 +133,37 @@ private extension StorageViewController {
     }
     
     private func uploadButtonPressed() {
-        uploadButton.addAction(UIAction { action in
-            let ac = UIAlertController(title: "New folder", message: nil, preferredStyle: .alert)
-            ac.addTextField { textField in
-                textField.placeholder = "Enter the name"
-            }
-                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned ac] _ in
-                    let answer = ac.textFields![0]
-                    self.viewModel.createNewFolder(answer.text ?? "")
+        uploadButton.addAction(UIAction { [weak self] action in
+            guard let self = self else { return }
+            let actionSheet = UIAlertController(title: "What to do", message: nil, preferredStyle: .actionSheet)
+            let newFolder = UIAlertAction(title: "New Folde", style: .default) { _ in
+                
+                let enterNameAlert = UIAlertController(title: "New folder", message: nil, preferredStyle: .alert)
+                enterNameAlert.addTextField { textField in
+                    textField.placeholder = "Enter the name"
                 }
-                ac.addAction(submitAction)
-            self.present(ac, animated: true)
+                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned enterNameAlert] _ in
+                    let answer = enterNameAlert.textFields?[0]
+                    self.viewModel.createNewFolder(answer?.text ?? "")
+                }
+                enterNameAlert.addAction(submitAction)
+                self.present(enterNameAlert, animated: true)
+            }
+            let newFile = UIAlertAction(title: "New File", style: .default)
+            let cancle = UIAlertAction(title: "Cancle", style: .cancel)
+            
+            actionSheet.addAction(newFolder)
+            actionSheet.addAction(newFile)
+            actionSheet.addAction(cancle)
+            self.present(actionSheet, animated: true)
         },
                                for: .touchUpInside)
     }
     
     func setupConstraints() {
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
         collectionView.snp.makeConstraints { make in
             make.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
             make.left.equalToSuperview().inset(16)
@@ -209,8 +211,17 @@ extension StorageViewController: UICollectionViewDataSource {
             fatalError("Wrong cell")
         }
         let model = cellDataSource[indexPath.row]
-        //cell.configure(model)
+        let url = ""
+        cell.configure(model, url: url)
         return cell
+    }
+}
+
+extension StorageViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
+        UIEdgeInsets(top: 0, left: 30.0, bottom: 0, right: 16.0)
     }
 }
 
