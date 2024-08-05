@@ -73,7 +73,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchCurrentData(path: String, completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlParams = ["path": "disk:/" + path]
+        let urlParams = ["path": path]
         let urlString = "https://cloud-api.yandex.net/v1/disk/resources"
         guard let url = URL(string: urlString) else { return }
         
