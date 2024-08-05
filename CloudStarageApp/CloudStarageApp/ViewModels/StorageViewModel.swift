@@ -16,6 +16,7 @@ protocol StorageViewModelProtocol: AnyObject {
     
     func numbersOfRowInSection() -> Int
     func fetchData()
+    func pagination(_ path: String)
     func mapModel()
     func presentDetailVC()
     func sortData()
@@ -42,6 +43,10 @@ final class StorageViewModel {
         cellDataSource.value = model.compactMap { CellDataModel($0) }
     }
 
+    func returnPath() -> String {
+        "dsa"
+    }
+    
 }
     
 extension StorageViewModel: StorageViewModelProtocol {
@@ -51,7 +56,7 @@ extension StorageViewModel: StorageViewModelProtocol {
             return
         }
         isLoading.value = true
-        NetworkManager.shared.fetchData { [weak self] result in
+        NetworkManager.shared.fetchData("") { [weak self] result in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 switch result {
@@ -80,6 +85,27 @@ extension StorageViewModel: StorageViewModelProtocol {
     
     func numbersOfRowInSection() -> Int {
         return model.count
+    }
+    
+    func pagination(_ path: String) {
+        if isLoading.value ?? true {
+            return
+        }
+        isLoading.value = true
+        NetworkManager.shared.fetchCurentData(path: path) { [weak self] result in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let file):
+                    self.model = file
+                    self.mapModel()
+                    self.isLoading.value = false
+                    print("\(path)")
+                case .failure(let error):
+                    print("model failrue: \(error)")
+                }
+            }
+        }
     }
     
     func presentDetailVC() {

@@ -14,9 +14,12 @@ final class PresentImageViewController: UIViewController {
     
     private let viewModel: PresentImageViewModelProtocol
     
+    
+    private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var imageView = UIImageView()
     private lazy var shareButton = UIButton()
     private lazy var deleteButton = UIButton()
+    
 
     init(viewModel: PresentImageViewModelProtocol) {
         self.viewModel = viewModel
@@ -29,12 +32,19 @@ final class PresentImageViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        activityIndicator.isHidden = false
+        self.activityIndicator.startAnimating()
         
         setupLayout()
     }
     
-    func configure(_ model: CellDataModel) {
-        //imageView.sd_setImage(with: model.previewImage?.baseURL, placeholderImage: .logo)
+    func configure(_ url: URL) {
+        DispatchQueue.main.async {
+            self.imageView.sd_setImage(with: url)
+            self.activityIndicator.stopAnimating()
+            //self.activityIndicator.isHidden = true
+        }
+        //self.activityIndicator.hidesWhenStopped = true
     }
 }
 
@@ -51,6 +61,7 @@ private extension PresentImageViewController {
         view.addSubview(imageView)
         view.addSubview(shareButton)
         view.addSubview(deleteButton)
+        view.addSubview(activityIndicator)
     }
     
     func setupButtons() {
@@ -60,6 +71,9 @@ private extension PresentImageViewController {
     }
     
     func setupConstraints() {
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
         imageView.snp.makeConstraints { make in
             make.center.equalToSuperview()
             make.height.width.equalTo(300)
