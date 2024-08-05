@@ -9,6 +9,7 @@ struct CellDataModel {
     let type: String?
     let previewImage: String?
     let file: String
+    let path: String
     let sizes: [Size]
     let size: Int?
     
@@ -19,6 +20,7 @@ struct CellDataModel {
         self.type = item.type
         self.previewImage = item.preview
         self.file = item.file ?? ""
+        self.path = item.path
         self.sizes = item.sizes ?? []
         self.size = item.size
     }

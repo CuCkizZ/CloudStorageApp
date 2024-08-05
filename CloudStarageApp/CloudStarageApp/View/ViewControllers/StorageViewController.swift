@@ -190,8 +190,9 @@ private extension StorageViewController {
 
 extension StorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let name = cellDataSource[indexPath.row].name
+        let name = cellDataSource[indexPath.row].path
         viewModel.pagination(name)
+        print(name)
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
