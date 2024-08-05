@@ -190,7 +190,8 @@ private extension StorageViewController {
 
 extension StorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        viewModel.presentDetailVC()
+        let name = cellDataSource[indexPath.row].name
+        viewModel.pagination(name)
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
@@ -222,8 +223,7 @@ extension StorageViewController: UICollectionViewDataSource {
             fatalError("Wrong cell")
         }
         let model = cellDataSource[indexPath.row]
-        let url = ""
-        cell.configure(model, url: url)
+        cell.configure(model)
         return cell
     }
 }

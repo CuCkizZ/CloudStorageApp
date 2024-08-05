@@ -11,6 +11,7 @@ protocol ProfileViewModelProtocol {
     var onDataLoaded: (() -> Void)? { get set }
     var dataSource: ProfileModel? { get set }
     var isLoading: Observable<Bool> { get set }
+    func pushToPublic()
     func fetchData()
     func logOut()
 }
@@ -27,6 +28,9 @@ final class ProfileViewModel {
         self.coordinator = coordinator
         fetchData()
     }
+}
+
+extension ProfileViewModel: ProfileViewModelProtocol {
     
     func fetchData() {
         NetworkManager.shared.fetchAccountData { [weak self] result in
@@ -43,11 +47,12 @@ final class ProfileViewModel {
             }
         }
     }
-}
-
-extension ProfileViewModel: ProfileViewModelProtocol {
+    
+    func pushToPublic() {
+        coordinator.finish()
+    }
     
     func logOut() {
-        coordinator.finish()
+        //coordinator.finish()
     }
 }

@@ -17,7 +17,7 @@ final class ProfileCoordinator: Coorditator {
         
     }
     override func finish() {
-        Logout()
+        finishDelegate?.coordinatorDidFinish(childCoordinator: self)
         print("Profile done")
     }
     
@@ -28,6 +28,6 @@ final class ProfileCoordinator: Coorditator {
     }
     
     func Logout() {
-       // let profileVC = factory.makeLoginScene(coordinator: self)
+       
     }
 }

@@ -13,11 +13,11 @@ private enum PresentationStyle: String, CaseIterable {
     }
 }
 
-final class HomeViewController: UIViewController {
+final class PublicStorageViewController: UIViewController {
     private var refresher = UIRefreshControl()
     
     private lazy var activityIndicator = UIActivityIndicatorView()
-    private var viewModel: HomeViewModelProtocol
+    private var viewModel: PublickStorageViewModelProtocol
     private lazy var cellDataSource: [CellDataModel] = []
     
     //MARK: CollectionView
@@ -35,7 +35,7 @@ final class HomeViewController: UIViewController {
     
     
     
-    init(viewModel: HomeViewModelProtocol) {
+    init(viewModel: PublickStorageViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -89,7 +89,7 @@ final class HomeViewController: UIViewController {
 
 // MARK: Layout
 
-private extension HomeViewController {
+private extension PublicStorageViewController {
     
     func setupLayout() {
         setupView()
@@ -199,73 +199,54 @@ private extension HomeViewController {
     }
 }
 
-extension HomeViewController: UICollectionViewDelegate {
-    
+extension PublicStorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        viewModel.presentDetailVC(path: "")
+    }
+    
+    
+    
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+        guard let indexPath = indexPaths.first else { return nil }
+        let name = cellDataSource[indexPath.item].name
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
+                self.viewModel.deleteFile(name)
+            }
+            let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+                // viewmodel
+            }
+            let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
+                // viewmodel
+            }
+            return UIMenu(title: "", children: [deleteAction, shareAction, renameAction])
+        }
+    }
+}
+
+extension PublicStorageViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        min(cellDataSource.count, 10)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
+                                                            for: indexPath) as? CollectionViewCell else {
+            fatalError("Wrong cell")
+        }
         let model = cellDataSource[indexPath.row]
-        let fileType = cellDataSource[indexPath.row].file
         
-        if fileType.contains("officedocument") {
-            let vc = WebViewViewController()
-            navigationController?.pushViewController(vc, animated: true)
-        } else if fileType.contains("image") {
-            let vm = PresentImageViewModel()
-            let vc = PresentImageViewController(viewModel: vm)
-            let urlString = cellDataSource[indexPath.row].sizes
-            if let originalUrlString = urlString.first(where: { $0.name == "ORIGINAL" })?.url {
-                if let url = URL(string: originalUrlString) {
-                    vc.configure(url)
-                }
-                navigationController?.pushViewController(vc, animated: true)
-            }
-        } else {
-            let vc = PDFViewController()
-            vc.configure(fileType)
-            navigationController?.pushViewController(vc, animated: true)
-        }
+        cell.configure(model)
+        return cell
     }
-        
-        
-        
-        func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
-            guard let indexPath = indexPaths.first else { return nil }
-            let name = cellDataSource[indexPath.item].name
-            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
-                let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-                    self.viewModel.deleteFile(name)
-                }
-                let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                    // viewmodel
-                }
-                let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
-                    // viewmodel
-                }
-                return UIMenu(title: "", children: [deleteAction, shareAction, renameAction])
-            }
-        }
+}
+
+extension PublicStorageViewController: UICollectionViewDelegateFlowLayout {
+    func collectionView(_ collectionView: UICollectionView,
+                        layout collectionViewLayout: UICollectionViewLayout,
+                        insetForSectionAt section: Int) -> UIEdgeInsets {
+        UIEdgeInsets(top: 0, left: 30.0, bottom: 0, right: 16.0)
     }
-    
-    extension HomeViewController: UICollectionViewDataSource {
-        
-        func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-            min(cellDataSource.count, 10)
-        }
-        
-        func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
-                                                                for: indexPath) as? CollectionViewCell else {
-                fatalError("Wrong cell")
-            }
-            let model = cellDataSource[indexPath.row]
-            cell.configure(model)
-            return cell
-        }
-    }
-    
-    extension HomeViewController: UICollectionViewDelegateFlowLayout {
-        func collectionView(_ collectionView: UICollectionView,
-                            layout collectionViewLayout: UICollectionViewLayout,
-                            insetForSectionAt section: Int) -> UIEdgeInsets {
-            UIEdgeInsets(top: 0, left: 30.0, bottom: 0, right: 16.0)
-        }
-    }
+}
+
+

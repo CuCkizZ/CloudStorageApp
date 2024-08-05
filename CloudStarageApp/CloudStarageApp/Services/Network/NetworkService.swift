@@ -11,12 +11,13 @@ import Alamofire
 
 protocol NetworkServiceProtocol {
     func getToket()
-    func fetchDataWithAlamofire(completion: @escaping (Result<Data, Error>) -> Void)
+    func fetchDataWithAlamofire(_ path: String, completion: @escaping (Result<Data, Error>) -> Void)
     func fetchAccountData(completion: @escaping (Result<Data, Error>) -> Void)
     func createNewFolder(_ name: String)
     func deleteFolder(urlString: String, name: String)
     func renameFile(from oldName: String, to newName: String)
     func fetchLastData(completion: @escaping (Result<Data, Error>) -> Void)
+    func fetchPublicData(completion: @escaping (Result<Data, Error>) -> Void)
     func fetchCurrentData(path: String, completion: @escaping (Result<Data, Error>) -> Void)
 }
 
@@ -34,10 +35,10 @@ final class NetworkService: NetworkServiceProtocol {
     
     init() {
         self.headers = [
-               "Accept" : "application/json",
-               "Authorization" : "OAuth y0_AgAAAAB3PvZkAADLWwAAAAELlSb3AADQZy6bNutAiZm4EhJkt3zSpFwhuQ"
-           ]
-       }
+            "Accept" : "application/json",
+            "Authorization" : "OAuth y0_AgAAAAB3PvZkAADLWwAAAAELlSb3AADQZy6bNutAiZm4EhJkt3zSpFwhuQ"
+        ]
+    }
     
     func getToket() {
         let urlString = "https://oauth.yandex.ru/authorize?response_type=token&client_id="+Constants.idClient
@@ -55,8 +56,8 @@ final class NetworkService: NetworkServiceProtocol {
         print(self.newtoken)
     }
     
-    func fetchDataWithAlamofire(completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlParams = ["path": "disk:/"]
+    func fetchDataWithAlamofire(_ path: String, completion: @escaping (Result<Data, Error>) -> Void) {
+        let urlParams = ["path": "disk:/" + path]
         let urlString = "https://cloud-api.yandex.net/v1/disk/resources"
         guard let url = URL(string: urlString) else { return }
         
@@ -118,6 +119,21 @@ final class NetworkService: NetworkServiceProtocol {
         }
     }
     
+    func fetchPublicData(completion: @escaping (Result<Data, Error>) -> Void) {
+        let urlStirng = "https://cloud-api.yandex.net/v1/disk/resources/public"
+        guard let url = URL(string: urlStirng) else { return }
+        
+        AF.request(url, method: .get, headers: headers).response { response in
+            if let error = response.error {
+                completion(.failure(error))
+                print("URL error")
+                return
+            }
+            guard let data = response.data else { return }
+            completion(.success(data))
+        }
+    }
+    
     func createNewFolder(_ name: String) {
         let urlString = "https://cloud-api.yandex.net/v1/disk/resources?path=disk:/\(name)"
         guard let url = URL(string: urlString) else { return }
@@ -156,7 +172,7 @@ final class NetworkService: NetworkServiceProtocol {
         let body: [String: String] = [
             "name": newName
         ]
-
+        
         AF.request(urlString, method: .patch, parameters: body, encoding: JSONEncoding.default, headers: headers).validate().response { response in
             switch response.result {
             case .success:
@@ -166,7 +182,7 @@ final class NetworkService: NetworkServiceProtocol {
             }
         }
     }
-    
 }
+
 
 

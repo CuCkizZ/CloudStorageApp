@@ -28,14 +28,7 @@ extension HomeCoordinator {
     }
     
     func presentImage() {
-        let coordinator = self
-        guard let navigationController = navigationController else { return }
-        let homeVC = factory.makeHomeScene(coordinator: self)
-        let vm = PresentImageViewModel()
-        let vc = PresentImageViewController(viewModel: vm)
         
-        
-        navigationController.pushViewController(vc, animated: true)
     }
     
 }
