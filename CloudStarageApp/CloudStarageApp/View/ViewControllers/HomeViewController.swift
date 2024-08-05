@@ -219,9 +219,9 @@ extension HomeViewController: UICollectionViewDelegate {
                 navigationController?.pushViewController(vc, animated: true)
             }
         } else {
-            let vc = PDFViewController()
-            vc.configure(fileType)
-            navigationController?.pushViewController(vc, animated: true)
+            viewModel.presentPdfVC(fyleType: fileType)
+//            vc.configure(fileType)
+//            navigationController?.pushViewController(vc, animated: true)
         }
     }
         

@@ -22,8 +22,6 @@ final class PathPageCoordinator: Coorditator {
 extension PathPageCoordinator {
     
     func showPage() {
-        guard let navigationController = navigationController else { return }
-        let vc = factory.makePageScene(coordinator: self)
-        navigationController.pushViewController(vc, animated: true)
+       
     }
 }

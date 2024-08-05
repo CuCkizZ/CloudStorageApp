@@ -45,7 +45,7 @@ final class StorageViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        viewModel.fetchData(path: "")
         setupLayout()
         bindView()
         bindViewModel()
@@ -115,7 +115,7 @@ private extension StorageViewController {
     }
     
     @objc func pullToRefresh() {
-        viewModel.fetchData()
+        //xxviewModel.fetchData()
         refresher.endRefreshing()
     }
     

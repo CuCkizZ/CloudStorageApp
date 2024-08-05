@@ -15,7 +15,7 @@ protocol StorageViewModelProtocol: AnyObject {
     
     
     func numbersOfRowInSection() -> Int
-    func fetchData()
+    func fetchData(path: String)
     func pagination(_ path: String)
     func mapModel()
     func presentDetailVC()
@@ -36,7 +36,7 @@ final class StorageViewModel {
     
     init(coordinator: StorageCoordinator) {
         self.coordinator = coordinator
-        fetchData()
+        //fetchData()
     }
     
     func mapModel() {
@@ -51,12 +51,12 @@ final class StorageViewModel {
     
 extension StorageViewModel: StorageViewModelProtocol {
     
-    func fetchData() {
+    func fetchData(path: String) {
         if isLoading.value ?? true {
             return
         }
         isLoading.value = true
-        NetworkManager.shared.fetchData("") { [weak self] result in
+        NetworkManager.shared.fetchData(path) { [weak self] result in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 switch result {
@@ -79,7 +79,7 @@ extension StorageViewModel: StorageViewModelProtocol {
             NetworkManager.shared.createNewFolder(name)
             DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
                 guard let self = self else { return }
-                self.fetchData()
+                self.fetchData(path: name)
             }
     }
     
@@ -109,7 +109,7 @@ extension StorageViewModel: StorageViewModelProtocol {
     }
     
     func presentDetailVC() {
-        //coordinator.showHomeScene()
+        coordinator.showStorageScene()
     }
     
     func sortData() {

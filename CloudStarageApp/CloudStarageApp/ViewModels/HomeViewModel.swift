@@ -17,7 +17,8 @@ protocol HomeViewModelProtocol: AnyObject {
     func numbersOfRowInSection() -> Int
     func fetchData()
     func mapModel() 
-    func presentDetailVC(path: String)
+    func presentPdfVC(fyleType: String)
+    
     func sortData()
     func createNewFolder(_ name: String)
     func deleteFile(_ name: String)
@@ -81,9 +82,9 @@ extension HomeViewModel: HomeViewModelProtocol {
         5
     }
     
-    func presentDetailVC(path: String) {
+    func presentPdfVC(fyleType: String) {
         //coordinator.showHomeScene()
-        coordinator.presentImage()
+        coordinator.goToPDF(fyleType: fyleType)
 //        NetworkManager.shared.fetchCurentData(path: path) { [weak self] result in
 //            guard let self = self else { return }
 //            DispatchQueue.main.async {

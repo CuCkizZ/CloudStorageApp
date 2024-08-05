@@ -24,9 +24,6 @@ final class PresentImageCoordinator: Coorditator {
 
 extension PresentImageCoordinator {
     func presentImageScene() {
-        guard let navigationController = navigationController else { return }
-        let vc = factory.makePresentScene(coordinator: self)
-        navigationController.pushViewController(vc, animated: true)
     }
 }
     

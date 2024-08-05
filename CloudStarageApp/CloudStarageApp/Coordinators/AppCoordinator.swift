@@ -53,22 +53,12 @@ private extension AppCoordinator {
                                             navigationController: navigationController, finisDelegate: self)
         loginCoordinator.start()
     }
-    
-    func showPublicScene() {
-        guard let navigationController = navigationController else { return }
-        let publicCoordinator = factory.makePublicFlow(coordinator: self, navigationController: navigationController, finisDelegate: self)
-        publicCoordinator.start()
-    }
 }
 
 extension AppCoordinator {
     
     func showMainFlow() {
         showMainScene()
-    }
-    
-    func showPub() {
-        showPublicScene()
     }
 }
 
@@ -82,17 +72,17 @@ extension AppCoordinator: CoorditatorFinishDelegate {
         case .onboarding:
             //showMainFlow()
             showAuthFlow()
-            //navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
+            navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         case .app:
             return
         case .login:
-            showMainScene()
-            //navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
+            showMainFlow()
+            navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         case .profile:
-            showPub()
-            //navigationController?.pushViewController(UIViewController(), animated: true)
+            print("dsa")
+            navigationController?.pushViewController(UIViewController(), animated: true)
         case .imagePresent:
-            showPub()
+            print("dsa")
         case .publicCoordinator:
             showMainFlow()
         case .logout: 

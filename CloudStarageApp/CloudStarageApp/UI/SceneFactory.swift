@@ -55,7 +55,7 @@ struct SceneFactory {
         
         let homeNavigationController = UINavigationController()
         let homeCoordinator = HomeCoordinator(type: .home, navigationController: homeNavigationController)
-        homeNavigationController.tabBarItem = UITabBarItem(title: "Last one", image: UIImage(resource: .homeTab), tag: 0)
+        homeNavigationController.tabBarItem = UITabBarItem(title: "Latest", image: UIImage(resource: .homeTab), tag: 0)
         homeCoordinator.finishDelegate = finishDelegate
         homeCoordinator.start()
         
@@ -96,14 +96,6 @@ struct SceneFactory {
         return loginCoordinator
     }
     
-    static func makePresentFlow(coordinator: AppCoordinator,
-                                navigationController: UINavigationController,
-                                finisDelegate: CoorditatorFinishDelegate) -> PresentImageCoordinator {
-        let presentCoordinator = PresentImageCoordinator(type: .imagePresent, navigationController: navigationController, finishDelegate: finisDelegate)
-        coordinator.addChildCoordinator(presentCoordinator)
-        return presentCoordinator
-    }
-    
     static func makeHomeScene(coordinator: HomeCoordinator) -> HomeViewController {
         let viewModel = HomeViewModel(coordinator: coordinator)
         let homeVC = HomeViewController(viewModel: viewModel)
@@ -116,40 +108,23 @@ struct SceneFactory {
         return vc
     }
     
+    static func makePaggScene(coordinator: StorageCoordinator) -> StorageViewController {
+        let vm = StorageViewModel(coordinator: coordinator)
+        let vc = StorageViewController(viewModel: vm)
+        return vc
+    }
+    
     static func makeProfileScene(coordinator: ProfileCoordinator) -> ProfileViewController {
         let viewModel = ProfileViewModel(coordinator: coordinator)
         let view = ProfileViewController(viewModel: viewModel)
         return view
     }
     
-    static func makePresentScene(coordinator: PresentImageCoordinator) -> PresentImageViewController {
-        let vm = PresentImageViewModel()
-        let vc = PresentImageViewController(viewModel: vm)
+    static func makePDFScene(fyleType: String, coordinator: HomeCoordinator) -> PDFViewController {
+        let vm = PDFViewModel(coordinator: coordinator, fyleType: fyleType)
+        let vc = PDFViewController(viewModel: vm)
         return vc
     }
     
-    static func makePageScene(coordinator: PathPageCoordinator) -> PathPageViewController {
-        let vm = PathPageViewModel(coordinator: coordinator)
-        let vc = PathPageViewController(viewModel: vm)
-        return vc
-    }
-    
-    static func makePublicFlow(coordinator: AppCoordinator,
-                               navigationController: UINavigationController,
-                               finisDelegate: CoorditatorFinishDelegate) -> PublicCoordinator {
-        let publicCoordinator = PublicCoordinator(type: .publicCoordinator,
-                                                          navigationController: navigationController,
-                                                          finishDelegate: finisDelegate)
-        coordinator.addChildCoordinator(publicCoordinator)
-        print("public coordinator created")
-        return publicCoordinator
-    }
-    
-    static func makePublicScene(coordinator: PublicCoordinator) -> PublicStorageViewController {
-        let vm = PublicStorageViewModel(coordinator: coordinator)
-        let vc = PublicStorageViewController(viewModel: vm)
-        print("public vc created")
-        return vc
-    }
 }
 

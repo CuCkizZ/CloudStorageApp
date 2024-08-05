@@ -21,14 +21,16 @@ final class HomeCoordinator: Coorditator {
 
 extension HomeCoordinator {
     
+    func goToPDF(fyleType: String) {
+        guard let navigationController = navigationController else { return }
+        let vc = factory.makePDFScene(fyleType: fyleType, coordinator: self)
+        print("coordinator works")
+        navigationController.pushViewController(vc, animated: true)
+    }
+    
     func showHomeScene() {
         guard let navigationController = navigationController else { return }
         let vc = factory.makeHomeScene(coordinator: self)
         navigationController.pushViewController(vc, animated: true)
     }
-    
-    func presentImage() {
-        
-    }
-    
 }

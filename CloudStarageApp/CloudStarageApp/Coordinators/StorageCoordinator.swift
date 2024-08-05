@@ -28,4 +28,11 @@ extension StorageCoordinator {
         let loginVC = factory.makeStorageScene(coordinator: self)
         navigationController.pushViewController(loginVC, animated: true)
     }
+    
+    func paggination() {
+        guard let navigationController = navigationController else { return }
+        let pageVC = factory.makePaggScene(coordinator: self)
+        navigationController.pushViewController(pageVC, animated: true)
+    }
+    
 }
