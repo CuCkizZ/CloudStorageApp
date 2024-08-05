@@ -126,7 +126,7 @@ private extension ProfileViewController {
     }
     
     func setupButton() {
-        downloadButton.setTitle("Download", for: .normal)
+        downloadButton.setTitle("Public Files", for: .normal)
         downloadButton.setTitleColor(.black, for: .normal)
         downloadButton.backgroundColor = .white
         downloadButton.layer.cornerRadius = 12
@@ -136,7 +136,7 @@ private extension ProfileViewController {
         downloadButton.layer.shadowOpacity = 0.3
         downloadButton.layer.masksToBounds = false
         
-        //downloadButton.addTarget(self, action: #selector(updateShapeLayer), for: .touchUpInside)
+        downloadButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
     }
     
     func updateViewLayer() {
@@ -163,6 +163,10 @@ private extension ProfileViewController {
     }
     
 //    MARK: ButtonMethod
+    
+    @objc func buttonTapped() {
+       
+    }
 
     func setupConstraints() {
         totalStorageLabel.snp.makeConstraints { make in

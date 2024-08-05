@@ -54,11 +54,10 @@ private extension AppCoordinator {
         loginCoordinator.start()
     }
     
-    func logOut() {
+    func showPublicScene() {
         guard let navigationController = navigationController else { return }
-        let loginCoordinator = factory.logout(coordinator: self, navigationController: navigationController, finishDelegate: self)
-        loginCoordinator.start()
-        
+        let publicCoordinator = factory.makePublicFlow(coordinator: self, navigationController: navigationController, finisDelegate: self)
+        publicCoordinator.start()
     }
 }
 
@@ -68,10 +67,8 @@ extension AppCoordinator {
         showMainScene()
     }
     
-    func showPresentScene() {
-        guard let navigationController = navigationController else { return }
-        let presenterCoordinator = factory.makePresentFlow(coordinator: self, navigationController: navigationController, finisDelegate: self)
-        presenterCoordinator.start()
+    func showPub() {
+        showPublicScene()
     }
 }
 
@@ -85,18 +82,21 @@ extension AppCoordinator: CoorditatorFinishDelegate {
         case .onboarding:
             //showMainFlow()
             showAuthFlow()
-            navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
+            //navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         case .app:
             return
         case .login:
             showMainScene()
-            navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
+            //navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         case .profile:
-            logOut()
-            tabBarController.viewControllers?.removeAll()
+            showPub()
+            //navigationController?.pushViewController(UIViewController(), animated: true)
         case .imagePresent:
-           // showPresentScene()
-            navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
+            showPub()
+        case .publicCoordinator:
+            showMainFlow()
+        case .logout: 
+            showAuthFlow()
         default:
             navigationController?.popToRootViewController(animated: false)
         }

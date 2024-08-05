@@ -134,12 +134,22 @@ struct SceneFactory {
         return vc
     }
     
-    static func logout(coordinator: AppCoordinator,
-                       navigationController: UINavigationController,
-                       finishDelegate: CoorditatorFinishDelegate) -> LoginCoordinator {
-        coordinator.childCoordinators.removeAll()
-        return makeLoginFlow(coordinator: coordinator, navigationController: navigationController, finisDelegate: finishDelegate)
-        
+    static func makePublicFlow(coordinator: AppCoordinator,
+                               navigationController: UINavigationController,
+                               finisDelegate: CoorditatorFinishDelegate) -> PublicCoordinator {
+        let publicCoordinator = PublicCoordinator(type: .publicCoordinator,
+                                                          navigationController: navigationController,
+                                                          finishDelegate: finisDelegate)
+        coordinator.addChildCoordinator(publicCoordinator)
+        print("public coordinator created")
+        return publicCoordinator
+    }
+    
+    static func makePublicScene(coordinator: PublicCoordinator) -> PublicStorageViewController {
+        let vm = PublicStorageViewModel(coordinator: coordinator)
+        let vc = PublicStorageViewController(viewModel: vm)
+        print("public vc created")
+        return vc
     }
 }
 

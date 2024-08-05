@@ -15,6 +15,8 @@ enum CoordinatorType {
     case imagePresent
     case storage
     case profile
+    case publicCoordinator
+    case logout
 }
 
 protocol CoordinatorProtocol: AnyObject {
