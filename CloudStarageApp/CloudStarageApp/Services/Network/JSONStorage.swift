@@ -41,7 +41,7 @@ struct Item: Codable {
     let name: String
     let exif: Exif
     let created: String
-    //let resourceID: String
+    let resourceID: String?
     let modified: String
     let path: String
     let type: String

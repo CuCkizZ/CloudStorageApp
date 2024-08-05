@@ -17,6 +17,7 @@ final class StorageCoordinator: Coorditator {
     }
     override func finish() {
         print("Im done")
+        finishDelegate?.coordinatorDidFinish(childCoordinator: self)
     }
 }
 

@@ -1,4 +1,5 @@
 import UIKit
+import SDWebImage
 
 struct CellDataModel {
     
@@ -7,7 +8,9 @@ struct CellDataModel {
     let date: String
     let type: String?
     let previewImage: String?
+    let file: String
     let sizes: [Size]
+    let size: Int?
     
     init(_ item: Item) {
         self.name = item.name
@@ -15,7 +18,8 @@ struct CellDataModel {
         self.date = item.created
         self.type = item.type
         self.previewImage = item.preview
-        let sizes: [Size] = []
-        self.sizes = sizes
+        self.file = item.file ?? ""
+        self.sizes = item.sizes ?? []
+        self.size = item.size
     }
 }
