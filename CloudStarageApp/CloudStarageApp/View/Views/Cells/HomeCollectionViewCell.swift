@@ -11,6 +11,7 @@ final class CollectionViewCell: UICollectionViewCell {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
+        imageView.backgroundColor = .gray
         return imageView
     }()
     
@@ -59,21 +60,33 @@ final class CollectionViewCell: UICollectionViewCell {
         
     }
     
-    func configure(_ model: CellDataModel, url: String) {
+    func configure(_ model: CellDataModel) {
         nameLabel.text = model.name
         //        sizeLabel.text = model.size
         dateLabel.text = model.date
-        guard let urld = URL(string: model.previewImage ?? "") else { return }
-        contentImageView.sd_setImage(with: urld, placeholderImage: UIImage(resource: .file))
+        DispatchQueue.global().async {
+            guard let imageUrl = URL(string: "https://downloader.disk.yandex.ru/preview/f5aec057c18393a4537999e10b9d09b8545d66d4b2d73f4b9a1574b0b17cf9fe/inf/hSygf6tcyNZAohUKEgjoiKvzyIaBVUhB68HRB3_xAmpWurmS45p3rImzhATaQbHxgvaizAOzGn5vu5d_CyfHHQ%3D%3D?uid=2000615012&filename=%D0%A2%D0%B5%D1%85%D0%BD%D0%B8%D1%87%D0%B5%D1%81%D0%BA%D0%BE%D0%B5%20%D0%B7%D0%B0%D0%B4%D0%B0%D0%BD%D0%B8%D0%B5%20%281%29.pdf&disposition=inline&hash=&limit=0&content_type=image%2Fjpeg&owner_uid=2000615012&tknv=v2&size=S&crop=0") else { return }
+            guard let imageData = try? Data(contentsOf: imageUrl) else { return }
+            
+            DispatchQueue.main.async {
+                self.contentImageView.image = UIImage(data: imageData)
+            }
+        }
     }
+    
+    func publickConfigure(_ model: PublicItem) {
+        nameLabel.text = model.name
+        dateLabel.text = model.created
+    }
+    
 }
 
 private extension CollectionViewCell {
     
     func setupLabels() {
-        nameLabel.font = .Inter.regular.size(of: 15)
-        sizeLabel.font = .Inter.extraLight.size(of: 13)
-        dateLabel.font = .Inter.extraLight.size(of: 13)
+        nameLabel.font = .Inter.regular.size(of: 17)
+        sizeLabel.font = .Inter.extraLight.size(of: 14)
+        dateLabel.font = .Inter.extraLight.size(of: 14)
         
         nameLabel.textColor = .black
         sizeLabel.textColor = AppColors.customGray
@@ -86,6 +99,9 @@ private extension CollectionViewCell {
         }
         contentImageView.snp.makeConstraints { make in
             make.height.width.equalTo(33)
+        }
+        nameLabel.snp.makeConstraints { make in
+            make.height.equalTo(17)
         }
     }
 }

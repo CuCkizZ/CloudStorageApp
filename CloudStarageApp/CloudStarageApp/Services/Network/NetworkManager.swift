@@ -43,13 +43,31 @@ class NetworkManager {
         }
     }
     
-    func fetchData(completion: @escaping (Result<[Item], Error>) -> Void) {
-        client.fetchDataWithAlamofire { result in
+    func fetchData(_ path: String, completion: @escaping (Result<[Item], Error>) -> Void) {
+        client.fetchDataWithAlamofire(path) { result in
             switch result {
             case .success(let data):
                 do {
                     let result = try self.decoder.decode(Welcome.self, from: data)
                     completion(.success(result.embedded.items))
+                } catch {
+                    completion(.failure(error))
+                    print("Ошибка при парсе: \(error.localizedDescription)")
+                }
+            case .failure(let error):
+                completion(.failure(error))
+                print("Нечего парсить")
+            }
+        }
+    }
+    
+    func fetchPublicData(completion: @escaping (Result<[PublicItem], Error>) -> Void) {
+        client.fetchPublicData { result in
+            switch result {
+            case .success(let data):
+                do {
+                    let result = try self.decoder.decode(PublicWelcome.self, from: data)
+                    completion(.success(result.items))
                 } catch {
                     completion(.failure(error))
                     print("Ошибка при парсе: \(error.localizedDescription)")
