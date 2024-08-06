@@ -184,6 +184,27 @@ private extension PublicStorageViewController {
                                for: .touchUpInside)
     }
     
+    func copyShare(share: URL) {
+        UIPasteboard.general.url = share
+    }
+    
+    func sharePresent(shareLink: String) {
+        let vm = ShareActivityViewModel()
+        let shareVC = ShareActivityViewController(viewModel: vm, shareLink: shareLink)
+        if let sheet = shareVC.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { context in
+                self.view.bounds.height / 4
+            })]
+            
+            self.present(shareVC, animated: true)
+        }
+    }
+    
+    func presentIt(shareLink: String) {
+        let avc = UIActivityViewController(activityItems: [shareLink], applicationActivities: nil)
+        present(avc, animated: true)
+    }
+    
     func setupConstraints() {
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
@@ -205,19 +226,22 @@ extension PublicStorageViewController: UICollectionViewDelegate {
     }
     
     
-    
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
-        let name = cellDataSource[indexPath.item].name
+        let model = cellDataSource[indexPath.row]
+        guard let linkString = model.publicUrl else { return nil}
+        let name = model.name
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
             let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
                 self.viewModel.deleteFile(name)
             }
             let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                // viewmodel
+                self.sharePresent(shareLink: String(describing: linkString))
+                self.copyShare(share: linkString)
+                print(linkString)
             }
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
-                // viewmodel
+                self.presentIt(shareLink: model.file)
             }
             return UIMenu(title: "", children: [deleteAction, shareAction, renameAction])
         }

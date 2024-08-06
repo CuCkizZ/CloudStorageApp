@@ -126,6 +126,12 @@ struct SceneFactory {
         return vc
     }
     
+    static func makeShareScene(coordinator: ProfileCoordinator) -> ShareActivityViewController {
+        let vm = ShareActivityViewModel()
+        let vc = ShareActivityViewController(viewModel: vm, shareLink: "")
+        return vc
+    }
+    
     static func makePDFScene(fyleType: String, coordinator: HomeCoordinator) -> PDFViewController {
         let vm = PDFViewModel(coordinator: coordinator, fyleType: fyleType)
         let vc = PDFViewController(viewModel: vm)

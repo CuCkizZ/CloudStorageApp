@@ -35,6 +35,17 @@ extension ProfileCoordinator {
         navigationController.pushViewController(publicVC, animated: true)
     }
     
+    func presentShare(from: UIViewController) {
+        let shareVC = factory.makeShareScene(coordinator: self)
+        if let sheet = shareVC.sheetPresentationController {
+            sheet.detents = [.custom(resolver: { context in
+                250
+            })]
+        }
+        
+        from.present(shareVC, animated: true)
+    }
+    
     func Logout() {
     }
 }

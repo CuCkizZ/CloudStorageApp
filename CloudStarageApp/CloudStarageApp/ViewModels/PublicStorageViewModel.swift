@@ -22,27 +22,28 @@ protocol PublickStorageViewModelProtocol {
     func sortData()
     func createNewFolder(_ name: String)
     func unpublicResource()
+    func modalPresent()
     func deleteFile(_ name: String)
 }
-    final class PublicStorageViewModel {
-        private weak var coordinator: ProfileCoordinator?
-        var searchKeyword: String = ""
-        
-        var isLoading: Observable<Bool> = Observable(false)
-        var cellDataSource: Observable<[PublicItem]> = Observable(nil)
-        var model: [PublicItem] = []
-        
-        
-        init(coordinator: ProfileCoordinator) {
-            self.coordinator = coordinator
-            fetchData()
-        }
-        
-        func mapModel() {
-            cellDataSource.value = model
-        }
-
+final class PublicStorageViewModel {
+    private weak var coordinator: ProfileCoordinator?
+    var searchKeyword: String = ""
+    
+    var isLoading: Observable<Bool> = Observable(false)
+    var cellDataSource: Observable<[PublicItem]> = Observable(nil)
+    var model: [PublicItem] = []
+    
+    
+    init(coordinator: ProfileCoordinator) {
+        self.coordinator = coordinator
+        fetchData()
     }
+    
+    func mapModel() {
+        cellDataSource.value = model
+    }
+}
+
 extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     
     
@@ -84,11 +85,16 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     }
     
     func numbersOfRowInSection() -> Int {
-        5
+        model.count
     }
     
     func presentDetailVC(path: String) {
         
+    }
+    
+    func modalPresent() {
+        let view = PublicStorageViewController(viewModel: self)
+        coordinator?.presentShare(from: view)
     }
     
     func sortData() {
