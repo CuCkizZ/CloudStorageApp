@@ -235,6 +235,11 @@ extension PublicStorageViewController: UICollectionViewDelegate {
             let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
                 self.viewModel.deleteFile(name)
             }
+            
+            let unpublishAction = UIAction(title: "Unpublish", image: UIImage(systemName: "link")) { _ in
+                self.viewModel.unpublishFile(model.path)
+            }
+            
             let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
                 self.sharePresent(shareLink: String(describing: linkString))
                 self.copyShare(share: linkString)
@@ -243,7 +248,7 @@ extension PublicStorageViewController: UICollectionViewDelegate {
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
                 self.presentIt(shareLink: model.file)
             }
-            return UIMenu(title: "", children: [deleteAction, shareAction, renameAction])
+            return UIMenu(title: "", children: [deleteAction, unpublishAction, shareAction, renameAction])
         }
     }
 }

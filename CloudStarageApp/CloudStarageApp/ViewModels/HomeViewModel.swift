@@ -18,7 +18,7 @@ protocol HomeViewModelProtocol: AnyObject {
     func fetchData()
     func mapModel() 
     func presentPdfVC(fyleType: String)
-    
+    func publicFile(_ path: String)
     func createNewFolder(_ name: String)
     func deleteFile(_ name: String)
 }
@@ -75,6 +75,10 @@ extension HomeViewModel: HomeViewModelProtocol {
                 guard let self = self else { return }
                 self.fetchData()
             }
+    }
+    
+    func publicFile(_ path: String) {
+        NetworkManager.shared.toPublicFile(path)
     }
     
     func numbersOfRowInSection() -> Int {

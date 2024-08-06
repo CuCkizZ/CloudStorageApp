@@ -24,6 +24,7 @@ protocol PublickStorageViewModelProtocol {
     func unpublicResource()
     func modalPresent()
     func deleteFile(_ name: String)
+    func unpublishFile(_ path: String)
 }
 final class PublicStorageViewModel {
     private weak var coordinator: ProfileCoordinator?
@@ -95,6 +96,10 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     func modalPresent() {
         let view = PublicStorageViewController(viewModel: self)
         coordinator?.presentShare(from: view)
+    }
+    
+    func unpublishFile(_ path: String) {
+        NetworkManager.shared.unpublishFile(path)
     }
     
     func sortData() {
