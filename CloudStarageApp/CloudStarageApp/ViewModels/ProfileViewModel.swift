@@ -49,10 +49,10 @@ extension ProfileViewModel: ProfileViewModelProtocol {
     }
     
     func pushToPublic() {
-        coordinator.finish()
+        coordinator.goToPublic()
     }
     
     func logOut() {
-        //coordinator.finish()
+        coordinator.finish()
     }
 }

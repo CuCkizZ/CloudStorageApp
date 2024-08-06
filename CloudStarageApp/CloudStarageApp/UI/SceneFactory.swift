@@ -120,6 +120,12 @@ struct SceneFactory {
         return view
     }
     
+    static func makePublicScene(coordinator: ProfileCoordinator) -> PublicStorageViewController {
+        let vm = PublicStorageViewModel(coordinator: coordinator)
+        let vc = PublicStorageViewController(viewModel: vm)
+        return vc
+    }
+    
     static func makePDFScene(fyleType: String, coordinator: HomeCoordinator) -> PDFViewController {
         let vm = PDFViewModel(coordinator: coordinator, fyleType: fyleType)
         let vc = PDFViewController(viewModel: vm)

@@ -13,7 +13,7 @@ final class ProfileViewController: UIViewController {
     private let usedImageView = UIImageView()
     private let leftImageView = UIImageView()
     private let storageCircleView = UIImageView()
-    private let downloadButton = UIButton()
+    private let goToPublicButton = UIButton()
     private lazy var totalShapeLayer = CAShapeLayer()
     private lazy var usageShapeLayer = CAShapeLayer()
     
@@ -73,7 +73,7 @@ private extension ProfileViewController {
         view.addSubview(leftStorageLabel)
         view.addSubview(usedImageView)
         view.addSubview(leftImageView)
-        view.addSubview(downloadButton)
+        view.addSubview(goToPublicButton)
         setupViews()
         SetupNavBar()
         setupConstraints()
@@ -99,7 +99,7 @@ private extension ProfileViewController {
             print("Cancel")
         }))
         alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { action in
-            self.viewModel.logOut()
+            self.buttonTapped()
         }))
         present(alert, animated: true)
     }
@@ -126,17 +126,17 @@ private extension ProfileViewController {
     }
     
     func setupButton() {
-        downloadButton.setTitle("Public Files", for: .normal)
-        downloadButton.setTitleColor(.black, for: .normal)
-        downloadButton.backgroundColor = .white
-        downloadButton.layer.cornerRadius = 12
-        downloadButton.layer.shadowColor = UIColor.black.cgColor
-        downloadButton.layer.shadowOffset = CGSize(width: 1, height: 2)
-        downloadButton.layer.shadowRadius = 4
-        downloadButton.layer.shadowOpacity = 0.3
-        downloadButton.layer.masksToBounds = false
+        goToPublicButton.setTitle("Public Files", for: .normal)
+        goToPublicButton.setTitleColor(.black, for: .normal)
+        goToPublicButton.backgroundColor = .white
+        goToPublicButton.layer.cornerRadius = 12
+        goToPublicButton.layer.shadowColor = UIColor.black.cgColor
+        goToPublicButton.layer.shadowOffset = CGSize(width: 1, height: 2)
+        goToPublicButton.layer.shadowRadius = 4
+        goToPublicButton.layer.shadowOpacity = 0.3
+        goToPublicButton.layer.masksToBounds = false
         
-        downloadButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
+        goToPublicButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
     }
     
     func updateViewLayer() {
@@ -165,7 +165,8 @@ private extension ProfileViewController {
 //    MARK: ButtonMethod
     
     @objc func buttonTapped() {
-       
+        viewModel.pushToPublic()
+        print("logout tapped")
     }
 
     func setupConstraints() {
@@ -191,7 +192,7 @@ private extension ProfileViewController {
             make.left.equalTo(leftImageView.snp.right).inset(-10)
             make.top.equalTo(usedStorageLabel.snp.bottom).inset(-20)
         }
-        downloadButton.snp.makeConstraints { make in
+        goToPublicButton.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(leftStorageLabel.snp.bottom).inset(-50)
             
@@ -227,10 +228,4 @@ extension ProfileViewController {
         view.layer.addSublayer(usageShapeLayer)
     }
 }
-
-//extension Float {
-//    func rounded(toPlaces places: Int) -> Float {
-//        let divisor = pow(10.0, Float(places))
-//        return (self * divisor).rounded() / divisor
-//    }
 

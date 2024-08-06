@@ -18,7 +18,7 @@ final class PublicStorageViewController: UIViewController {
     
     private lazy var activityIndicator = UIActivityIndicatorView()
     private var viewModel: PublickStorageViewModelProtocol
-    private lazy var cellDataSource: [CellDataModel] = []
+    private lazy var cellDataSource: [PublicItem] = []
     
     //MARK: CollectionView
     private lazy var uploadButton = CSUploadButton()
@@ -109,7 +109,7 @@ private extension PublicStorageViewController {
     func SetupNavBar() {
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: selectedStyle.buttonImage, style: .plain, target: self, action: #selector(changeContentLayout))
         navigationController?.navigationBar.prefersLargeTitles = true
-        title = "Last one"
+        title = "Published"
     }
     
     
@@ -236,7 +236,7 @@ extension PublicStorageViewController: UICollectionViewDataSource {
         }
         let model = cellDataSource[indexPath.row]
         
-        cell.configure(model)
+        cell.publickConfigure(model)
         return cell
     }
 }

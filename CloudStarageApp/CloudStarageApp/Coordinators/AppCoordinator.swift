@@ -87,6 +87,7 @@ extension AppCoordinator: CoorditatorFinishDelegate {
             showMainFlow()
         case .logout: 
             showAuthFlow()
+            tabBarController.removeFromParent()
         default:
             navigationController?.popToRootViewController(animated: false)
         }

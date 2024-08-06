@@ -9,6 +9,8 @@ import UIKit
 
 final class TabBarController: UITabBarController {
     
+    weak var tabBarControllers: TabBarController?
+    
     init(tabBarControllers: [UIViewController]) {
         super.init(nibName: nil, bundle: nil)
         for tab in tabBarControllers {

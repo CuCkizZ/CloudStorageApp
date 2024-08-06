@@ -77,9 +77,4 @@ class Coorditator: CoordinatorProtocol {
     func finish() {
         print("Coordinator finished")
     }
-    
-    func present(from: UIViewController, to: UIViewController) {
-        from.present(to, animated: true)
-    }
-    
 }

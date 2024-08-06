@@ -10,7 +10,7 @@ import Foundation
 protocol PublickStorageViewModelProtocol {
     
     var isLoading: Observable<Bool> { get set }
-    var cellDataSource: Observable<[CellDataModel]> { get set }
+    var cellDataSource: Observable<[PublicItem]> { get set }
     var searchKeyword: String { get set }
     var model: [PublicItem] { get set }
     
@@ -25,21 +25,21 @@ protocol PublickStorageViewModelProtocol {
     func deleteFile(_ name: String)
 }
     final class PublicStorageViewModel {
-        private weak var coordinator: PublicCoordinator?
+        private weak var coordinator: ProfileCoordinator?
         var searchKeyword: String = ""
         
         var isLoading: Observable<Bool> = Observable(false)
-        var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
+        var cellDataSource: Observable<[PublicItem]> = Observable(nil)
         var model: [PublicItem] = []
         
         
-        init(coordinator: PublicCoordinator) {
+        init(coordinator: ProfileCoordinator) {
             self.coordinator = coordinator
             fetchData()
         }
         
         func mapModel() {
-           // cellDataSource.value = model.compactMap { CellDataModel($0) }
+            cellDataSource.value = model
         }
 
     }
@@ -59,6 +59,7 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
                     self.model = data
                     self.mapModel()
                     self.isLoading.value = false
+                    print(self.model.count)
                 case .failure(let error):
                     print("model failrue: \(error)")
                 }
