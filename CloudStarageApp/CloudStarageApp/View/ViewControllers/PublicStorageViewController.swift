@@ -52,12 +52,6 @@ final class PublicStorageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        collectionView.refreshControl = refresher
-        self.collectionView.alwaysBounceVertical = true
-        self.refresher.tintColor = AppColors.customGray
-        self.refresher.addTarget(self, action: #selector(pullToRefresh), for: .valueChanged)
-        self.collectionView.addSubview(refresher)
-        
         setupLayout()
         bindView()
         bindViewModel()
@@ -246,7 +240,7 @@ extension PublicStorageViewController: UICollectionViewDelegate {
                 print(linkString)
             }
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
-                self.presentIt(shareLink: model.file)
+                self.presentIt(shareLink: model.file ?? "")
             }
             return UIMenu(title: "", children: [deleteAction, unpublishAction, shareAction, renameAction])
         }

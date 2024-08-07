@@ -101,7 +101,6 @@ extension OnboardingViewController: OnboardingViewControllerProtocol {
 
 extension OnboardingViewController: UIPageViewControllerDataSource {
     
-    
     func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         guard let pageVC = viewController as? OnboardingPageViewController else { return UIViewController() }
         guard let currentIndex = pages.firstIndex(of: pageVC),
@@ -119,7 +118,6 @@ extension OnboardingViewController: UIPageViewControllerDataSource {
     }
     
 }
-
 
 extension OnboardingViewController: UIPageViewControllerDelegate {
     func pageViewController(_ pageViewController: UIPageViewController, willTransitionTo pendingViewControllers: [UIViewController]) {

@@ -196,17 +196,12 @@ final class NetworkService: NetworkServiceProtocol {
             if let error = response.error {
                 print("Error: \(error)")
             }
-            if let data = response.data {
-                let str = String(data: data, encoding: .utf8)
-                print("Data: \(str ?? "")")
-            }
         }
     }
     
     func unpublishFile(path: String) {
         let urlSting = "https://cloud-api.yandex.net/v1/disk/resources/unpublish?path=\(path)"
         guard let url = URL(string: urlSting) else { return }
-        
         
         AF.request(url, method: .put, headers: headers).validate().response { response in
             guard let statusCode = response.response?.statusCode else {
@@ -219,7 +214,6 @@ final class NetworkService: NetworkServiceProtocol {
             }
             if let data = response.data {
                 let str = String(data: data, encoding: .utf8)
-                print("Data: \(str ?? "")")
             }
         }
     }

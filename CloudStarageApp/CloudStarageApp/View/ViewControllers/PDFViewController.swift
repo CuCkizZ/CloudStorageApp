@@ -54,11 +54,9 @@ private extension PDFViewController {
         view.addSubview(pdfView)
     }
     
-    
     func setupConstraints() {
         pdfView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
-    
 }

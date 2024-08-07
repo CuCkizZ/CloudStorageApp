@@ -14,12 +14,10 @@ final class PresentImageViewController: UIViewController {
     
     private let viewModel: PresentImageViewModelProtocol
     
-    
     private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var imageView = UIImageView()
     private lazy var shareButton = UIButton()
     private lazy var deleteButton = UIButton()
-    
 
     init(viewModel: PresentImageViewModelProtocol) {
         self.viewModel = viewModel
@@ -66,7 +64,6 @@ private extension PresentImageViewController {
     
     func setupButtons() {
         shareButton.setImage(UIImage(systemName: "square.and.arrow.up"), for: .normal)
-        
         deleteButton.setImage(UIImage(systemName: "trash"), for: .normal)
     }
     

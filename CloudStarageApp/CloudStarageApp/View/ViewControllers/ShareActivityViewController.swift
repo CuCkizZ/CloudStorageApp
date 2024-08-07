@@ -40,7 +40,6 @@ private extension ShareActivityViewController {
     
     func setupLayout() {
         view.backgroundColor = .lightGray
-        
         setupStackView()
         setupButtons()
     }
@@ -49,9 +48,7 @@ private extension ShareActivityViewController {
         view.addSubview(stack)
         stack.axis = .vertical
         stack.alignment = .center
-        
         stack.spacing = 16
-        
         stack.snp.makeConstraints { make in
             make.top.equalToSuperview()
             make.centerX.equalToSuperview()

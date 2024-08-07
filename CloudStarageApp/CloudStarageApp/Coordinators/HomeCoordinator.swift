@@ -24,7 +24,6 @@ extension HomeCoordinator {
     func goToPDF(fyleType: String) {
         guard let navigationController = navigationController else { return }
         let vc = factory.makePDFScene(fyleType: fyleType, coordinator: self)
-        print("coordinator works")
         navigationController.pushViewController(vc, animated: true)
     }
     

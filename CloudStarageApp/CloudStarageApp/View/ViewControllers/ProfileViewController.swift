@@ -139,9 +139,13 @@ private extension ProfileViewController {
         goToPublicButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
     }
     
+    @objc func buttonTapped() {
+        viewModel.pushToPublic()
+    }
+    
     func updateViewLayer() {
         guard let model = viewModel.dataSource else { return }
-        let totalSpace = (model.totalSpace / 1000000000) 
+        let totalSpace = (model.totalSpace / 1000000000)
         let usageSt = CGFloat(model.usedSpace / 1000000000) / 4
         print(totalSpace)
         let animation = CABasicAnimation(keyPath: "strokeEnd")
@@ -162,12 +166,7 @@ private extension ProfileViewController {
         usageShapeLayer.add(animation, forKey: "strokeEnd")
     }
     
-//    MARK: ButtonMethod
-    
-    @objc func buttonTapped() {
-        viewModel.pushToPublic()
-        print("logout tapped")
-    }
+//    MARK: Constraints
 
     func setupConstraints() {
         totalStorageLabel.snp.makeConstraints { make in

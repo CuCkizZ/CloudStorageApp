@@ -61,7 +61,6 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
                     self.model = data
                     self.mapModel()
                     self.isLoading.value = false
-                    print(self.model.count)
                 case .failure(let error):
                     print("model failrue: \(error)")
                 }

@@ -68,7 +68,6 @@ class NetworkManager {
                 do {
                     let result = try self.decoder.decode(PublicWelcome.self, from: data)
                     completion(.success(result.items))
-                    print(result)
                 } catch {
                     completion(.failure(error))
                     print("Ошибка при парсе: \(error.localizedDescription)")
