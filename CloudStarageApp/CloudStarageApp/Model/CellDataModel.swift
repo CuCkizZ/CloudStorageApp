@@ -15,7 +15,6 @@ struct CellDataModel {
     
     init(_ item: Item) {
         self.name = item.name
-        //        self.size = item.size ?? 0
         self.date = dateFormatter(dateString: item.created)
         self.type = item.type
         self.previewImage = item.preview
