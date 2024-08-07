@@ -25,19 +25,19 @@ final class LoginViewController: UIViewController {
     let activityIndicator = UIActivityIndicatorView(style: .large)
     private let loadingView = UIView()
     private let blackButton = YandexButton()
-    private let loginTextField = CSTextField()
-    private let passwordTextFiled = CSTextField()
+//    private let loginTextField = CSTextField()
+//    private let passwordTextFiled = CSTextField()
     private let loginButton = CSBlueButton()
     
-    private lazy var stackView: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [loginTextField, passwordTextFiled])
-        stack.axis = .vertical
-        stack.spacing = 20
-        stack.alignment = .center
-        loginTextField.placeholder = Placeholder.user
-        passwordTextFiled.placeholder = Placeholder.password
-        return stack
-    }()
+//    private lazy var stackView: UIStackView = {
+//        let stack = UIStackView(arrangedSubviews: [loginTextField, passwordTextFiled])
+//        stack.axis = .vertical
+//        stack.spacing = 20
+//        stack.alignment = .center
+//        loginTextField.placeholder = Placeholder.user
+//        passwordTextFiled.placeholder = Placeholder.password
+//        return stack
+//    }()
     
     init(viewModel: LoginViewOutput) {
         self.viewModel = viewModel
@@ -54,10 +54,6 @@ final class LoginViewController: UIViewController {
         super.viewDidLoad()
         
         setupView()
-    }
-    
-    deinit {
-        stopKeybordListener()
     }
 
     func bindViewModel() {
@@ -84,7 +80,7 @@ private extension LoginViewController {
         view.backgroundColor = .systemBackground
         view.addSubview(loadingView)
         view.addSubview(activityIndicator)
-        view.addSubview(stackView)
+        //view.addSubview(stackView)
         view.addSubview(loginButton)
         view.addSubview(blackButton)
         setupButton()
@@ -125,18 +121,18 @@ private extension LoginViewController {
 
     
     func setupConstraints() {
-        stackView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.horizontalEdges.equalToSuperview().inset(20)
-        }
-        loginTextField.snp.makeConstraints { make in
-            make.horizontalEdges.equalTo(stackView)
-            make.height.equalTo(50)
-        }
-        passwordTextFiled.snp.makeConstraints { make in
-            make.horizontalEdges.equalTo(stackView)
-            make.height.equalTo(50)
-        }
+//        stackView.snp.makeConstraints { make in
+//            make.center.equalToSuperview()
+//            make.horizontalEdges.equalToSuperview().inset(20)
+//        }
+//        loginTextField.snp.makeConstraints { make in
+//            make.horizontalEdges.equalTo(stackView)
+//            make.height.equalTo(50)
+//        }
+//        passwordTextFiled.snp.makeConstraints { make in
+//            make.horizontalEdges.equalTo(stackView)
+//            make.height.equalTo(50)
+//        }
         
         blackButton.snp.makeConstraints { make in
             make.bottom.equalTo(loginButton.snp.top).inset(-16)
@@ -158,49 +154,12 @@ private extension LoginViewController {
 
 // MARK: Yandex
 
-// MARK: Keybord
-
-private extension LoginViewController {
-    func setupObservers() {
-        startKeybordListener()
-    }
-    
-    func startKeybordListener() {
-        NotificationCenter.default.addObserver(self, selector: #selector(keybordWillShow(_:)),
-                                               name: UIResponder.keyboardWillShowNotification,
-                                               object: nil)
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(keybordWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
-        
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(handleTap(_:)))
-        view.addGestureRecognizer(tapGesture)
-    }
-    
-    func stopKeybordListener() {
-        NotificationCenter.default.removeObserver(self)
-    }
-    
-    @objc func handleTap(_ sender: UITapGestureRecognizer) {
-        view.endEditing(true)
-    }
-    
-    @objc func keybordWillShow(_ notification: Notification) {
-//                guard let keybordFrame = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
-//               // let keyboardHeight = keybordFrame.cgRectValue.height
-        
-    }
-    
-    @objc func keybordWillHide(_ notification: Notification) {
-        
-    }
-}
-
 // MARK: - Protocol Methods
 
 extension LoginViewController: LoginViewInput {
     
     func onSighInTapped() {
-        viewModel.login(login: loginTextField.text ?? "", password: loginTextField.text ?? "")
+        viewModel.login(login: "", password: "")
     }
     
     func onSignUpTapped() {

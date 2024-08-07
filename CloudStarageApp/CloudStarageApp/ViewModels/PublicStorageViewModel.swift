@@ -10,7 +10,7 @@ import Foundation
 protocol PublickStorageViewModelProtocol {
     
     var isLoading: Observable<Bool> { get set }
-    var cellDataSource: Observable<[CellDataModel]> { get set }
+    var cellDataSource: Observable<[PublicItem]> { get set }
     var searchKeyword: String { get set }
     var model: [PublicItem] { get set }
     
@@ -22,27 +22,29 @@ protocol PublickStorageViewModelProtocol {
     func sortData()
     func createNewFolder(_ name: String)
     func unpublicResource()
+    func modalPresent()
     func deleteFile(_ name: String)
+    func unpublishFile(_ path: String)
 }
-    final class PublicStorageViewModel {
-        private weak var coordinator: PublicCoordinator?
-        var searchKeyword: String = ""
-        
-        var isLoading: Observable<Bool> = Observable(false)
-        var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
-        var model: [PublicItem] = []
-        
-        
-        init(coordinator: PublicCoordinator) {
-            self.coordinator = coordinator
-            fetchData()
-        }
-        
-        func mapModel() {
-           // cellDataSource.value = model.compactMap { CellDataModel($0) }
-        }
-
+final class PublicStorageViewModel {
+    private weak var coordinator: ProfileCoordinator?
+    var searchKeyword: String = ""
+    
+    var isLoading: Observable<Bool> = Observable(false)
+    var cellDataSource: Observable<[PublicItem]> = Observable(nil)
+    var model: [PublicItem] = []
+    
+    
+    init(coordinator: ProfileCoordinator) {
+        self.coordinator = coordinator
+        fetchData()
     }
+    
+    func mapModel() {
+        cellDataSource.value = model
+    }
+}
+
 extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     
     
@@ -83,11 +85,20 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     }
     
     func numbersOfRowInSection() -> Int {
-        5
+        model.count
     }
     
     func presentDetailVC(path: String) {
         
+    }
+    
+    func modalPresent() {
+        let view = PublicStorageViewController(viewModel: self)
+        coordinator?.presentShare(from: view)
+    }
+    
+    func unpublishFile(_ path: String) {
+        NetworkManager.shared.unpublishFile(path)
     }
     
     func sortData() {

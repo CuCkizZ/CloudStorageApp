@@ -15,15 +15,15 @@ private enum PresentationStyle: String, CaseIterable {
 
 final class StorageViewController: UIViewController {
     // MARK: Model
-    private var refresher = UIRefreshControl()
+    private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
     private var viewModel: StorageViewModelProtocol
     private var cellDataSource: [CellDataModel] = []
+    var path = "disk:/"
+    var titleName = "Storage"
     
-    //MARK: CollectionView
-    
-    private var selectedStyle: PresentationStyle = .table
     private lazy var uploadButton = CSUploadButton()
+    private lazy var selectedStyle: PresentationStyle = .table
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -43,9 +43,14 @@ final class StorageViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
 
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.fetchData(path: "")
+        viewModel.fetchCurrentData(name: titleName, path: path)
         setupLayout()
         bindView()
         bindViewModel()
@@ -73,7 +78,6 @@ final class StorageViewController: UIViewController {
             }
         }
     }
-    
 }
 
 // MARK: Layout
@@ -99,7 +103,7 @@ private extension StorageViewController {
     func SetupNavBar() {
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: selectedStyle.buttonImage, style: .plain, target: self, action: #selector(changeContentLayout))
         navigationController?.navigationBar.prefersLargeTitles = true
-        title = "Storage"
+        title = titleName
     }
     
     func setupCollectionView() {
@@ -190,9 +194,13 @@ private extension StorageViewController {
 
 extension StorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let name = cellDataSource[indexPath.row].path
-        viewModel.pagination(name)
+        let name = cellDataSource[indexPath.row].name
+        let cellpath = cellDataSource[indexPath.row].path
+        self.titleName = name
+        self.path = cellpath
+        viewModel.presentVc(path: path)
         print(name)
+        print(path)
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {

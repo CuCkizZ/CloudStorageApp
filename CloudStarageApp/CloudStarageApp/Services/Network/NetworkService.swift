@@ -19,6 +19,8 @@ protocol NetworkServiceProtocol {
     func fetchLastData(completion: @escaping (Result<Data, Error>) -> Void)
     func fetchPublicData(completion: @escaping (Result<Data, Error>) -> Void)
     func fetchCurrentData(path: String, completion: @escaping (Result<Data, Error>) -> Void)
+    func toPublicFile(path: String)
+    func unpublishFile(path: String)
 }
 
 private enum Constants {
@@ -165,9 +167,6 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func renameFile(from name: String, to newName: String) {
-        let headers: HTTPHeaders = [
-            "Authorization": "OAuth your_access_token"
-        ]
         let urlString = "https://cloud-api.yandex.net/v1/disk/resources/disk=\(name)"
         let body: [String: String] = [
             "name": newName
@@ -179,6 +178,42 @@ final class NetworkService: NetworkServiceProtocol {
                 print("File renamed successfully")
             case .failure(let error):
                 print("Error: \(error)")
+            }
+        }
+    }
+    
+    func toPublicFile(path: String) {
+        let urlSting = "https://cloud-api.yandex.net/v1/disk/resources/publish?path=\(path)"
+        guard let url = URL(string: urlSting) else { return }
+        
+        
+        AF.request(url, method: .put, headers: headers).validate().response { response in
+            guard let statusCode = response.response?.statusCode else {
+                print("Error: no response")
+                return
+            }
+            print("status code: \(statusCode)")
+            if let error = response.error {
+                print("Error: \(error)")
+            }
+        }
+    }
+    
+    func unpublishFile(path: String) {
+        let urlSting = "https://cloud-api.yandex.net/v1/disk/resources/unpublish?path=\(path)"
+        guard let url = URL(string: urlSting) else { return }
+        
+        AF.request(url, method: .put, headers: headers).validate().response { response in
+            guard let statusCode = response.response?.statusCode else {
+                print("Error: no response")
+                return
+            }
+            print("status code: \(statusCode)")
+            if let error = response.error {
+                print("Error: \(error)")
+            }
+            if let data = response.data {
+                let str = String(data: data, encoding: .utf8)
             }
         }
     }

@@ -122,6 +122,14 @@ class NetworkManager {
         client.createNewFolder(name)
     }
     
+    func toPublicFile(_ path: String) {
+        client.toPublicFile(path: path)
+    }
+    
+    func unpublishFile(_ path: String) {
+        client.unpublishFile(path: path)
+    }
+    
     func deleteReqest(name: String) {
         let urlString = "https://cloud-api.yandex.net/v1/disk/resources?path=disk:/\(name)"
         client.deleteFolder(urlString: urlString, name: name)

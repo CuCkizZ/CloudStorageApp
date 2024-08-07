@@ -16,12 +16,25 @@ struct CellDataModel {
     init(_ item: Item) {
         self.name = item.name
         //        self.size = item.size ?? 0
-        self.date = item.created
+        self.date = dateFormatter(dateString: item.created)
         self.type = item.type
         self.previewImage = item.preview
         self.file = item.file ?? ""
         self.path = item.path
         self.sizes = item.sizes ?? []
         self.size = item.size
+        
+        
+        func dateFormatter(dateString: String) -> String {
+            let dateFormatter = DateFormatter()
+            dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+            
+            if let date = dateFormatter.date(from: dateString) {
+                dateFormatter.dateFormat = "dd.MM.yyyy HH:mm"
+                return dateFormatter.string(from: date)
+                
+            }
+            return ""
+        }
     }
 }

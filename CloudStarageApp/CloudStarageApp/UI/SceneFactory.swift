@@ -18,6 +18,8 @@ private enum Constants {
 
 struct SceneFactory {
     
+//    MARK: OnboardingCoordinator
+    
     static func makeOnbording(coordinaror: OnboardingCoordinator) -> OnboardingViewController {
         var pages = [OnboardingPageViewController]()
         
@@ -39,6 +41,8 @@ struct SceneFactory {
         return view
     }
     
+//    //    MARK: AppCoordinator
+    
     static func makeOnboardingFlow(coordinator: AppCoordinator,
                                    navigationController: UINavigationController,
                                    finisDelegate: CoorditatorFinishDelegate) {
@@ -48,6 +52,16 @@ struct SceneFactory {
                                                           finishDelegate: finisDelegate)
         coordinator.addChildCoordinator(onBoardingCoordinator)
         onBoardingCoordinator.start()
+    }
+    
+    static func makeLoginFlow(coordinator: AppCoordinator,
+                              navigationController: UINavigationController,
+                              finisDelegate: CoorditatorFinishDelegate) -> LoginCoordinator {
+        let loginCoordinator = LoginCoordinator(type: .login,
+                                                navigationController: navigationController,
+                                                finishDelegate: finisDelegate)
+        coordinator.addChildCoordinator(loginCoordinator)
+        return loginCoordinator
     }
     
     static func makeMainFlow(coordinator: AppCoordinator,
@@ -80,21 +94,15 @@ struct SceneFactory {
         return tabBarController
     }
     
+//    MARK: LoginCoordinator
+    
     static func makeLoginScene(coordinator: LoginCoordinator) -> LoginViewController {
         let viewModel = LoginViewModel(coordinator: coordinator)
         let loginVC = LoginViewController(viewModel: viewModel)
         return loginVC
     }
     
-    static func makeLoginFlow(coordinator: AppCoordinator,
-                              navigationController: UINavigationController,
-                              finisDelegate: CoorditatorFinishDelegate) -> LoginCoordinator {
-        let loginCoordinator = LoginCoordinator(type: .login,
-                                                          navigationController: navigationController,
-                                                          finishDelegate: finisDelegate)
-        coordinator.addChildCoordinator(loginCoordinator)
-        return loginCoordinator
-    }
+//    MARK: HomeCoordinator
     
     static func makeHomeScene(coordinator: HomeCoordinator) -> HomeViewController {
         let viewModel = HomeViewModel(coordinator: coordinator)
@@ -102,17 +110,28 @@ struct SceneFactory {
         return homeVC
     }
     
-    static func makeStorageScene(coordinator: StorageCoordinator) -> StorageViewController {
+    static func makePDFScene(fyleType: String, coordinator: HomeCoordinator) -> PDFViewController {
+        let vm = PDFViewModel(coordinator: coordinator, fyleType: fyleType)
+        let vc = PDFViewController(viewModel: vm)
+        return vc
+    }
+    
+//    MARK: StorageCoordinator
+    
+    static func makeStorageScene(titleName: String, coordinator: StorageCoordinator) -> StorageViewController {
         let vm = StorageViewModel(coordinator: coordinator)
         let vc = StorageViewController(viewModel: vm)
         return vc
     }
     
-    static func makePaggScene(coordinator: StorageCoordinator) -> StorageViewController {
-        let vm = StorageViewModel(coordinator: coordinator)
-        let vc = StorageViewController(viewModel: vm)
-        return vc
-    }
+//    static func makePaggScene(name: String, coordinator: StorageCoordinator) -> PagginationViewController {
+//        let vm = PagginationViewModel(coordinator: coordinator)
+//        let vc = PagginationViewController(titleNav: name, viewModel: vm)
+//        return vc
+//    }
+    
+//    MARK: ProfileCoordinator
+    
     
     static func makeProfileScene(coordinator: ProfileCoordinator) -> ProfileViewController {
         let viewModel = ProfileViewModel(coordinator: coordinator)
@@ -120,9 +139,15 @@ struct SceneFactory {
         return view
     }
     
-    static func makePDFScene(fyleType: String, coordinator: HomeCoordinator) -> PDFViewController {
-        let vm = PDFViewModel(coordinator: coordinator, fyleType: fyleType)
-        let vc = PDFViewController(viewModel: vm)
+    static func makePublicScene(coordinator: ProfileCoordinator) -> PublicStorageViewController {
+        let vm = PublicStorageViewModel(coordinator: coordinator)
+        let vc = PublicStorageViewController(viewModel: vm)
+        return vc
+    }
+    
+    static func makeShareScene(coordinator: ProfileCoordinator) -> ShareActivityViewController {
+        let vm = ShareActivityViewModel()
+        let vc = ShareActivityViewController(viewModel: vm, shareLink: "")
         return vc
     }
     

@@ -18,8 +18,7 @@ protocol HomeViewModelProtocol: AnyObject {
     func fetchData()
     func mapModel() 
     func presentPdfVC(fyleType: String)
-    
-    func sortData()
+    func publicFile(_ path: String)
     func createNewFolder(_ name: String)
     func deleteFile(_ name: String)
 }
@@ -78,29 +77,15 @@ extension HomeViewModel: HomeViewModelProtocol {
             }
     }
     
+    func publicFile(_ path: String) {
+        NetworkManager.shared.toPublicFile(path)
+    }
+    
     func numbersOfRowInSection() -> Int {
         5
     }
     
     func presentPdfVC(fyleType: String) {
-        //coordinator.showHomeScene()
         coordinator.goToPDF(fyleType: fyleType)
-//        NetworkManager.shared.fetchCurentData(path: path) { [weak self] result in
-//            guard let self = self else { return }
-//            DispatchQueue.main.async {
-//                switch result {
-//                case .success(let file):
-//                    self.model = file
-//                    self.mapModel()
-//                    self.isLoading.value = false
-//                case .failure(let error):
-//                    print("model failrue: \(error)")
-//                }
-//            }
-//        }
-    }
-    
-    func sortData() {
-        
     }
 }

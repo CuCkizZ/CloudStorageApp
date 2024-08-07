@@ -7,15 +7,12 @@
 
 import UIKit
 import PDFKit
-import WebKit
 import SnapKit
 
 class PDFViewController: UIViewController {
     
     private let viewModel: PDFViewModel
-    
     private lazy var pdfView = PDFView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
-    private lazy var webView = WKWebView()
     
     init(viewModel: PDFViewModel) {
         self.viewModel = viewModel
@@ -50,7 +47,6 @@ private extension PDFViewController {
     
     func setupLayout() {
         setupView()
-        //configure()
         setupConstraints()
     }
     
@@ -58,11 +54,9 @@ private extension PDFViewController {
         view.addSubview(pdfView)
     }
     
-    
     func setupConstraints() {
         pdfView.snp.makeConstraints { make in
             make.edges.equalToSuperview()
         }
     }
-    
 }

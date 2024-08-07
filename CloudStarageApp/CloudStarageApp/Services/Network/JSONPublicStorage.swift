@@ -13,20 +13,20 @@ struct PublicWelcome: Codable {
 
 // MARK: - Item
 struct PublicItem: Codable {
-    let antivirusStatus, publicKey: String
-    let publicURL: String?
+    let antivirusStatus, publicKey: String?
+    let publicUrl: URL?
     let name: String
     let exif: Exif?
     let created: String
-    let size: Int
+    let size: Int?
     let resourceID: String?
     let modified: String?
-    let mimeType: String
-    let sizes: [Size]
-    let file: String
-    let mediaType: String
-    let preview: String
-    let path, sha256, type, md5: String
+    let mimeType: String?
+    let sizes: [Size]?
+    let file: String?
+    let mediaType: String?
+    let preview: String?
+    let path, type: String
     let revision: Int
 }
 

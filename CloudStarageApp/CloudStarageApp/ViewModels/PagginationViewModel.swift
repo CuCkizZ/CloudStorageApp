@@ -1,13 +1,12 @@
 //
-//  HomeViewModel.swift
+//  PagginationViewModel.swift
 //  CloudStarageApp
 //
-//  Created by Nikita Beglov on 17.07.2024.
+//  Created by Nikita Beglov on 07.08.2024.
 //
-
 import Foundation
 
-protocol StorageViewModelProtocol: AnyObject {
+protocol PagginationViewModelProtocol: AnyObject {
     var isLoading: Observable<Bool> { get set }
     var cellDataSource: Observable<[CellDataModel]> { get set }
     var searchKeyword: String { get set }
@@ -16,15 +15,16 @@ protocol StorageViewModelProtocol: AnyObject {
     
     func numbersOfRowInSection() -> Int
     func fetchData(path: String)
-    func fetchCurrentData(name: String, path: String)
+    func pagination(_ path: String)
     func mapModel()
+    func setTitle(_ name: String) -> String
+    func presentDetailVC()
     func sortData()
     func createNewFolder(_ name: String)
     func deleteFile(_ name: String)
-    func presentVc(path: String)
 }
 
-final class StorageViewModel {
+final class PagginationViewModel {
     
     private let coordinator: StorageCoordinator
     var searchKeyword: String = ""
@@ -33,11 +33,10 @@ final class StorageViewModel {
     var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
     var model: [Item] = []
     
-    var path: String?
-    
     
     init(coordinator: StorageCoordinator) {
         self.coordinator = coordinator
+        //fetchData()
     }
     
     func mapModel() {
@@ -50,36 +49,14 @@ final class StorageViewModel {
     
 }
     
-extension StorageViewModel: StorageViewModelProtocol {
+extension PagginationViewModel: PagginationViewModelProtocol {
     
     func fetchData(path: String) {
-//        if isLoading.value ?? true {
-//            return
-//        }
-//        isLoading.value = true
-//        NetworkManager.shared.fetchData(path) { [weak self] result in
-//            guard let self = self else { return }
-//            DispatchQueue.main.async {
-//                switch result {
-//                case .success(let file):
-//                    self.model = file
-//                    self.mapModel()
-//                    self.isLoading.value = false
-//                case .failure(let error):
-//                    print("model failrue: \(error)")
-//                }
-//            }
-//        }
-    }
-    
-    func fetchCurrentData(name: String, path: String) {
-        
         if isLoading.value ?? true {
             return
         }
         isLoading.value = true
-        //coordinator.paggination()
-        NetworkManager.shared.fetchCurentData(path: path) { [weak self] result in
+        NetworkManager.shared.fetchData(path) { [weak self] result in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 switch result {
@@ -87,19 +64,12 @@ extension StorageViewModel: StorageViewModelProtocol {
                     self.model = file
                     self.mapModel()
                     self.isLoading.value = false
-                    print("\(path)")
                 case .failure(let error):
                     print("model failrue: \(error)")
                 }
             }
         }
     }
-    
-    func presentVc(path: String) {
-        coordinator.showStorageScene()
-        fetchCurrentData(name: "dsa", path: path)
-    }
-    
     
     func deleteFile(_ name: String) {
         NetworkManager.shared.deleteReqest(name: name)
@@ -117,6 +87,34 @@ extension StorageViewModel: StorageViewModelProtocol {
         return model.count
     }
     
+    func pagination(_ path: String) {
+        if isLoading.value ?? true {
+            return
+        }
+        isLoading.value = true
+        NetworkManager.shared.fetchCurentData(path: path) { [weak self] result in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let file):
+                    self.model = file
+                    self.mapModel()
+                    self.isLoading.value = false
+                    print("\(path)")
+                case .failure(let error):
+                    print("model failrue: \(error)")
+                }
+            }
+        }
+    }
+    
+    func setTitle(_ name: String) -> String {
+        name
+    }
+    
+    func presentDetailVC() {
+        //coordinator.paggination(name: "")
+    }
     
     func sortData() {
         

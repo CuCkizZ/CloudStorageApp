@@ -13,29 +13,30 @@ private enum PresentationStyle: String, CaseIterable {
     }
 }
 
-final class HomeViewController: UIViewController {
+final class PagginationViewController: UIViewController {
+    // MARK: Model
     private var refresher = UIRefreshControl()
-    
     private lazy var activityIndicator = UIActivityIndicatorView()
-    private let viewModel: HomeViewModelProtocol
-    private lazy var cellDataSource: [CellDataModel] = []
+    private var viewModel: PagginationViewModelProtocol
+    private var cellDataSource: [CellDataModel] = []
+    var titleNav: String
     
     //MARK: CollectionView
-    private lazy var uploadButton = CSUploadButton()
     
     private var selectedStyle: PresentationStyle = .table
+    private lazy var uploadButton = CSUploadButton()
+    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: view.bounds.width, height: 33)
-        layout.minimumLineSpacing = 5
-        layout.minimumInteritemSpacing = 5
+        layout.minimumLineSpacing = 4
+        layout.minimumInteritemSpacing = 4
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
     
-    
-    
-    init(viewModel: HomeViewModelProtocol) {
+    init(titleNav: String, viewModel: PagginationViewModelProtocol) {
+        self.titleNav = titleNav
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
     }
@@ -44,14 +45,10 @@ final class HomeViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        title = titleNav
+        viewModel.fetchData(path: "")
         setupLayout()
         bindView()
         bindViewModel()
@@ -71,7 +68,7 @@ final class HomeViewController: UIViewController {
             DispatchQueue.main.async {
                 if isLoading {
                     self.activityIndicator.startAnimating()
-                    //self.collectionView.reloadData()
+                    self.collectionView.reloadData()
                 } else {
                     self.activityIndicator.stopAnimating()
                     self.activityIndicator.isHidden = true
@@ -81,15 +78,16 @@ final class HomeViewController: UIViewController {
     }
 }
 
-// MARK: Layout
+    // MARK: Layout
 
-private extension HomeViewController {
+private extension PagginationViewController {
     
     func setupLayout() {
         setupView()
-        setupNavBar()
-        setupButtonUp()
+        SetupNavBar()
+        setupButtonTap()
         setupConstraints()
+        
     }
     
     func setupView() {
@@ -100,12 +98,11 @@ private extension HomeViewController {
         setupCollectionView()
     }
     
-    func setupNavBar() {
+    func SetupNavBar() {
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: selectedStyle.buttonImage, style: .plain, target: self, action: #selector(changeContentLayout))
         navigationController?.navigationBar.prefersLargeTitles = true
-        title = "Latests"
+        title = "Name of file"
     }
-    
     
     func setupCollectionView() {
         collectionView.backgroundColor = .systemBackground
@@ -119,15 +116,9 @@ private extension HomeViewController {
         collectionView.addSubview(refresher)
     }
     
-    //   MARK: Objc Methods
-    
     @objc func pullToRefresh() {
-        viewModel.fetchData()
+        //xxviewModel.fetchData()
         refresher.endRefreshing()
-    }
-    
-    @objc func tap() {
-        uploadButtonPressed()
     }
     
     @objc private func changeContentLayout() {
@@ -143,11 +134,15 @@ private extension HomeViewController {
         }
     }
     
-    func setupButtonUp() {
+    func setupButtonTap() {
         uploadButton.action = { [weak self] in
             guard let self = self else { return }
             self.tap()
         }
+    }
+    
+    func tap() {
+        uploadButtonPressed()
     }
     
     private func uploadButtonPressed() {
@@ -177,6 +172,7 @@ private extension HomeViewController {
         },
                                for: .touchUpInside)
     }
+
     
     func setupConstraints() {
         activityIndicator.snp.makeConstraints { make in
@@ -193,41 +189,24 @@ private extension HomeViewController {
     }
 }
 
-extension HomeViewController: UICollectionViewDelegate {
-    
+    // MARK: UICollectionViewDelegate, UICollectionViewDataSource
+
+extension PagginationViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let model = cellDataSource[indexPath.row]
-        let fileType = cellDataSource[indexPath.row].file
-        
-        if fileType.contains("officedocument") {
-            let vc = WebViewViewController()
-            vc.configure(fileType)
-            navigationController?.pushViewController(vc, animated: true)
-        } else if fileType.contains("image") {
-            let vm = PresentImageViewModel()
-            let vc = PresentImageViewController(viewModel: vm)
-            let urlString = cellDataSource[indexPath.row].sizes
-            if let originalUrlString = urlString.first(where: { $0.name == "ORIGINAL" })?.url {
-                if let url = URL(string: originalUrlString) {
-                    vc.configure(url)
-                }
-                navigationController?.pushViewController(vc, animated: true)
-            }
-        } else {
-            viewModel.presentPdfVC(fyleType: fileType)
-        }
+        let name = cellDataSource[indexPath.row].path
+        viewModel.presentDetailVC()
+        print(name)
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
         let name = cellDataSource[indexPath.item].name
-        let path = cellDataSource[indexPath.row].path
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
             let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
                 self.viewModel.deleteFile(name)
             }
-            let shareAction = UIAction(title: "Publish", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                self.viewModel.publicFile(path)
+            let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+                // Handle share action
             }
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
                 // viewmodel
@@ -237,10 +216,9 @@ extension HomeViewController: UICollectionViewDelegate {
     }
 }
 
-extension HomeViewController: UICollectionViewDataSource {
-    
+extension PagginationViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        min(cellDataSource.count, 10)
+        viewModel.numbersOfRowInSection()
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -254,10 +232,12 @@ extension HomeViewController: UICollectionViewDataSource {
     }
 }
 
-extension HomeViewController: UICollectionViewDelegateFlowLayout {
+extension PagginationViewController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView,
                         layout collectionViewLayout: UICollectionViewLayout,
                         insetForSectionAt section: Int) -> UIEdgeInsets {
         UIEdgeInsets(top: 0, left: 30.0, bottom: 0, right: 16.0)
     }
 }
+
+
