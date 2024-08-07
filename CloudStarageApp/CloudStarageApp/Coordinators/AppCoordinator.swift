@@ -79,10 +79,7 @@ extension AppCoordinator: CoorditatorFinishDelegate {
             showMainFlow()
             navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         case .profile:
-            print("dsa")
             navigationController?.pushViewController(UIViewController(), animated: true)
-        case .imagePresent:
-            print("dsa")
         case .publicCoordinator:
             showMainFlow()
         case .logout: 

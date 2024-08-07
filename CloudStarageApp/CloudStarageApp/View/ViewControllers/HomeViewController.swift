@@ -200,9 +200,10 @@ extension HomeViewController: UICollectionViewDelegate {
         let fileType = cellDataSource[indexPath.row].file
         
         if fileType.contains("officedocument") {
-            let vc = WebViewViewController()
-            vc.configure(fileType)
-            navigationController?.pushViewController(vc, animated: true)
+//            let vc = WebViewViewController()
+//            vc.configure(fileType)
+//            navigationController?.pushViewController(vc, animated: true)
+            viewModel.presentDocumet(type: .web, fyleType: fileType)
         } else if fileType.contains("image") {
             let vm = PresentImageViewModel()
             let vc = PresentImageViewController(viewModel: vm)
@@ -214,7 +215,7 @@ extension HomeViewController: UICollectionViewDelegate {
                 navigationController?.pushViewController(vc, animated: true)
             }
         } else {
-            viewModel.presentPdfVC(fyleType: fileType)
+            viewModel.presentDocumet(type: .pdf, fyleType: fileType)
         }
     }
     

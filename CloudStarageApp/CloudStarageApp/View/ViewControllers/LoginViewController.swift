@@ -16,15 +16,13 @@ protocol LoginViewInput: AnyObject {
 final class LoginViewController: UIViewController {
     
     private let viewModel: LoginViewOutput
-    private var yandex = YandexLoginSDK.shared
-    
     
     private lazy var bottomButtomCT = NSLayoutConstraint()
     private lazy var bottomStackViewCT = NSLayoutConstraint()
     
     let activityIndicator = UIActivityIndicatorView(style: .large)
     private let loadingView = UIView()
-    private let blackButton = YandexButton()
+    //private let blackButton = YandexButton()
 //    private let loginTextField = CSTextField()
 //    private let passwordTextFiled = CSTextField()
     private let loginButton = CSBlueButton()
@@ -82,7 +80,7 @@ private extension LoginViewController {
         view.addSubview(activityIndicator)
         //view.addSubview(stackView)
         view.addSubview(loginButton)
-        view.addSubview(blackButton)
+        //view.addSubview(blackButton)
         setupButton()
         setupConstraints()
         bindViewModel()
@@ -121,24 +119,11 @@ private extension LoginViewController {
 
     
     func setupConstraints() {
-//        stackView.snp.makeConstraints { make in
-//            make.center.equalToSuperview()
+//        blackButton.snp.makeConstraints { make in
+//            make.bottom.equalTo(loginButton.snp.top).inset(-16)
 //            make.horizontalEdges.equalToSuperview().inset(20)
-//        }
-//        loginTextField.snp.makeConstraints { make in
-//            make.horizontalEdges.equalTo(stackView)
 //            make.height.equalTo(50)
 //        }
-//        passwordTextFiled.snp.makeConstraints { make in
-//            make.horizontalEdges.equalTo(stackView)
-//            make.height.equalTo(50)
-//        }
-        
-        blackButton.snp.makeConstraints { make in
-            make.bottom.equalTo(loginButton.snp.top).inset(-16)
-            make.horizontalEdges.equalToSuperview().inset(20)
-            make.height.equalTo(50)
-        }
         
         loginButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(50)

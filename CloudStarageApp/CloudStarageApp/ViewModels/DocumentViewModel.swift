@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class PDFViewModel {
+final class DocumentViewModel {
     
     private let coordinator: HomeCoordinator
     var fyleType: String

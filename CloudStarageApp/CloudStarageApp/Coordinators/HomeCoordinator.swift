@@ -21,10 +21,14 @@ final class HomeCoordinator: Coorditator {
 
 extension HomeCoordinator {
     
-    func goToPDF(fyleType: String) {
+    func goToDocument(type: ConfigureTypes, fyleType: String) {
         guard let navigationController = navigationController else { return }
-        let vc = factory.makePDFScene(fyleType: fyleType, coordinator: self)
+        let vc = factory.makeDocumentScene(type: type, fyleType: fyleType, coordinator: self)
         navigationController.pushViewController(vc, animated: true)
+    }
+    
+    func goToWeb() {
+        
     }
     
     func showHomeScene() {

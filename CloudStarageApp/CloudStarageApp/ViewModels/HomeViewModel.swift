@@ -17,7 +17,7 @@ protocol HomeViewModelProtocol: AnyObject {
     func numbersOfRowInSection() -> Int
     func fetchData()
     func mapModel() 
-    func presentPdfVC(fyleType: String)
+    func presentDocumet(type: ConfigureTypes, fyleType: String)
     func publicFile(_ path: String)
     func createNewFolder(_ name: String)
     func deleteFile(_ name: String)
@@ -85,7 +85,7 @@ extension HomeViewModel: HomeViewModelProtocol {
         5
     }
     
-    func presentPdfVC(fyleType: String) {
-        coordinator.goToPDF(fyleType: fyleType)
+    func presentDocumet(type: ConfigureTypes, fyleType: String) {
+        coordinator.goToDocument(type: type, fyleType: fyleType)
     }
 }
