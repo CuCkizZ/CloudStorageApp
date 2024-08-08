@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class AppCoordinator: Coorditator {
+final class AppCoordinator: Coordinator {
     
     private let userStorage = UserStorage.shared
     private let factory = SceneFactory.self

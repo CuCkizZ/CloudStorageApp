@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class LoginCoordinator: Coorditator {
+final class LoginCoordinator: Coordinator {
     
     private let factory = SceneFactory.self
     

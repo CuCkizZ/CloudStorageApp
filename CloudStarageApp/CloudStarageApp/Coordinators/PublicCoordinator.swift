@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class PublicCoordinator: Coorditator {
+final class PublicCoordinator: Coordinator {
     
     private let factory = SceneFactory.self
     
@@ -23,5 +23,6 @@ final class PublicCoordinator: Coorditator {
 
 extension PublicCoordinator {
     func showPublic() {
+        
     }
 }

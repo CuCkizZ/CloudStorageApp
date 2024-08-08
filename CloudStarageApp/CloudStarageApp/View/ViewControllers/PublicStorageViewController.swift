@@ -182,18 +182,6 @@ private extension PublicStorageViewController {
         UIPasteboard.general.url = share
     }
     
-    func sharePresent(shareLink: String) {
-        let vm = ShareActivityViewModel()
-        let shareVC = ShareActivityViewController(viewModel: vm, shareLink: shareLink)
-        if let sheet = shareVC.sheetPresentationController {
-            sheet.detents = [.custom(resolver: { context in
-                self.view.bounds.height / 4
-            })]
-            
-            self.present(shareVC, animated: true)
-        }
-    }
-    
     func presentIt(shareLink: String) {
         let avc = UIActivityViewController(activityItems: [shareLink], applicationActivities: nil)
         present(avc, animated: true)
@@ -235,9 +223,10 @@ extension PublicStorageViewController: UICollectionViewDelegate {
             }
             
             let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                self.sharePresent(shareLink: String(describing: linkString))
-                self.copyShare(share: linkString)
-                print(linkString)
+                self.viewModel.presentShareView()
+//                self.sharePresent(shareLink: String(describing: linkString))
+//                self.copyShare(share: linkString)
+//                print(linkString)
             }
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
                 let enterNameAlert = UIAlertController(title: "New name", message: nil, preferredStyle: .alert)

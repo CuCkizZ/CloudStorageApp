@@ -7,7 +7,7 @@
 
 import Foundation
 
-final class PresentImageCoordinator: Coorditator {
+final class PresentImageCoordinator: Coordinator {
     
     private let factory = SceneFactory.self
     

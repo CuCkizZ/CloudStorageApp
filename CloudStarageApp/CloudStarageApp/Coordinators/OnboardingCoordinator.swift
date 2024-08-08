@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class OnboardingCoordinator: Coorditator {
+final class OnboardingCoordinator: Coordinator {
     
     private let factory = SceneFactory.self
     

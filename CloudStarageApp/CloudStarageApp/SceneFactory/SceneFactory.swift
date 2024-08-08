@@ -138,7 +138,6 @@ struct SceneFactory {
     
 //    MARK: ProfileCoordinator
     
-    
     static func makeProfileScene(coordinator: ProfileCoordinator) -> ProfileViewController {
         let viewModel = ProfileViewModel(coordinator: coordinator)
         let view = ProfileViewController(viewModel: viewModel)
@@ -157,5 +156,11 @@ struct SceneFactory {
         return vc
     }
     
+//    MARK: ShareViewController
+    static func makeShareSceneApp(coordinator: Coordinator) -> ShareActivityViewController {
+        let vm = ShareActivityViewModel()
+        let vc = ShareActivityViewController(viewModel: vm, shareLink: "")
+        return vc
+    }
 }
 

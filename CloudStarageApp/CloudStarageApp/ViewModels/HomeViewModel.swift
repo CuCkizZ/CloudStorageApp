@@ -13,11 +13,11 @@ protocol HomeViewModelProtocol: AnyObject {
     var searchKeyword: String { get set }
     var model: [Item] { get set }
     
-    
     func numbersOfRowInSection() -> Int
     func fetchData()
     func mapModel() 
     func presentDocumet(type: ConfigureTypes, fyleType: String)
+    func presentShareView()
     func publicFile(_ path: String)
     func createNewFolder(_ name: String)
     func deleteFile(_ name: String)
@@ -89,6 +89,10 @@ extension HomeViewModel: HomeViewModelProtocol {
     
     func numbersOfRowInSection() -> Int {
         model.count
+    }
+    
+    func presentShareView() {
+        coordinator.presentShareScene()
     }
     
     func presentDocumet(type: ConfigureTypes, fyleType: String) {

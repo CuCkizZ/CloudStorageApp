@@ -228,7 +228,7 @@ extension HomeViewController: UICollectionViewDelegate {
                 self.viewModel.deleteFile(name)
             }
             let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                // Handle share action
+                self.viewModel.presentShareView()
             }
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
                 let enterNameAlert = UIAlertController(title: "New name", message: nil, preferredStyle: .alert)

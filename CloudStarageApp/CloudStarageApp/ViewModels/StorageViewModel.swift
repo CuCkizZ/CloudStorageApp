@@ -22,6 +22,7 @@ protocol StorageViewModelProtocol: AnyObject {
     func createNewFolder(_ name: String)
     func deleteFile(_ name: String)
     func presentVc(path: String)
+    func presentShareScene()
     func renameFile(oldName: String, newName: String)
 }
 
@@ -102,6 +103,9 @@ extension StorageViewModel: StorageViewModelProtocol {
         fetchCurrentData(name: "dsa", path: path)
     }
     
+    func presentShareScene() {
+        coordinator.presentShareScene()
+    }
     
     func deleteFile(_ name: String) {
         NetworkManager.shared.deleteReqest(name: name)

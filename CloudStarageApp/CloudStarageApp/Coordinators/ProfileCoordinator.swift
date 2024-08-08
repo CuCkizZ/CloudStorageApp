@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class ProfileCoordinator: Coorditator {
+final class ProfileCoordinator: Coordinator {
     
     private let factory = SceneFactory.self
     
@@ -35,15 +35,15 @@ extension ProfileCoordinator {
         navigationController.pushViewController(publicVC, animated: true)
     }
     
-    func presentShare(from: UIViewController) {
-        let shareVC = factory.makeShareScene(coordinator: self)
-        if let sheet = shareVC.sheetPresentationController {
+    func presentShareScene() {
+        guard let navigationController = navigationController else { return }
+        let vc = factory.makeShareSceneApp(coordinator: self)
+        if let sheet = vc.sheetPresentationController {
             sheet.detents = [.custom(resolver: { context in
-                250
+                navigationController.view.bounds.height / 4
             })]
+            navigationController.present(vc, animated: true)
         }
-        
-        from.present(shareVC, animated: true)
     }
     
     func Logout() {

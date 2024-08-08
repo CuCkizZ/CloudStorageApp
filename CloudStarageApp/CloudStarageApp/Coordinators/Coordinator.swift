@@ -48,7 +48,7 @@ protocol TabBarCoordinatorProtocol: AnyObject, CoordinatorProtocol {
     var tabBarController: UITabBarController? { get set }
 }
 
-class Coorditator: CoordinatorProtocol {
+class Coordinator: CoordinatorProtocol {
     
     var childCoordinators: [CoordinatorProtocol]
     var type: CoordinatorType

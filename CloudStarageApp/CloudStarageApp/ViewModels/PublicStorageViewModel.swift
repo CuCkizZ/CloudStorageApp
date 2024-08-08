@@ -22,13 +22,13 @@ protocol PublickStorageViewModelProtocol {
     func sortData()
     func createNewFolder(_ name: String)
     func unpublicResource()
-    func modalPresent()
+    func presentShareView()
     func deleteFile(_ name: String)
     func unpublishFile(_ path: String)
     func renameFile(oldName: String, newName: String)
 }
 final class PublicStorageViewModel {
-    private weak var coordinator: ProfileCoordinator?
+    private var coordinator: ProfileCoordinator
     var searchKeyword: String = ""
     
     var isLoading: Observable<Bool> = Observable(false)
@@ -93,9 +93,8 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
         
     }
     
-    func modalPresent() {
-        let view = PublicStorageViewController(viewModel: self)
-        coordinator?.presentShare(from: view)
+    func presentShareView() {
+        coordinator.presentShareScene()
     }
     
     func unpublishFile(_ path: String) {
