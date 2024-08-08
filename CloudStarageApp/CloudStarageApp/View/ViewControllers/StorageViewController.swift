@@ -192,18 +192,19 @@ private extension StorageViewController {
 
 extension StorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let name = cellDataSource[indexPath.row].name
-        let cellpath = cellDataSource[indexPath.row].path
-       // self.titleName = name
-            //self.path = cellpath
+        _ = cellDataSource[indexPath.row].name
+        _ = cellDataSource[indexPath.row].path
+        // self.titleName = name
+        //self.path = cellpath
         //viewModel.presentVc(path: path)
         //print(name)
-       // print(path)
+        // print(path)
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
         let name = cellDataSource[indexPath.item].name
+        let path = cellDataSource[indexPath.row].path
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
             let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
                 self.viewModel.deleteFile(name)
@@ -212,7 +213,18 @@ extension StorageViewController: UICollectionViewDelegate {
                 // Handle share action
             }
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
-                // viewmodel
+                let enterNameAlert = UIAlertController(title: "New name", message: nil, preferredStyle: .alert)
+                enterNameAlert.addTextField { textField in
+                    textField.placeholder = "Enter the name"
+                    
+                }
+                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned enterNameAlert] _ in
+                    if let answer = enterNameAlert.textFields?[0], let newName = answer.text {
+                        self.viewModel.renameFile(oldName: name, newName: newName)
+                    }
+                }
+                enterNameAlert.addAction(submitAction)
+                self.present(enterNameAlert, animated: true)
             }
             return UIMenu(title: "", children: [deleteAction, shareAction, renameAction])
         }

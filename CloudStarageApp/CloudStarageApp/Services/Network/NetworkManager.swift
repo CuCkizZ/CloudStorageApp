@@ -136,7 +136,7 @@ class NetworkManager {
     }
     
     func renameFile(oldName: String, newName: String) {
-        client.renameFile(from: oldName, to: newName)
+        client.renameFile(oldName: oldName, newName: newName)
     }
     
 }

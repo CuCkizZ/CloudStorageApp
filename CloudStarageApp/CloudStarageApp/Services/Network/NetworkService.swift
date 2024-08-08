@@ -15,12 +15,12 @@ protocol NetworkServiceProtocol {
     func fetchAccountData(completion: @escaping (Result<Data, Error>) -> Void)
     func createNewFolder(_ name: String)
     func deleteFolder(urlString: String, name: String)
-    func renameFile(from oldName: String, to newName: String)
     func fetchLastData(completion: @escaping (Result<Data, Error>) -> Void)
     func fetchPublicData(completion: @escaping (Result<Data, Error>) -> Void)
     func fetchCurrentData(path: String, completion: @escaping (Result<Data, Error>) -> Void)
     func toPublicFile(path: String)
     func unpublishFile(path: String)
+    func renameFile(oldName: String, newName: String)
 }
 
 private enum Constants {
@@ -166,22 +166,6 @@ final class NetworkService: NetworkServiceProtocol {
         }
     }
     
-    func renameFile(from name: String, to newName: String) {
-        let urlString = "https://cloud-api.yandex.net/v1/disk/resources/disk=\(name)"
-        let body: [String: String] = [
-            "name": newName
-        ]
-        
-        AF.request(urlString, method: .patch, parameters: body, encoding: JSONEncoding.default, headers: headers).validate().response { response in
-            switch response.result {
-            case .success:
-                print("File renamed successfully")
-            case .failure(let error):
-                print("Error: \(error)")
-            }
-        }
-    }
-    
     func toPublicFile(path: String) {
         let urlSting = "https://cloud-api.yandex.net/v1/disk/resources/publish?path=\(path)"
         guard let url = URL(string: urlSting) else { return }
@@ -200,8 +184,8 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func unpublishFile(path: String) {
-        let urlSting = "https://cloud-api.yandex.net/v1/disk/resources/unpublish?path=\(path)"
-        guard let url = URL(string: urlSting) else { return }
+        let urlString = "https://cloud-api.yandex.net/v1/disk/resources/unpublish?path=\(path)"
+        guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .put, headers: headers).validate().response { response in
             guard let statusCode = response.response?.statusCode else {
@@ -213,7 +197,27 @@ final class NetworkService: NetworkServiceProtocol {
                 print("Error: \(error)")
             }
             if let data = response.data {
+                _ = String(data: data, encoding: .utf8)
+            }
+        }
+    }
+    
+    func renameFile(oldName: String, newName: String) {
+        let urlString = "https://cloud-api.yandex.net/v1/disk/resources/move?from=\(oldName)&path=\(newName)"
+        guard let url = URL(string: urlString) else { return }
+        
+        AF.request(url, method: .post, headers: headers).validate().response { response in
+            guard let statusCode = response.response?.statusCode else {
+                print("Error: no response")
+                return
+            }
+            print("status code: \(statusCode)")
+            if let error = response.error {
+                print("Error: \(error)")
+            }
+            if let data = response.data {
                 let str = String(data: data, encoding: .utf8)
+                print("Data: \(String(describing: str))")
             }
         }
     }

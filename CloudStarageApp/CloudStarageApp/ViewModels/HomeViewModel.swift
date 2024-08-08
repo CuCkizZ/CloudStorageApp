@@ -82,7 +82,7 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func numbersOfRowInSection() -> Int {
-        5
+        model.count
     }
     
     func presentDocumet(type: ConfigureTypes, fyleType: String) {

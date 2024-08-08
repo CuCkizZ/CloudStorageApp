@@ -22,6 +22,7 @@ protocol StorageViewModelProtocol: AnyObject {
     func createNewFolder(_ name: String)
     func deleteFile(_ name: String)
     func presentVc(path: String)
+    func renameFile(oldName: String, newName: String)
 }
 
 final class StorageViewModel {
@@ -112,6 +113,11 @@ extension StorageViewModel: StorageViewModelProtocol {
                 guard let self = self else { return }
                 self.fetchData()
             }
+    }
+    
+    func renameFile(oldName: String, newName: String) {
+        NetworkManager.shared.renameFile(oldName: oldName, newName: newName)
+        fetchData()
     }
     
     func numbersOfRowInSection() -> Int {
