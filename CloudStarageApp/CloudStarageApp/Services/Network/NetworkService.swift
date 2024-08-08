@@ -11,7 +11,7 @@ import Alamofire
 
 protocol NetworkServiceProtocol {
     func getToket()
-    func fetchDataWithAlamofire(_ path: String, completion: @escaping (Result<Data, Error>) -> Void)
+    func fetchDataWithAlamofire(completion: @escaping (Result<Data, Error>) -> Void)
     func fetchAccountData(completion: @escaping (Result<Data, Error>) -> Void)
     func createNewFolder(_ name: String)
     func deleteFolder(urlString: String, name: String)
@@ -58,8 +58,8 @@ final class NetworkService: NetworkServiceProtocol {
         print(self.newtoken)
     }
     
-    func fetchDataWithAlamofire(_ path: String, completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlParams = ["path": "disk:/" + path]
+    func fetchDataWithAlamofire(completion: @escaping (Result<Data, Error>) -> Void) {
+        let urlParams = ["path": "disk:/"]
         let urlString = "https://cloud-api.yandex.net/v1/disk/resources"
         guard let url = URL(string: urlString) else { return }
         

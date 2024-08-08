@@ -48,7 +48,7 @@ final class PagginationViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = titleNav
-        viewModel.fetchData(path: "")
+        viewModel.fetchData()
         setupLayout()
         bindView()
         bindViewModel()

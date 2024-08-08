@@ -14,7 +14,7 @@ protocol PagginationViewModelProtocol: AnyObject {
     
     
     func numbersOfRowInSection() -> Int
-    func fetchData(path: String)
+    func fetchData()
     func pagination(_ path: String)
     func mapModel()
     func setTitle(_ name: String) -> String
@@ -51,12 +51,12 @@ final class PagginationViewModel {
     
 extension PagginationViewModel: PagginationViewModelProtocol {
     
-    func fetchData(path: String) {
+    func fetchData() {
         if isLoading.value ?? true {
             return
         }
         isLoading.value = true
-        NetworkManager.shared.fetchData(path) { [weak self] result in
+        NetworkManager.shared.fetchData() { [weak self] result in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 switch result {
@@ -79,7 +79,7 @@ extension PagginationViewModel: PagginationViewModelProtocol {
             NetworkManager.shared.createNewFolder(name)
             DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
                 guard let self = self else { return }
-                self.fetchData(path: name)
+                self.fetchData()
             }
     }
     

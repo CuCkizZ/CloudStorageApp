@@ -45,12 +45,10 @@ final class StorageViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.fetchCurrentData(name: titleName, path: path)
         setupLayout()
         bindView()
         bindViewModel()
@@ -119,7 +117,7 @@ private extension StorageViewController {
     }
     
     @objc func pullToRefresh() {
-        //xxviewModel.fetchData()
+        viewModel.fetchData()
         refresher.endRefreshing()
     }
     
@@ -196,11 +194,11 @@ extension StorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let name = cellDataSource[indexPath.row].name
         let cellpath = cellDataSource[indexPath.row].path
-        self.titleName = name
-        self.path = cellpath
-        viewModel.presentVc(path: path)
-        print(name)
-        print(path)
+       // self.titleName = name
+            //self.path = cellpath
+        //viewModel.presentVc(path: path)
+        //print(name)
+       // print(path)
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {

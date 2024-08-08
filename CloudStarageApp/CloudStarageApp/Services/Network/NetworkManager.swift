@@ -43,8 +43,8 @@ class NetworkManager {
         }
     }
     
-    func fetchData(_ path: String, completion: @escaping (Result<[Item], Error>) -> Void) {
-        client.fetchDataWithAlamofire(path) { result in
+    func fetchData(completion: @escaping (Result<[Item], Error>) -> Void) {
+        client.fetchDataWithAlamofire() { result in
             switch result {
             case .success(let data):
                 do {
