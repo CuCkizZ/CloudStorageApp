@@ -21,6 +21,7 @@ protocol HomeViewModelProtocol: AnyObject {
     func publicFile(_ path: String)
     func createNewFolder(_ name: String)
     func deleteFile(_ name: String)
+    func renameFile(oldName: String, newName: String)
 }
 
 final class HomeViewModel {
@@ -79,6 +80,11 @@ extension HomeViewModel: HomeViewModelProtocol {
     
     func publicFile(_ path: String) {
         NetworkManager.shared.toPublicFile(path)
+    }
+    
+    func renameFile(oldName: String, newName: String) {
+        NetworkManager.shared.renameFile(oldName: oldName, newName: newName)
+        fetchData()
     }
     
     func numbersOfRowInSection() -> Int {

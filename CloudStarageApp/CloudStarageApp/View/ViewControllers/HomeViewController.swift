@@ -227,11 +227,22 @@ extension HomeViewController: UICollectionViewDelegate {
             let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
                 self.viewModel.deleteFile(name)
             }
-            let shareAction = UIAction(title: "Publish", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                self.viewModel.publicFile(path)
+            let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+                // Handle share action
             }
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
-                // viewmodel
+                let enterNameAlert = UIAlertController(title: "New name", message: nil, preferredStyle: .alert)
+                enterNameAlert.addTextField { textField in
+                    textField.placeholder = "Enter the name"
+                    
+                }
+                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned enterNameAlert] _ in
+                    if let answer = enterNameAlert.textFields?[0], let newName = answer.text {
+                        self.viewModel.renameFile(oldName: name, newName: newName)
+                    }
+                }
+                enterNameAlert.addAction(submitAction)
+                self.present(enterNameAlert, animated: true)
             }
             return UIMenu(title: "", children: [deleteAction, shareAction, renameAction])
         }

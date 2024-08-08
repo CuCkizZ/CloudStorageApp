@@ -240,7 +240,18 @@ extension PublicStorageViewController: UICollectionViewDelegate {
                 print(linkString)
             }
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
-                self.presentIt(shareLink: model.file ?? "")
+                let enterNameAlert = UIAlertController(title: "New name", message: nil, preferredStyle: .alert)
+                enterNameAlert.addTextField { textField in
+                    textField.placeholder = "Enter the name"
+                    
+                }
+                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned enterNameAlert] _ in
+                    if let answer = enterNameAlert.textFields?[0], let newName = answer.text {
+                        self.viewModel.renameFile(oldName: name, newName: newName)
+                    }
+                }
+                enterNameAlert.addAction(submitAction)
+                self.present(enterNameAlert, animated: true)
             }
             return UIMenu(title: "", children: [deleteAction, unpublishAction, shareAction, renameAction])
         }

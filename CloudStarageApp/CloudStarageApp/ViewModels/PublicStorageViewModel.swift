@@ -25,6 +25,7 @@ protocol PublickStorageViewModelProtocol {
     func modalPresent()
     func deleteFile(_ name: String)
     func unpublishFile(_ path: String)
+    func renameFile(oldName: String, newName: String)
 }
 final class PublicStorageViewModel {
     private weak var coordinator: ProfileCoordinator?
@@ -99,6 +100,11 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     
     func unpublishFile(_ path: String) {
         NetworkManager.shared.unpublishFile(path)
+    }
+    
+    func renameFile(oldName: String, newName: String) {
+        NetworkManager.shared.renameFile(oldName: oldName, newName: newName)
+        fetchData()
     }
     
     func sortData() {
