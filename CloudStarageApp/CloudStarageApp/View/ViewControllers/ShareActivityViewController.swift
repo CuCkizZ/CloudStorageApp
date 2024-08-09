@@ -8,9 +8,12 @@
 import UIKit
 import SnapKit
 
+
+
 final class ShareActivityViewController: UIViewController {
     
     private let viewModel: ShareActivityViewModel
+    private var typeOfView: ConfigureTypes?
     
     private lazy var fileButton = UIButton()
     private lazy var linkButton = UIButton()
@@ -54,6 +57,10 @@ private extension ShareActivityViewController {
             make.centerX.equalToSuperview()
             make.left.right.equalToSuperview()
         }
+    }
+    
+    func configure() {
+        
     }
     
     
