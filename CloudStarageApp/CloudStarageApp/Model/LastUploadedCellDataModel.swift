@@ -21,7 +21,7 @@ struct LastUploadedCellDataModel {
     
     init(_ item: LastItem) {
         self.publickKey = item.publicKey
-        self.publicUrl = item.publicURL 
+        self.publicUrl = item.publicUrl
         self.name = item.name
         self.date = dateFormatter(dateString: item.created)
         self.type = item.type

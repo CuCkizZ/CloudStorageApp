@@ -18,7 +18,7 @@ protocol HomeViewModelProtocol: AnyObject {
     func mapModel() 
     func presentDocumet(name: String, type: ConfigureTypes, fyleType: String)
     func presentShareView(shareLink: String)
-    func publicFile(_ path: String)
+    func publishFile(_ path: String)
     func createNewFolder(_ name: String)
     func deleteFile(_ name: String)
     func renameFile(oldName: String, newName: String)
@@ -71,16 +71,19 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func createNewFolder(_ name: String) {
-            NetworkManager.shared.createNewFolder(name)
-            DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                guard let self = self else { return }
-                self.fetchData()
-            }
+        NetworkManager.shared.createNewFolder(name)
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            self.fetchData()
+        }
     }
     
-    func publicFile(_ path: String) {
-        NetworkManager.shared.toPublicFile(path)
+    func publishFile(_ path: String) {
+        NetworkManager.shared.toPublicFile(path: path)
     }
+
+
+                
     
     func renameFile(oldName: String, newName: String) {
         NetworkManager.shared.renameFile(oldName: oldName, newName: newName)

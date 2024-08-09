@@ -53,6 +53,7 @@ final class HomeViewController: UIViewController {
         super.viewDidLoad()
         
         NotificationCenter.default.addObserver(self, selector: #selector(showOfflineDeviceUI(notification:)), name: NSNotification.Name.connectivityStatus, object: nil)
+        activityIndicator.hidesWhenStopped = true
         
         setupLayout()
         bindView()
@@ -85,6 +86,20 @@ final class HomeViewController: UIViewController {
                 } else {
                     self.activityIndicator.stopAnimating()
                     self.activityIndicator.isHidden = true
+                }
+            }
+        }
+    }
+    
+    func bindGettingLink() {
+        viewModel.isLoading.bind { [weak self] isLoading in
+            guard let self = self, let isLoading = isLoading else { return }
+            DispatchQueue.main.async {
+                if isLoading {
+                    self.activityIndicator.isHidden = false
+                    self.activityIndicator.startAnimating()
+                } else {
+                    self.activityIndicator.stopAnimating()
                 }
             }
         }
@@ -243,29 +258,23 @@ extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
         let model = modelReturn(indexPath: indexPath)
+        //var publicUrl = model.publicUrl
         let name = model.name
         let path = model.path
-        //let type = model.mediaType
-
+        
+        
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
             guard let self = self else { return UIMenu() }
             let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
                 self.viewModel.deleteFile(name)
             }
-            
             let shareLinkAction = UIAction(title: "Share link", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                let isKey = self.chechPublickKey(publicKey: model.publickKey)
-                    self.viewModel.publicFile(path)
-                
-                DispatchQueue.main.async {
-                    let avc = UIActivityViewController(activityItems: [model.file], applicationActivities: nil)
-                    self.present(avc, animated: true)
-                }
-               //self.viewModel.presentShareView(shareLink: "test")
+                self.viewModel.publishFile(path)
+                let avc = UIActivityViewController(activityItems: [model.publicUrl], applicationActivities: nil)
+                self.present(avc, animated: true)
             }
             let shareFileAction = UIAction(title: "Share file", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                let isKey = self.chechPublickKey(publicKey: model.publickKey)
-                self.viewModel.publicFile(path)
+                //self.viewModel.publicFile(path)
                 DispatchQueue.main.async {
                     let avc = UIActivityViewController(activityItems: [model.file], applicationActivities: nil)
                     self.present(avc, animated: true)
@@ -285,7 +294,7 @@ extension HomeViewController: UICollectionViewDelegate {
                 enterNameAlert.addAction(submitAction)
                 self.present(enterNameAlert, animated: true)
             }
-            let shareMenu = UIMenu(title: "Share", children: [shareFileAction, shareLinkAction])
+            let shareMenu = UIMenu(title: "Share", children: [shareLinkAction, shareFileAction])
             return UIMenu(title: "", children: [deleteAction, shareMenu, renameAction])
         }
     }
@@ -304,6 +313,7 @@ extension HomeViewController: UICollectionViewDataSource {
             fatalError("Wrong cell")
         }
         cell.lastUpdatedConfigure(model)
+        print(model.publicUrl ?? "no url")
         return cell
     }
 }

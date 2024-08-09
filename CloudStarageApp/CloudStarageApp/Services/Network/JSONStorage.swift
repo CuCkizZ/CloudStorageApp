@@ -109,7 +109,7 @@ struct LastItem: Codable {
     let path, sha256, type, md5: String
     let revision: Int
     let publicKey: String?
-    let publicURL: String?
+    let publicUrl: String?
     let photosliceTime: String?
 }
 

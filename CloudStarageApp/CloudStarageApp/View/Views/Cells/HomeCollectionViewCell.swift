@@ -81,7 +81,7 @@ final class CollectionViewCell: UICollectionViewCell {
         nameLabel.text = model.name
         DispatchQueue.main.async {
             if let previewImage = model.previewImage, let url = URL(string: previewImage) {
-                    self.contentImageView.load(url: url)
+                    self.contentImageView.sd_setImage(with: url)
             } else {
                 self.contentImageView.image = nil
             }
