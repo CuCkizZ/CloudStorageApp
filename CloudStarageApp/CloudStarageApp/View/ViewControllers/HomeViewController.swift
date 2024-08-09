@@ -52,9 +52,19 @@ final class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        NotificationCenter.default.addObserver(self, selector: #selector(showOfflineDeviceUI(notification:)), name: NSNotification.Name.connectivityStatus, object: nil)
+        
         setupLayout()
         bindView()
         bindViewModel()
+    }
+    
+    @objc func showOfflineDeviceUI(notification: Notification) {
+        if NetworkMonitor.shared.isConnected {
+            print("Connected")
+        } else {
+            print("Not connected")
+        }
     }
     
     func bindView() {

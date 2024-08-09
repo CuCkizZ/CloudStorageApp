@@ -11,7 +11,7 @@ import Alamofire
 
 protocol NetworkServiceProtocol {
     func getToket()
-    func fetchDataWithAlamofire(completion: @escaping (Result<Data, Error>) -> Void)
+    func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void)
     func fetchAccountData(completion: @escaping (Result<Data, Error>) -> Void)
     func createNewFolder(_ name: String)
     func deleteFolder(urlString: String, name: String)
@@ -58,15 +58,14 @@ final class NetworkService: NetworkServiceProtocol {
         print(self.newtoken)
     }
     
-    func fetchDataWithAlamofire(completion: @escaping (Result<Data, Error>) -> Void) {
+    func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void) {
         let urlParams = ["path": "disk:/"]
         let urlString = "https://cloud-api.yandex.net/v1/disk/resources"
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
             if let error = response.error {
-                completion(.failure(error))
-                print("Url error")
+                completion(.failure(.internetError))
                 return
             }
             guard let data = response.data else { return }
