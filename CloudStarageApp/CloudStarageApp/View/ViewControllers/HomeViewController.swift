@@ -197,13 +197,14 @@ extension HomeViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let model = cellDataSource[indexPath.row]
-        let fileType = cellDataSource[indexPath.row].file
+        let fileType = model.file
+        let name = model.name
         
         if fileType.contains("officedocument") {
 //            let vc = WebViewViewController()
 //            vc.configure(fileType)
 //            navigationController?.pushViewController(vc, animated: true)
-            viewModel.presentDocumet(type: .web, fyleType: fileType)
+            viewModel.presentDocumet(name: name, type: .web, fyleType: fileType)
         } else if fileType.contains("image") {
             let vm = PresentImageViewModel()
             let vc = PresentImageViewController(viewModel: vm)
@@ -215,14 +216,14 @@ extension HomeViewController: UICollectionViewDelegate {
                 navigationController?.pushViewController(vc, animated: true)
             }
         } else {
-            viewModel.presentDocumet(type: .pdf, fyleType: fileType)
+            viewModel.presentDocumet(name: name, type: .pdf, fyleType: fileType)
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
         let name = cellDataSource[indexPath.item].name
-        let path = cellDataSource[indexPath.row].path
+        _ = cellDataSource[indexPath.row].path
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
             let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
                 self.viewModel.deleteFile(name)

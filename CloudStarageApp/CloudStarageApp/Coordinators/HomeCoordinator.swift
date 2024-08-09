@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class HomeCoordinator: Coordinator {
+class HomeCoordinator: Coordinator {
     
     private let factory = SceneFactory.self
     
@@ -21,9 +21,9 @@ final class HomeCoordinator: Coordinator {
 
 extension HomeCoordinator {
     
-    func goToDocument(type: ConfigureTypes, fyleType: String) {
+    func goToDocument(name: String, type: ConfigureTypes, fyleType: String) {
         guard let navigationController = navigationController else { return }
-        let vc = factory.makeDocumentScene(type: type, fyleType: fyleType, coordinator: self)
+        let vc = factory.makeDocumentScene(name: name, type: type, fyleType: fyleType, coordinator: self)
         navigationController.pushViewController(vc, animated: true)
     }
     

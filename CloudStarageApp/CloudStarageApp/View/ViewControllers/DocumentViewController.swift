@@ -19,6 +19,7 @@ final class DocumentViewController: UIViewController {
     
     private let viewModel: DocumentViewModel
     private var typeOfView: ConfigureTypes?
+    
     private lazy var webView = WKWebView()
     private lazy var pdfView = PDFView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
     
@@ -36,7 +37,8 @@ final class DocumentViewController: UIViewController {
         setupLayout()
     }
     
-    func configure(type: ConfigureTypes, fileType: String) {
+    func configure(name: String, type: ConfigureTypes, fileType: String) {
+        title = name
         self.typeOfView = type
         guard let url = URL(string: fileType) else { return }
         switch type {

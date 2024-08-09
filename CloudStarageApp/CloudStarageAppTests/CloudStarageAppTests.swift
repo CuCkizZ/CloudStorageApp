@@ -1,36 +1,71 @@
-//
-//  CloudStarageAppTests.swift
-//  CloudStarageAppTests
-//
-//  Created by Nikita Beglov on 11.07.2024.
-//
-
 import XCTest
 @testable import CloudStarageApp
 
-final class CloudStarageAppTests: XCTestCase {
+class HomeViewModelTests: XCTestCase {
+    var viewModel: HomeViewModel!
+    var coordinator: MockHomeCoordinator!
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+    override func setUp() {
+        super.setUp()
+        coordinator = MockHomeCoordinator(type: .home, navigationController: UINavigationController())
+        viewModel = HomeViewModel(coordinator: coordinator)
     }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    override func tearDown() {
+        viewModel = nil
+        coordinator = nil
+        super.tearDown()
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // Any test you write for XCTest can be annotated as throws and async.
-        // Mark your test throws to produce an unexpected failure when your test encounters an uncaught error.
-        // Mark your test async to allow awaiting for asynchronous code to complete. Check the results with assertions afterwards.
-    }
+    func testFetchData() {
+        let expectation = XCTestExpectation(description: "Fetch data")
 
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
+        viewModel.fetchData()
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            XCTAssertFalse(self.viewModel.isLoading.value ?? true)
+            XCTAssertNotNil(self.viewModel.cellDataSource.value)
+            XCTAssertEqual(self.viewModel.model.count, self.viewModel.cellDataSource.value?.count)
+            expectation.fulfill()
         }
+
+        wait(for: [expectation], timeout: 2)
     }
 
+    func testDeleteFile() {
+        let name = "test.txt"
+        viewModel.deleteFile(name)
+        // Add assertions to verify that the delete request was sent correctly
+    }
+
+    func testCreateNewFolder() {
+        let name = "new_folder"
+        viewModel.createNewFolder(name)
+        // Add assertions to verify that the create new folder request was sent correctly
+    }
+
+    func testPublicFile() {
+        let path = "/path/to/file.txt"
+        viewModel.publicFile(path)
+        // Add assertions to verify that the public file request was sent correctly
+    }
+
+    func testRenameFile() {
+        let oldName = "old_file.txt"
+        let newName = "new_file.txt"
+        viewModel.renameFile(oldName: oldName, newName: newName)
+        // Add assertions to verify that the rename file request was sent correctly
+    }
+
+    func testNumbersOfRowInSection() {
+        let count = viewModel.numbersOfRowInSection()
+        XCTAssertEqual(count, viewModel.model.count)
+    }
+}
+
+class MockHomeCoordinator: HomeCoordinator {
+    var presentShareSceneCalled = false
+    var goToDocumentCalled = false
+    var goToDocumentType: ConfigureTypes?
+    var goToDocumentFileType: String?
 }

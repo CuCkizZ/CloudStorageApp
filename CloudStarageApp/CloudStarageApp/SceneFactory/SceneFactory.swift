@@ -110,14 +110,14 @@ struct SceneFactory {
         return homeVC
     }
     
-    static func makeDocumentScene(type: ConfigureTypes, fyleType: String, coordinator: HomeCoordinator) -> DocumentViewController {
+    static func makeDocumentScene(name: String, type: ConfigureTypes, fyleType: String, coordinator: HomeCoordinator) -> DocumentViewController {
         let vm = DocumentViewModel(coordinator: coordinator, fyleType: fyleType)
         let vc = DocumentViewController(viewModel: vm)
         switch type {
         case .pdf:
-            vc.configure(type: .pdf, fileType: fyleType)
+            vc.configure(name: name, type: .pdf, fileType: fyleType)
         case .web:
-            vc.configure(type: .web, fileType: fyleType)
+            vc.configure(name: name, type: .web, fileType: fyleType)
         }
         return vc
     }

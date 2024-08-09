@@ -16,7 +16,7 @@ protocol HomeViewModelProtocol: AnyObject {
     func numbersOfRowInSection() -> Int
     func fetchData()
     func mapModel() 
-    func presentDocumet(type: ConfigureTypes, fyleType: String)
+    func presentDocumet(name: String, type: ConfigureTypes, fyleType: String)
     func presentShareView()
     func publicFile(_ path: String)
     func createNewFolder(_ name: String)
@@ -95,7 +95,7 @@ extension HomeViewModel: HomeViewModelProtocol {
         coordinator.presentShareScene()
     }
     
-    func presentDocumet(type: ConfigureTypes, fyleType: String) {
-        coordinator.goToDocument(type: type, fyleType: fyleType)
+    func presentDocumet(name: String, type: ConfigureTypes, fyleType: String) {
+        coordinator.goToDocument(name: name, type: type, fyleType: fyleType)
     }
 }
