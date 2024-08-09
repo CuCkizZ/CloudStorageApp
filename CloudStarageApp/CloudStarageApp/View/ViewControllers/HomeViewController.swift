@@ -18,7 +18,7 @@ final class HomeViewController: UIViewController {
     
     private lazy var activityIndicator = UIActivityIndicatorView()
     private let viewModel: HomeViewModelProtocol
-    private lazy var cellDataSource: [CellDataModel] = []
+    private lazy var cellDataSource: [LastUploadedCellDataModel] = []
     
     //MARK: CollectionView
     private lazy var uploadButton = CSUploadButton()
@@ -202,7 +202,7 @@ private extension HomeViewController {
         }
     }
     
-    private func modelReturn(indexPath: IndexPath) -> CellDataModel {
+    private func modelReturn(indexPath: IndexPath) -> LastUploadedCellDataModel {
         return cellDataSource[indexPath.row]
     }
     
@@ -303,7 +303,7 @@ extension HomeViewController: UICollectionViewDataSource {
                                                             for: indexPath) as? CollectionViewCell else {
             fatalError("Wrong cell")
         }
-        cell.configure(model)
+        cell.lastUpdatedConfigure(model)
         return cell
     }
 }

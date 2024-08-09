@@ -9,9 +9,9 @@ import Foundation
 
 protocol HomeViewModelProtocol: AnyObject {
     var isLoading: Observable<Bool> { get set }
-    var cellDataSource: Observable<[CellDataModel]> { get set }
+    var cellDataSource: Observable<[LastUploadedCellDataModel]> { get set }
     var searchKeyword: String { get set }
-    var model: [Item] { get set }
+    var model: [LastItem] { get set }
     
     func numbersOfRowInSection() -> Int
     func fetchData()
@@ -29,8 +29,8 @@ final class HomeViewModel {
     var searchKeyword: String = ""
     
     var isLoading: Observable<Bool> = Observable(false)
-    var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
-    internal var model: [Item] = []
+    var cellDataSource: Observable<[LastUploadedCellDataModel]> = Observable(nil)
+    internal var model: [LastItem] = []
     
     
     init(coordinator: HomeCoordinator) {
@@ -39,7 +39,7 @@ final class HomeViewModel {
     }
     
     func mapModel() {
-        cellDataSource.value = model.compactMap { CellDataModel($0) }
+        cellDataSource.value = model.compactMap { LastUploadedCellDataModel($0) }
     }
 
 }

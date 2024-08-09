@@ -1,26 +1,34 @@
-import UIKit
-import SDWebImage
+//
+//  CellLastDataModel.swift
+//  CloudStarageApp
+//
+//  Created by Nikita Beglov on 09.08.2024.
+//
 
-struct CellDataModel {
+import Foundation
+
+struct LastUploadedCellDataModel {
     let publickKey: String?
+    let publicUrl: String?
     let name: String
     let date: String
     let type: String?
     let previewImage: String?
     let file: String
     let path: String
-    let sizes: [Size]
+    let sizes: [LastSize]
     let size: Int?
     
-    init(_ item: Item) {
+    init(_ item: LastItem) {
         self.publickKey = item.publicKey
+        self.publicUrl = item.publicURL 
         self.name = item.name
         self.date = dateFormatter(dateString: item.created)
         self.type = item.type
         self.previewImage = item.preview
-        self.file = item.file ?? ""
+        self.file = item.file
         self.path = item.path
-        self.sizes = item.sizes ?? []
+        self.sizes = item.sizes
         self.size = item.size
         
         func dateFormatter(dateString: String) -> String {
