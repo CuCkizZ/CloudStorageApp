@@ -154,7 +154,7 @@ private extension HomeViewController {
         uploadButton.addAction(UIAction { [weak self] action in
             guard let self = self else { return }
             let actionSheet = UIAlertController(title: "What to do", message: nil, preferredStyle: .actionSheet)
-            let newFolder = UIAlertAction(title: "New Folde", style: .default) { _ in
+            let newFolder = UIAlertAction(title: "New Folder", style: .default) { _ in
                 
                 let enterNameAlert = UIAlertController(title: "New folder", message: nil, preferredStyle: .alert)
                 enterNameAlert.addTextField { textField in
@@ -201,9 +201,6 @@ extension HomeViewController: UICollectionViewDelegate {
         let name = model.name
         
         if fileType.contains("officedocument") {
-//            let vc = WebViewViewController()
-//            vc.configure(fileType)
-//            navigationController?.pushViewController(vc, animated: true)
             viewModel.presentDocumet(name: name, type: .web, fyleType: fileType)
         } else if fileType.contains("image") {
             let vm = PresentImageViewModel()
