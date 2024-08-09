@@ -2,9 +2,9 @@ import UIKit
 import SDWebImage
 
 struct CellDataModel {
-    
+    let publickKey: String?
+    let publicUrl: String?
     let name: String
-    //    let size: Int
     let date: String
     let type: String?
     let previewImage: String?
@@ -14,6 +14,7 @@ struct CellDataModel {
     let size: Int?
     
     init(_ item: Item) {
+        self.publickKey = item.publicKey
         self.name = item.name
         self.date = dateFormatter(dateString: item.created)
         self.type = item.type
@@ -22,7 +23,7 @@ struct CellDataModel {
         self.path = item.path
         self.sizes = item.sizes ?? []
         self.size = item.size
-        
+        self.publicUrl = item.publicUrl
         
         func dateFormatter(dateString: String) -> String {
             let dateFormatter = DateFormatter()

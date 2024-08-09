@@ -38,6 +38,8 @@ struct Embedded: Codable {
         
         // MARK: - Item
 struct Item: Codable {
+    let publicKey: String?
+    let publicUrl: String?
     let name: String
     let exif: Exif
     let created: String

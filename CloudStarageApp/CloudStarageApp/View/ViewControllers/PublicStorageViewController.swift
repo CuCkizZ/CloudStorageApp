@@ -223,7 +223,7 @@ extension PublicStorageViewController: UICollectionViewDelegate {
             }
             
             let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                self.viewModel.presentShareView()
+                self.viewModel.presentShareView(shareLink: model.publicUrl ?? "no url")
 //                self.sharePresent(shareLink: String(describing: linkString))
 //                self.copyShare(share: linkString)
 //                print(linkString)

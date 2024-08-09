@@ -157,9 +157,9 @@ struct SceneFactory {
     }
     
 //    MARK: ShareViewController
-    static func makeShareSceneApp(coordinator: Coordinator) -> ShareActivityViewController {
+    static func makeShareSceneApp(shareLink: String, coordinator: Coordinator) -> ShareActivityViewController {
         let vm = ShareActivityViewModel()
-        let vc = ShareActivityViewController(viewModel: vm, shareLink: "")
+        let vc = ShareActivityViewController(viewModel: vm, shareLink: shareLink)
         return vc
     }
 }

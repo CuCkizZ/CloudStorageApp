@@ -201,12 +201,25 @@ private extension HomeViewController {
             make.height.width.equalTo(40)
         }
     }
+    
+    private func modelReturn(indexPath: IndexPath) -> CellDataModel {
+        return cellDataSource[indexPath.row]
+    }
+    
+    private func chechPublickKey(publicKey: String?) -> Bool {
+        if publicKey != nil {
+            return true
+        } else {
+            return false
+        }
+    }
+    
 }
 
 extension HomeViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let model = cellDataSource[indexPath.row]
+        let model = modelReturn(indexPath: indexPath)
         let fileType = model.file
         let name = model.name
         
@@ -229,14 +242,34 @@ extension HomeViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
-        let name = cellDataSource[indexPath.item].name
-        _ = cellDataSource[indexPath.row].path
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+        let model = modelReturn(indexPath: indexPath)
+        let name = model.name
+        let path = model.path
+        //let type = model.mediaType
+
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
+            guard let self = self else { return UIMenu() }
             let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
                 self.viewModel.deleteFile(name)
             }
-            let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                self.viewModel.presentShareView()
+            
+            let shareLinkAction = UIAction(title: "Share link", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+                let isKey = self.chechPublickKey(publicKey: model.publickKey)
+                    self.viewModel.publicFile(path)
+                
+                DispatchQueue.main.async {
+                    let avc = UIActivityViewController(activityItems: [model.file], applicationActivities: nil)
+                    self.present(avc, animated: true)
+                }
+               //self.viewModel.presentShareView(shareLink: "test")
+            }
+            let shareFileAction = UIAction(title: "Share file", image: UIImage(systemName: "square.and.arrow.up")) { _ in
+                let isKey = self.chechPublickKey(publicKey: model.publickKey)
+                self.viewModel.publicFile(path)
+                DispatchQueue.main.async {
+                    let avc = UIActivityViewController(activityItems: [model.file], applicationActivities: nil)
+                    self.present(avc, animated: true)
+                }
             }
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
                 let enterNameAlert = UIAlertController(title: "New name", message: nil, preferredStyle: .alert)
@@ -252,7 +285,8 @@ extension HomeViewController: UICollectionViewDelegate {
                 enterNameAlert.addAction(submitAction)
                 self.present(enterNameAlert, animated: true)
             }
-            return UIMenu(title: "", children: [deleteAction, shareAction, renameAction])
+            let shareMenu = UIMenu(title: "Share", children: [shareFileAction, shareLinkAction])
+            return UIMenu(title: "", children: [deleteAction, shareMenu, renameAction])
         }
     }
 }
@@ -264,11 +298,11 @@ extension HomeViewController: UICollectionViewDataSource {
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let model = modelReturn(indexPath: indexPath)
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
                                                             for: indexPath) as? CollectionViewCell else {
             fatalError("Wrong cell")
         }
-        let model = cellDataSource[indexPath.row]
         cell.configure(model)
         return cell
     }

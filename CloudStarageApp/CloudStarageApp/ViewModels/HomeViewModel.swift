@@ -17,7 +17,7 @@ protocol HomeViewModelProtocol: AnyObject {
     func fetchData()
     func mapModel() 
     func presentDocumet(name: String, type: ConfigureTypes, fyleType: String)
-    func presentShareView()
+    func presentShareView(shareLink: String)
     func publicFile(_ path: String)
     func createNewFolder(_ name: String)
     func deleteFile(_ name: String)
@@ -91,8 +91,8 @@ extension HomeViewModel: HomeViewModelProtocol {
         model.count
     }
     
-    func presentShareView() {
-        coordinator.presentShareScene()
+    func presentShareView(shareLink: String) {
+        coordinator.presentShareScene(shareLink: shareLink)
     }
     
     func presentDocumet(name: String, type: ConfigureTypes, fyleType: String) {

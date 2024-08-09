@@ -19,7 +19,7 @@ final class ShareActivityViewController: UIViewController {
     private lazy var linkButton = UIButton()
     private lazy var textShare = UILabel()
     private lazy var stack = UIStackView(arrangedSubviews: [textShare, fileButton, linkButton])
-    var shareLink: String
+    private var shareLink: String
     
     init(viewModel: ShareActivityViewModel, shareLink: String) {
         self.viewModel = viewModel
@@ -60,7 +60,6 @@ private extension ShareActivityViewController {
     }
     
     func configure() {
-        
     }
     
     
@@ -96,9 +95,18 @@ private extension ShareActivityViewController {
         }
     }
     
-    @objc func getShareLink() {
-        let text = "Text"
-        let avc = UIActivityViewController(activityItems: [text], applicationActivities: nil)
-        present(avc, animated: true)
+    @objc func copyShare() {
+        UIPasteboard.general.string = self.shareLink
+        self.dismiss(animated: true)
+    }
+    
+    @objc func getShareLink(shareLink: String) {
+//        copyShare()
+//        let text = "share"
+//        let avc = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+//        DispatchQueue.main.async {
+//            self.present(avc, animated: true)
+//        }
+        
     }
 }
