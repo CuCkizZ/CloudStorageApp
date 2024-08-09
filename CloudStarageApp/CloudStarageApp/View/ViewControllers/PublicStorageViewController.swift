@@ -211,7 +211,8 @@ extension PublicStorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
         let model = cellDataSource[indexPath.row]
-        guard let linkString = model.publicUrl else { return nil}
+        guard let linkString = model.publicUrl else { return nil }
+        guard let file = model.file else { return nil }
         let name = model.name
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
             let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
@@ -222,11 +223,13 @@ extension PublicStorageViewController: UICollectionViewDelegate {
                 self.viewModel.unpublishFile(model.path)
             }
             
-            let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                self.viewModel.presentShareView(shareLink: model.publicUrl ?? "no url")
-//                self.sharePresent(shareLink: String(describing: linkString))
-//                self.copyShare(share: linkString)
-//                print(linkString)
+            let shareLinkAction = UIAction(title: "Share link", image: UIImage(systemName: "link.badge.plus")) { _ in
+                let avc = UIActivityViewController(activityItems: [linkString], applicationActivities: nil)
+                self.present(avc, animated: true)
+            }
+            let shareFileAction = UIAction(title: "Share file", image: UIImage(systemName: "arrow.up.doc")) { _ in
+                let avc = UIActivityViewController(activityItems: [file], applicationActivities: nil)
+                self.present(avc, animated: true)
             }
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
                 let enterNameAlert = UIAlertController(title: "New name", message: nil, preferredStyle: .alert)
@@ -242,7 +245,8 @@ extension PublicStorageViewController: UICollectionViewDelegate {
                 enterNameAlert.addAction(submitAction)
                 self.present(enterNameAlert, animated: true)
             }
-            return UIMenu(title: "", children: [deleteAction, unpublishAction, shareAction, renameAction])
+            let shareMenu = UIMenu(title: "Share", image: UIImage(systemName: "square.and.arrow.up"), children: [shareLinkAction, shareFileAction])
+            return UIMenu(title: "", children: [deleteAction, unpublishAction, shareMenu, renameAction])
         }
     }
 }

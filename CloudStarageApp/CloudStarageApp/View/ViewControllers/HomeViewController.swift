@@ -228,7 +228,6 @@ private extension HomeViewController {
             return false
         }
     }
-    
 }
 
 extension HomeViewController: UICollectionViewDelegate {
@@ -270,15 +269,14 @@ extension HomeViewController: UICollectionViewDelegate {
             }
             let shareLinkAction = UIAction(title: "Share link", image: UIImage(systemName: "square.and.arrow.up")) { _ in
                 self.viewModel.publishFile(path)
-                let avc = UIActivityViewController(activityItems: [model.publicUrl], applicationActivities: nil)
+                let avc = UIActivityViewController(activityItems: [model.publicUrl ?? ""], applicationActivities: nil)
                 self.present(avc, animated: true)
             }
             let shareFileAction = UIAction(title: "Share file", image: UIImage(systemName: "square.and.arrow.up")) { _ in
                 //self.viewModel.publicFile(path)
-                DispatchQueue.main.async {
-                    let avc = UIActivityViewController(activityItems: [model.file], applicationActivities: nil)
-                    self.present(avc, animated: true)
-                }
+                
+                let avc = UIActivityViewController(activityItems: [model.file], applicationActivities: nil)
+                self.present(avc, animated: true)
             }
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
                 let enterNameAlert = UIAlertController(title: "New name", message: nil, preferredStyle: .alert)
