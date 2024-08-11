@@ -33,9 +33,9 @@ extension HomeCoordinator {
         navigationController.pushViewController(vc, animated: true)
     }
     
-    func presentShareScene() {
+    func presentShareScene(shareLink: String) {
         guard let navigationController = navigationController else { return }
-        let vc = factory.makeShareSceneApp(coordinator: self)
+        let vc = factory.makeShareSceneApp(shareLink: shareLink, coordinator: self)
         if let sheet = vc.sheetPresentationController {
             sheet.detents = [.custom(resolver: { context in
                 navigationController.view.bounds.height / 4

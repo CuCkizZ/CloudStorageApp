@@ -25,12 +25,12 @@ class NetworkManager {
         client.getToket()
     }
     
-    func fetchLastData(completion: @escaping (Result<[Item], Error>) -> Void) {
+    func fetchLastData(completion: @escaping (Result<[LastItem], Error>) -> Void) {
         client.fetchLastData { result in
             switch result {
             case .success(let data):
                 do {
-                    let result = try self.decoder.decode(Embedded.self, from: data)
+                    let result = try self.decoder.decode(LastWelcome.self, from: data)
                     completion(.success(result.items))
                 } catch {
                     completion(.failure(error))
@@ -122,9 +122,10 @@ class NetworkManager {
         client.createNewFolder(name)
     }
     
-    func toPublicFile(_ path: String) {
+    func toPublicFile(path: String) {
         client.toPublicFile(path: path)
     }
+
     
     func unpublishFile(_ path: String) {
         client.unpublishFile(path: path)

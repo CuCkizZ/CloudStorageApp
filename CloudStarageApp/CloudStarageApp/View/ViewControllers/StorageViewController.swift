@@ -203,6 +203,7 @@ extension StorageViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
+        let model = cellDataSource[indexPath.row]
         let name = cellDataSource[indexPath.item].name
         _ = cellDataSource[indexPath.row].path
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
@@ -210,7 +211,7 @@ extension StorageViewController: UICollectionViewDelegate {
                 self.viewModel.deleteFile(name)
             }
             let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                self.viewModel.presentShareScene()
+                self.viewModel.presentShareScene(shareLink: model.type ?? "type")
             }
             let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
                 let enterNameAlert = UIAlertController(title: "New name", message: nil, preferredStyle: .alert)

@@ -72,6 +72,22 @@ final class CollectionViewCell: UICollectionViewCell {
         }
     }
     
+    func lastUpdatedConfigure(_ model: LastUploadedCellDataModel) {
+        if let size = model.size {
+            dateLabel.text = model.date + " \(size / 1000) кб"
+        } else {
+            dateLabel.text = model.date
+        }
+        nameLabel.text = model.name
+        DispatchQueue.main.async {
+            if let previewImage = model.previewImage, let url = URL(string: previewImage) {
+                    self.contentImageView.sd_setImage(with: url)
+            } else {
+                self.contentImageView.image = nil
+            }
+        }
+    }
+    
     func publickConfigure(_ model: PublicItem) {
         nameLabel.text = model.name
         dateLabel.text = model.created

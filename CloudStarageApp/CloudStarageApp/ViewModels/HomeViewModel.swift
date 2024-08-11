@@ -9,16 +9,16 @@ import Foundation
 
 protocol HomeViewModelProtocol: AnyObject {
     var isLoading: Observable<Bool> { get set }
-    var cellDataSource: Observable<[CellDataModel]> { get set }
+    var cellDataSource: Observable<[LastUploadedCellDataModel]> { get set }
     var searchKeyword: String { get set }
-    var model: [Item] { get set }
+    var model: [LastItem] { get set }
     
     func numbersOfRowInSection() -> Int
     func fetchData()
     func mapModel() 
     func presentDocumet(name: String, type: ConfigureTypes, fyleType: String)
-    func presentShareView()
-    func publicFile(_ path: String)
+    func presentShareView(shareLink: String)
+    func publishFile(_ path: String)
     func createNewFolder(_ name: String)
     func deleteFile(_ name: String)
     func renameFile(oldName: String, newName: String)
@@ -29,8 +29,8 @@ final class HomeViewModel {
     var searchKeyword: String = ""
     
     var isLoading: Observable<Bool> = Observable(false)
-    var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
-    internal var model: [Item] = []
+    var cellDataSource: Observable<[LastUploadedCellDataModel]> = Observable(nil)
+    internal var model: [LastItem] = []
     
     
     init(coordinator: HomeCoordinator) {
@@ -39,7 +39,7 @@ final class HomeViewModel {
     }
     
     func mapModel() {
-        cellDataSource.value = model.compactMap { CellDataModel($0) }
+        cellDataSource.value = model.compactMap { LastUploadedCellDataModel($0) }
     }
 
 }
@@ -71,16 +71,19 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func createNewFolder(_ name: String) {
-            NetworkManager.shared.createNewFolder(name)
-            DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                guard let self = self else { return }
-                self.fetchData()
-            }
+        NetworkManager.shared.createNewFolder(name)
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            self.fetchData()
+        }
     }
     
-    func publicFile(_ path: String) {
-        NetworkManager.shared.toPublicFile(path)
+    func publishFile(_ path: String) {
+        NetworkManager.shared.toPublicFile(path: path)
     }
+
+
+                
     
     func renameFile(oldName: String, newName: String) {
         NetworkManager.shared.renameFile(oldName: oldName, newName: newName)
@@ -91,8 +94,8 @@ extension HomeViewModel: HomeViewModelProtocol {
         model.count
     }
     
-    func presentShareView() {
-        coordinator.presentShareScene()
+    func presentShareView(shareLink: String) {
+        coordinator.presentShareScene(shareLink: shareLink)
     }
     
     func presentDocumet(name: String, type: ConfigureTypes, fyleType: String) {

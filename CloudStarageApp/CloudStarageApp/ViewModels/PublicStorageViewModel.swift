@@ -22,7 +22,7 @@ protocol PublickStorageViewModelProtocol {
     func sortData()
     func createNewFolder(_ name: String)
     func unpublicResource()
-    func presentShareView()
+    func presentShareView(shareLink: String)
     func deleteFile(_ name: String)
     func unpublishFile(_ path: String)
     func renameFile(oldName: String, newName: String)
@@ -93,8 +93,8 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
         
     }
     
-    func presentShareView() {
-        coordinator.presentShareScene()
+    func presentShareView(shareLink: String) {
+        coordinator.presentShareScene(shareLink: shareLink)
     }
     
     func unpublishFile(_ path: String) {

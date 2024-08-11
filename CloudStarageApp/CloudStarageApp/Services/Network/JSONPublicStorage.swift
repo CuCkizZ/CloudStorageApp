@@ -14,7 +14,7 @@ struct PublicWelcome: Codable {
 // MARK: - Item
 struct PublicItem: Codable {
     let antivirusStatus, publicKey: String?
-    let publicUrl: URL?
+    let publicUrl: String?
     let name: String
     let exif: Exif?
     let created: String
