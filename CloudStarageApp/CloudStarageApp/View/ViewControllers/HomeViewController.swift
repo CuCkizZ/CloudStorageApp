@@ -311,7 +311,6 @@ extension HomeViewController: UICollectionViewDataSource {
             fatalError("Wrong cell")
         }
         cell.lastUpdatedConfigure(model)
-        print(model.publicUrl ?? "no url")
         return cell
     }
 }

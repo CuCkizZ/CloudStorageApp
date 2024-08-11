@@ -207,7 +207,6 @@ extension PublicStorageViewController: UICollectionViewDelegate {
         viewModel.presentDetailVC(path: "")
     }
     
-    
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
         let model = cellDataSource[indexPath.row]

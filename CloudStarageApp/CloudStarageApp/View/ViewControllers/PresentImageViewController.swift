@@ -15,9 +15,25 @@ final class PresentImageViewController: UIViewController {
     private let viewModel: PresentImageViewModelProtocol
     
     private lazy var activityIndicator = UIActivityIndicatorView()
-    private lazy var imageView = UIImageView()
     private lazy var shareButton = UIButton()
     private lazy var deleteButton = UIButton()
+    var viewImage = UIView()
+    
+    private lazy var pinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
+    
+    private lazy var imageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleAspectFit
+        imageView.clipsToBounds = true
+        return imageView
+    }()
+    
+    private lazy var scrollView: UIScrollView = {
+        let scrollView = UIScrollView(frame: view.bounds)
+        scrollView.minimumZoomScale = 1.0
+        scrollView.maximumZoomScale = 6.0
+        return scrollView
+    }()
 
     init(viewModel: PresentImageViewModelProtocol) {
         self.viewModel = viewModel
@@ -53,18 +69,33 @@ private extension PresentImageViewController {
         setupViews()
         setupButtons()
         setupConstraints()
+        viewImage = viewForZooming(in: scrollView)
     }
     
     func setupViews() {
-        view.addSubview(imageView)
+        view.addSubview(scrollView)
         view.addSubview(shareButton)
         view.addSubview(deleteButton)
         view.addSubview(activityIndicator)
+        scrollView.addSubview(imageView)
+        scrollView.addSubview(viewImage)
+        scrollView.addGestureRecognizer(pinchGestureRecognizer)
     }
     
     func setupButtons() {
         shareButton.setImage(UIImage(systemName: "square.and.arrow.up"), for: .normal)
         deleteButton.setImage(UIImage(systemName: "trash"), for: .normal)
+    }
+    
+    func viewForZooming(in scrollView: UIScrollView) -> UIView {
+        return imageView
+    }
+
+    @objc func handlePinchGesture(_ gestureRecognizer: UIPinchGestureRecognizer) {
+        if gestureRecognizer.state == .changed {
+            scrollView.zoomScale *= gestureRecognizer.scale
+            gestureRecognizer.scale = 1
+        }
     }
     
     func setupConstraints() {
