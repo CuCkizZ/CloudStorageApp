@@ -7,25 +7,15 @@
 
 import Foundation
 
-protocol PublickStorageViewModelProtocol {
+protocol PublickStorageViewModelProtocol: BaseViewModelProtocol, AnyObject {
     
     var isLoading: Observable<Bool> { get set }
     var cellDataSource: Observable<[PublicItem]> { get set }
-    var searchKeyword: String { get set }
-    var model: [PublicItem] { get set }
-    
-    
-    func numbersOfRowInSection() -> Int
-    func fetchData()
-    func mapModel()
+
     func presentDetailVC(path: String)
-    func sortData()
-    func createNewFolder(_ name: String)
     func unpublicResource()
     func presentShareView(shareLink: String)
-    func deleteFile(_ name: String)
-    func unpublishFile(_ path: String)
-    func renameFile(oldName: String, newName: String)
+    
 }
 final class PublicStorageViewModel {
     private var coordinator: ProfileCoordinator
@@ -47,8 +37,6 @@ final class PublicStorageViewModel {
 }
 
 extension PublicStorageViewModel: PublickStorageViewModelProtocol {
-    
-    
     func fetchData() {
         if isLoading.value ?? true {
             return

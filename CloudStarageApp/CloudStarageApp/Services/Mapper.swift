@@ -9,7 +9,7 @@ import Foundation
 
 final class Mapper {
     
-    func mappingProfile(_ model: Account) -> ProfileModel {
+    func mappingProfile(_ model: Account) -> ProfileDataSource {
         let totalSpace = model.totalSpace
         let usedSpace = model.usedSpace 
         let leftSpace = totalSpace - usedSpace

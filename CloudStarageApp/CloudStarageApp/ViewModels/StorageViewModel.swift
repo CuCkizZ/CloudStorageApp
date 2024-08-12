@@ -7,33 +7,21 @@
 
 import Foundation
 
-protocol StorageViewModelProtocol: AnyObject {
-    var isLoading: Observable<Bool> { get set }
+protocol StorageViewModelProtocol: BaseViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
-    var searchKeyword: String { get set }
-    var model: [Item] { get set }
     
-    
-    func numbersOfRowInSection() -> Int
-    func fetchData()
     func fetchCurrentData(name: String, path: String)
-    func mapModel()
-    func sortData()
-    func createNewFolder(_ name: String)
-    func deleteFile(_ name: String)
     func presentVc(path: String)
     func presentShareScene(shareLink: String)
-    func renameFile(oldName: String, newName: String)
 }
 
 final class StorageViewModel {
     
     private let coordinator: StorageCoordinator
-    var searchKeyword: String = ""
+    private var model: [Item] = []
     
     var isLoading: Observable<Bool> = Observable(false)
     var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
-    var model: [Item] = []
     
     var path: String?
     
@@ -54,7 +42,11 @@ final class StorageViewModel {
 }
     
 extension StorageViewModel: StorageViewModelProtocol {
+    func unpublishFile(_ path: String) {
+        NetworkManager.shared.unpublishFile(path)
+    }
     
+
     func fetchData() {
         if isLoading.value ?? true {
             return
@@ -105,6 +97,10 @@ extension StorageViewModel: StorageViewModelProtocol {
     
     func presentShareScene(shareLink: String) {
         coordinator.presentShareScene(shareLink: shareLink)
+    }
+    
+    func publishFile(_ path: String) {
+        NetworkManager.shared.toPublicFile(path: path)
     }
     
     func deleteFile(_ name: String) {

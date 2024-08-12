@@ -39,7 +39,7 @@ final class NetworkService: NetworkServiceProtocol {
     init() {
         self.headers = [
             "Accept" : "application/json",
-            "Authorization" : "OAuth y0_AgAAAAA_XDUnAAOVdwAAAAENaADxAABTMXcP7xNOjKzXv96i4_Qc-NPOvQ"
+            "Authorization" : "OAuth y0_AgAAAAB3PvZkAADLWwAAAAELlSb3AADQZy6bNutAiZm4EhJkt3zSpFwhuQ"
         ]
     }
     

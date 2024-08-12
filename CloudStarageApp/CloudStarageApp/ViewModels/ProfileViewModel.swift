@@ -7,9 +7,9 @@
 
 import Foundation
 
-protocol ProfileViewModelProtocol {
+protocol ProfileViewModelProtocol: AnyObject {
     var onDataLoaded: (() -> Void)? { get set }
-    var dataSource: ProfileModel? { get set }
+    var dataSource: ProfileDataSource? { get set }
     var isLoading: Observable<Bool> { get set }
     func pushToPublic()
     func fetchData()
@@ -20,7 +20,7 @@ final class ProfileViewModel {
     
     private let coordinator: ProfileCoordinator
     private var model: Account?
-    var dataSource: ProfileModel?
+    var dataSource: ProfileDataSource?
     var isLoading: Observable<Bool> = Observable(false)
     var onDataLoaded: (() -> Void)?
  

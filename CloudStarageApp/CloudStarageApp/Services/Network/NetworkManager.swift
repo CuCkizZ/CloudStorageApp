@@ -97,7 +97,7 @@ class NetworkManager {
         }
     }
     
-    func fetchAccountData(completion: @escaping (Result<ProfileModel, Error>) -> Void) {
+    func fetchAccountData(completion: @escaping (Result<ProfileDataSource, Error>) -> Void) {
         client.fetchAccountData { result in
             switch result {
             case .success(let data):
