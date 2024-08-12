@@ -88,6 +88,11 @@ final class CollectionViewCell: UICollectionViewCell {
     func publickConfigure(_ model: PublicItem) {
         nameLabel.text = model.name
         dateLabel.text = model.created
+        if let preview = URL(string: model.preview ?? "") {
+            DispatchQueue.main.async {
+                self.contentImageView.sd_setImage(with: preview, placeholderImage: .file)
+            }
+        }
     }
     
 }
