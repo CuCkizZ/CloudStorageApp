@@ -203,18 +203,16 @@ extension PublicStorageViewController: UICollectionViewDelegate {
 
 extension PublicStorageViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        min(cellDataSource.count, 10)
+        cellDataSource.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let model = modelReturn(indexPath: indexPath)
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
                                                             for: indexPath) as? CollectionViewCell else {
             fatalError("Wrong cell")
         }
-        let model = cellDataSource[indexPath.row]
-        
         cell.publickConfigure(model)
-        print(model.type)
         return cell
     }
 }

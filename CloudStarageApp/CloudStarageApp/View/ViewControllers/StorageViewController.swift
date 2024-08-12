@@ -99,7 +99,7 @@ private extension StorageViewController {
     func SetupNavBar() {
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: selectedStyle.buttonImage, style: .plain, target: self, action: #selector(changeContentLayout))
         navigationController?.navigationBar.prefersLargeTitles = true
-        title = titleName
+        title = "Storage"
     }
     
     func setupCollectionView() {

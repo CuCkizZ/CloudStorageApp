@@ -20,6 +20,12 @@ final class HomeViewController: UIViewController {
     private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var uploadButton = CSUploadButton()
+    private lazy var chageLayoutButton: UIButton = {
+        let button = UIButton()
+        button.setImage(selectedStyle.buttonImage, for: .normal)
+        button.addTarget(self, action: #selector(changeContentLayout), for: .touchUpInside)
+        return button
+    }()
     
     private var selectedStyle: PresentationStyle = .table
     private lazy var collectionView: UICollectionView = {
@@ -117,6 +123,7 @@ private extension HomeViewController {
         view.addSubview(activityIndicator)
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
+        view.addSubview(chageLayoutButton)
         view.backgroundColor = .white
         setupCollectionView()
     }
@@ -182,8 +189,13 @@ private extension HomeViewController {
             make.center.equalToSuperview()
         }
         collectionView.snp.makeConstraints { make in
-            make.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.top.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
             make.left.equalToSuperview().inset(16)
+            make.right.equalToSuperview()
+        }
+        chageLayoutButton.snp.makeConstraints { make in
+            make.top.equalTo(collectionView).inset(-35)
+            make.right.equalTo(collectionView).inset(20)
         }
         uploadButton.snp.makeConstraints { make in
             make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
