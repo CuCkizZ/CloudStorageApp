@@ -14,13 +14,11 @@ private enum PresentationStyle: String, CaseIterable {
 }
 
 final class HomeViewController: UIViewController {
-    private var refresher = UIRefreshControl()
     
-    private lazy var activityIndicator = UIActivityIndicatorView()
     private let viewModel: HomeViewModelProtocol
     private lazy var cellDataSource: [LastUploadedCellDataModel] = []
-    
-    //MARK: CollectionView
+    private lazy var refresher = UIRefreshControl()
+    private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var uploadButton = CSUploadButton()
     
     private var selectedStyle: PresentationStyle = .table
@@ -32,8 +30,6 @@ final class HomeViewController: UIViewController {
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
-    
-    
     
     init(viewModel: HomeViewModelProtocol) {
         self.viewModel = viewModel
@@ -229,7 +225,7 @@ private extension HomeViewController {
         }
     }
 }
-
+ 
 extension HomeViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -265,7 +261,7 @@ extension HomeViewController: UICollectionViewDelegate {
         return UIContextMenuConfiguration.contextMenuConfiguration(for: .last, viewModel: viewModel, name: name, path: path, file: file, publicUrl: publicUrl, viewController: self)
     }
 }
- 
+
 extension HomeViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
@@ -281,13 +277,5 @@ extension HomeViewController: UICollectionViewDataSource {
         cell.lastUpdatedConfigure(model)
         print(model.type)
         return cell
-    }
-}
-
-extension HomeViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        insetForSectionAt section: Int) -> UIEdgeInsets {
-        UIEdgeInsets(top: 0, left: 30.0, bottom: 0, right: 16.0)
     }
 }

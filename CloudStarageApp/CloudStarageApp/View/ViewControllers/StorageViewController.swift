@@ -208,12 +208,9 @@ extension StorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
         let model = modelReturn(indexPath: indexPath)
-        //var publicUrl = model.publicUrl
         let name = model.name
         let path = model.path
         let file = model.file
-        let type = model.type ?? ""
-        //guard let publicUrl = model.publicUrl else { return nil }
         return UIContextMenuConfiguration.contextMenuConfiguration(for: .full, viewModel: viewModel, name: name, path: path, file: file, publicUrl: "", viewController: self)
     }
 }
@@ -234,12 +231,13 @@ extension StorageViewController: UICollectionViewDataSource {
     }
 }
 
-extension StorageViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        insetForSectionAt section: Int) -> UIEdgeInsets {
-        UIEdgeInsets(top: 0, left: 30.0, bottom: 0, right: 16.0)
+extension StorageViewController: StorageViewControllerProtocol {
+    func logout() {
+        
+    }
+    
+    func reloadCollectionView(collectionView: UICollectionView) {
+        
     }
 }
-
 
