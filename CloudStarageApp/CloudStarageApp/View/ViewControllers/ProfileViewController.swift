@@ -67,7 +67,7 @@ final class ProfileViewController: UIViewController {
 private extension ProfileViewController {
     
     func setupLayout() {
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .white
         view.addSubview(totalStorageLabel)
         view.addSubview(usedStorageLabel)
         view.addSubview(leftStorageLabel)

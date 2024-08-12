@@ -5,15 +5,19 @@ import YandexLoginSDK
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
+    var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         do {
-            let clientID = "56933db27900412f8f8dc0a8afcad6a3"
+            let clientID = "fb1d2080334243be9be6f947fcde3fa9"
             try YandexLoginSDK.shared.activate(with: clientID)
         } catch {
             print("1 application func error")
         }
-        
+        if #available(iOS 13.0, *) {
+            window?.overrideUserInterfaceStyle = .light
+            return true
+        }
         return true
     }
     
@@ -42,7 +46,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
      }
 
     // MARK: UISceneSession Lifecycle
-
+    @available(iOS 13.0, *)
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)

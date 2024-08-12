@@ -94,7 +94,7 @@ private extension StorageViewController {
         view.addSubview(activityIndicator)
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .white
         setupCollectionView()
     }
     
@@ -105,7 +105,7 @@ private extension StorageViewController {
     }
     
     func setupCollectionView() {
-        collectionView.backgroundColor = .systemBackground
+        collectionView.backgroundColor = .white
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.reuseID)

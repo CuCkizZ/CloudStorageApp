@@ -1,5 +1,6 @@
 
 import UIKit
+import YandexLoginSDK
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
@@ -16,6 +17,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         let appCoordinator = AppCoordinator(type: .app, navigationController: navBar, window: window)
         self.coordinator = appCoordinator
         appCoordinator.start()
+    }
+    func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+        for urlContext in URLContexts {
+            let url = urlContext.url
+            
+            do {
+                try YandexLoginSDK.shared.handleOpenURL(url)
+            } catch {
+                print("scene delegare error")
+            }
+        }
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

@@ -24,38 +24,55 @@ protocol NetworkServiceProtocol {
 }
 
 private enum Constants {
-    static let token = "OAuth y0_AgAAAAB3PvZkAADLWwAAAAELlSb3AADQZy6bNutAiZm4EhJkt3zSpFwhuQ"
+//    static let token = "OAuth y0_AgAAAAB3PvZkAADLWwAAAAELlSb3AADQZy6bNutAiZm4EhJkt3zSpFwhuQ"
     static let header = "Authorization"
-    static let idClient = "56933db27900412f8f8dc0a8afcad6a3"
+    static let idClient = "fb1d2080334243be9be6f947fcde3fa9"
 }
 
 
 
 final class NetworkService: NetworkServiceProtocol {
     private var newtoken = ""
+    private let token = "" 
     var headers: HTTPHeaders = [:]
     
     init() {
         self.headers = [
             "Accept" : "application/json",
-            "Authorization" : "OAuth y0_AgAAAAB3PvZkAADLWwAAAAELlSb3AADQZy6bNutAiZm4EhJkt3zSpFwhuQ"
+            "Authorization" : "OAuth y0_AgAAAAA_XDUnAAOVdwAAAAENaADxAABTMXcP7xNOjKzXv96i4_Qc-NPOvQ"
         ]
     }
     
+    
+    
+//cucki327   y0_AgAAAAA_XDUnAAOVdwAAAAENaADxAABTMXcP7xNOjKzXv96i4_Qc-NPOvQ
+
+
+    
+//        y0_AgAAAAB3PvZkAAwfCAAAAAEKyWfKAACyM_xVEBFElqpZe9E8ZcBEdWIOfw
+    
     func getToket() {
-        let urlString = "https://oauth.yandex.ru/authorize?response_type=token&client_id="+Constants.idClient
-        guard let url = URL(string: urlString) else { return }
         
-        AF.request(url).response { response in
-            if let error = response.error {
-                print("token error", error)
-            }
-            if let data = response.data {
-                self.newtoken = String(describing: data)
-                print("newtoket: \(self.newtoken)")
+        let oauthToken = "<OAuth-токен>"
+       // let jwtSecret = LoginResult.jwt
+        
+        let headers: HTTPHeaders = [
+            "Authorization": "OAuth \(oauthToken)"
+        ]
+        
+        let parameters: Parameters = [
+            "format": "json",
+           // "jwt_secret": jwtSecret
+        ]
+        
+        AF.request("https://login.yandex.ru/info", parameters: parameters, headers: headers).response { response in
+            switch response.result {
+            case .success(let value):
+                print("Response: \(value)")
+            case .failure(let error):
+                print("Error: \(error)")
             }
         }
-        print(self.newtoken)
     }
     
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void) {
