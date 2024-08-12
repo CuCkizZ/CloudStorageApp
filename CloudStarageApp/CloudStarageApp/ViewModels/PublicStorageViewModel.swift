@@ -37,6 +37,10 @@ final class PublicStorageViewModel {
 }
 
 extension PublicStorageViewModel: PublickStorageViewModelProtocol {
+    func publishFile(_ path: String) {
+        NetworkManager.shared.toPublicFile(path: path)
+    }
+    
     func fetchData() {
         if isLoading.value ?? true {
             return

@@ -15,5 +15,6 @@ protocol BaseViewModelProtocol {
     func unpublishFile(_ path: String)
     func createNewFolder(_ name: String)
     func deleteFile(_ name: String)
+    func publishFile(_ path: String)
     func renameFile(oldName: String, newName: String)
 }

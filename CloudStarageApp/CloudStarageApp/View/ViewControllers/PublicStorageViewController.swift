@@ -119,6 +119,10 @@ private extension PublicStorageViewController {
         collectionView.addSubview(refresher)
     }
     
+    private func modelReturn(indexPath: IndexPath) -> PublicItem {
+        return cellDataSource[indexPath.row]
+    }
+    
     //   MARK: Objc Methods
     
     @objc func pullToRefresh() {
@@ -209,44 +213,13 @@ extension PublicStorageViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
-        let model = cellDataSource[indexPath.row]
-        guard let linkString = model.publicUrl else { return nil }
-        guard let file = model.file else { return nil }
+        let model = modelReturn(indexPath: indexPath)
         let name = model.name
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
-            let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-                self.viewModel.deleteFile(name)
-            }
-            
-            let unpublishAction = UIAction(title: "Unpublish", image: UIImage(systemName: "link")) { _ in
-                self.viewModel.unpublishFile(model.path)
-            }
-            
-            let shareLinkAction = UIAction(title: "Share link", image: UIImage(systemName: "link.badge.plus")) { _ in
-                let avc = UIActivityViewController(activityItems: [linkString], applicationActivities: nil)
-                self.present(avc, animated: true)
-            }
-            let shareFileAction = UIAction(title: "Share file", image: UIImage(systemName: "arrow.up.doc")) { _ in
-                let avc = UIActivityViewController(activityItems: [file], applicationActivities: nil)
-                self.present(avc, animated: true)
-            }
-            let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
-                let enterNameAlert = UIAlertController(title: "New name", message: nil, preferredStyle: .alert)
-                enterNameAlert.addTextField { textField in
-                    textField.placeholder = "Enter the name"
-                    
-                }
-                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned enterNameAlert] _ in
-                    if let answer = enterNameAlert.textFields?[0], let newName = answer.text {
-                        self.viewModel.renameFile(oldName: name, newName: newName)
-                    }
-                }
-                enterNameAlert.addAction(submitAction)
-                self.present(enterNameAlert, animated: true)
-            }
-            let shareMenu = UIMenu(title: "Share", image: UIImage(systemName: "square.and.arrow.up"), children: [shareLinkAction, shareFileAction])
-            return UIMenu(title: "", children: [deleteAction, unpublishAction, shareMenu, renameAction])
-        }
+        let path = model.path
+        let file = model.file
+        let publicUrl = model.publicUrl
+        let type = model.type
+        return UIContextMenuConfiguration.contextMenuConfiguration(for: .publish, viewModel: viewModel, name: name, path: path, file: file ?? "", publicUrl: publicUrl, type: type, viewController: self)
     }
 }
 
@@ -263,6 +236,7 @@ extension PublicStorageViewController: UICollectionViewDataSource {
         let model = cellDataSource[indexPath.row]
         
         cell.publickConfigure(model)
+        print(model.type)
         return cell
     }
 }

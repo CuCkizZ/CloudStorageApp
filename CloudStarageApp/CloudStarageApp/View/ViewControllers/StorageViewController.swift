@@ -116,12 +116,16 @@ private extension StorageViewController {
         collectionView.addSubview(refresher)
     }
     
+    private func modelReturn(indexPath: IndexPath) -> CellDataModel {
+        return cellDataSource[indexPath.row]
+    }
+    
     @objc func pullToRefresh() {
         viewModel.fetchData()
         refresher.endRefreshing()
     }
     
-    @objc private func changeContentLayout() {
+    @objc func changeContentLayout() {
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             if layout.itemSize == CGSize(width: view.bounds.width, height: 33) {
                 layout.itemSize = CGSize(width: 100, height: 100)
@@ -203,32 +207,14 @@ extension StorageViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
-        let model = cellDataSource[indexPath.row]
-        let name = cellDataSource[indexPath.item].name
-        _ = cellDataSource[indexPath.row].path
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
-            let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-                self.viewModel.deleteFile(name)
-            }
-            let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                self.viewModel.presentShareScene(shareLink: model.type ?? "type")
-            }
-            let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
-                let enterNameAlert = UIAlertController(title: "New name", message: nil, preferredStyle: .alert)
-                enterNameAlert.addTextField { textField in
-                    textField.placeholder = "Enter the name"
-                    
-                }
-                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned enterNameAlert] _ in
-                    if let answer = enterNameAlert.textFields?[0], let newName = answer.text {
-                        self.viewModel.renameFile(oldName: name, newName: newName)
-                    }
-                }
-                enterNameAlert.addAction(submitAction)
-                self.present(enterNameAlert, animated: true)
-            }
-            return UIMenu(title: "", children: [deleteAction, shareAction, renameAction])
-        }
+        let model = modelReturn(indexPath: indexPath)
+        //var publicUrl = model.publicUrl
+        let name = model.name
+        let path = model.path
+        let file = model.file
+        let type = model.type ?? ""
+        //guard let publicUrl = model.publicUrl else { return nil }
+        return UIContextMenuConfiguration.contextMenuConfiguration(for: .full, viewModel: viewModel, name: name, path: path, file: file, publicUrl: "", viewController: self)
     }
 }
 

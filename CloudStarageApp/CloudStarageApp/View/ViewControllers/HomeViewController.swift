@@ -260,48 +260,16 @@ extension HomeViewController: UICollectionViewDelegate {
         //var publicUrl = model.publicUrl
         let name = model.name
         let path = model.path
-        
-        
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
-            guard let self = self else { return UIMenu() }
-            let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-                self.viewModel.deleteFile(name)
-            }
-            let shareLinkAction = UIAction(title: "Share link", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                self.viewModel.publishFile(path)
-                let avc = UIActivityViewController(activityItems: [model.publicUrl ?? ""], applicationActivities: nil)
-                self.present(avc, animated: true)
-            }
-            let shareFileAction = UIAction(title: "Share file", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                //self.viewModel.publicFile(path)
-                
-                let avc = UIActivityViewController(activityItems: [model.file], applicationActivities: nil)
-                self.present(avc, animated: true)
-            }
-            let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
-                let enterNameAlert = UIAlertController(title: "New name", message: nil, preferredStyle: .alert)
-                enterNameAlert.addTextField { textField in
-                    textField.placeholder = "Enter the name"
-                    
-                }
-                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned enterNameAlert] _ in
-                    if let answer = enterNameAlert.textFields?[0], let newName = answer.text {
-                        self.viewModel.renameFile(oldName: name, newName: newName)
-                    }
-                }
-                enterNameAlert.addAction(submitAction)
-                self.present(enterNameAlert, animated: true)
-            }
-            let shareMenu = UIMenu(title: "Share", children: [shareLinkAction, shareFileAction])
-            return UIMenu(title: "", children: [deleteAction, shareMenu, renameAction])
-        }
+        let file = model.file
+        let publicUrl = model.publicUrl
+        return UIContextMenuConfiguration.contextMenuConfiguration(for: .last, viewModel: viewModel, name: name, path: path, file: file, publicUrl: publicUrl, viewController: self)
     }
 }
-
+ 
 extension HomeViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        min(cellDataSource.count, 10)
+        cellDataSource.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -311,6 +279,7 @@ extension HomeViewController: UICollectionViewDataSource {
             fatalError("Wrong cell")
         }
         cell.lastUpdatedConfigure(model)
+        print(model.type)
         return cell
     }
 }
