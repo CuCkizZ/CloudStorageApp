@@ -26,6 +26,7 @@ private extension CSBlueButton {
         self.setTitle("Далее", for: .normal)
         self.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
         self.titleLabel?.font = .Inter.light.size(of: 16)
+        self.setTitleColor(.white, for: .application)
         self.backgroundColor = AppColors.standartBlue
         self.layer.cornerRadius = 12
     }

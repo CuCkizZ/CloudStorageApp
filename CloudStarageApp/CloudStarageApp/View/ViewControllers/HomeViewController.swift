@@ -121,16 +121,16 @@ private extension HomeViewController {
         view.addSubview(activityIndicator)
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .white
         setupCollectionView()
     }
     
     func setupNavBar() {
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: selectedStyle.buttonImage, style: .plain, target: self, action: #selector(changeContentLayout))
         navigationController?.navigationBar.prefersLargeTitles = true
+        navigationController?.hidesBottomBarWhenPushed = true
         title = "Latests"
     }
-    
     
     func setupCollectionView() {
         collectionView.backgroundColor = .systemBackground

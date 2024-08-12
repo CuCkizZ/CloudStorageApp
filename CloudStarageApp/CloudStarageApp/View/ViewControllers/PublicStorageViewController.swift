@@ -96,7 +96,7 @@ private extension PublicStorageViewController {
         view.addSubview(activityIndicator)
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .white
         setupCollectionView()
     }
     

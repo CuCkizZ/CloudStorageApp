@@ -72,8 +72,10 @@ private extension DocumentViewController {
         switch type {
         case .pdf:
             view.addSubview(pdfView)
+            pdfView.backgroundColor = .white
         case .web:
             view.addSubview(webView)
+            webView.backgroundColor = .white
         }
     }
     

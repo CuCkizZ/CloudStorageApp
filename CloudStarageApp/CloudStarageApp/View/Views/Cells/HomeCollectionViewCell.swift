@@ -80,11 +80,8 @@ final class CollectionViewCell: UICollectionViewCell {
         }
         nameLabel.text = model.name
         DispatchQueue.main.async {
-            if let previewImage = model.previewImage, let url = URL(string: previewImage) {
-                    self.contentImageView.sd_setImage(with: url)
-            } else {
-                self.contentImageView.image = nil
-            }
+            let url = URL(string: model.previewImage ?? "")
+                self.contentImageView.sd_setImage(with: url, placeholderImage: UIImage(resource: .file), options: [.retryFailed, .progressiveLoad], completed: nil)
         }
     }
     
