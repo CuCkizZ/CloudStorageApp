@@ -155,30 +155,8 @@ private extension PublicStorageViewController {
     }
     
     private func uploadButtonPressed() {
-        uploadButton.addAction(UIAction { [weak self] action in
-            guard let self = self else { return }
-            let actionSheet = UIAlertController(title: "What to do", message: nil, preferredStyle: .actionSheet)
-            let newFolder = UIAlertAction(title: "New Folde", style: .default) { _ in
-                
-                let enterNameAlert = UIAlertController(title: "New folder", message: nil, preferredStyle: .alert)
-                enterNameAlert.addTextField { textField in
-                    textField.placeholder = "Enter the name"
-                }
-                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned enterNameAlert] _ in
-                    let answer = enterNameAlert.textFields?[0]
-                    self.viewModel.createNewFolder(answer?.text ?? "")
-                }
-                enterNameAlert.addAction(submitAction)
-                self.present(enterNameAlert, animated: true)
-            }
-            let newFile = UIAlertAction(title: "New File", style: .default)
-            let cancle = UIAlertAction(title: "Cancle", style: .cancel)
-            
-            actionSheet.addAction(newFolder)
-            actionSheet.addAction(newFile)
-            actionSheet.addAction(cancle)
-            self.present(actionSheet, animated: true)
-        },
+        uploadButton.addAction(UIAction.createNewFolder(view: self,
+                                                        viewModel: viewModel),
                                for: .touchUpInside)
     }
     
