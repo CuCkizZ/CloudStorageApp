@@ -14,14 +14,18 @@ private enum PresentationStyle: String, CaseIterable {
 }
 
 final class HomeViewController: UIViewController {
-    private var refresher = UIRefreshControl()
     
-    private lazy var activityIndicator = UIActivityIndicatorView()
     private let viewModel: HomeViewModelProtocol
     private lazy var cellDataSource: [LastUploadedCellDataModel] = []
-    
-    //MARK: CollectionView
+    private lazy var refresher = UIRefreshControl()
+    private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var uploadButton = CSUploadButton()
+    private lazy var chageLayoutButton: UIButton = {
+        let button = UIButton()
+        button.setImage(selectedStyle.buttonImage, for: .normal)
+        button.addTarget(self, action: #selector(changeContentLayout), for: .touchUpInside)
+        return button
+    }()
     
     private var selectedStyle: PresentationStyle = .table
     private lazy var collectionView: UICollectionView = {
@@ -32,8 +36,6 @@ final class HomeViewController: UIViewController {
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
-    
-    
     
     init(viewModel: HomeViewModelProtocol) {
         self.viewModel = viewModel
@@ -121,6 +123,7 @@ private extension HomeViewController {
         view.addSubview(activityIndicator)
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
+        view.addSubview(chageLayoutButton)
         view.backgroundColor = .white
         setupCollectionView()
     }
@@ -148,6 +151,7 @@ private extension HomeViewController {
     
     @objc func pullToRefresh() {
         viewModel.fetchData()
+        collectionView.reloadData()
         refresher.endRefreshing()
     }
     
@@ -176,30 +180,8 @@ private extension HomeViewController {
     }
     
     private func uploadButtonPressed() {
-        uploadButton.addAction(UIAction { [weak self] action in
-            guard let self = self else { return }
-            let actionSheet = UIAlertController(title: "What to do", message: nil, preferredStyle: .actionSheet)
-            let newFolder = UIAlertAction(title: "New Folder", style: .default) { _ in
-                
-                let enterNameAlert = UIAlertController(title: "New folder", message: nil, preferredStyle: .alert)
-                enterNameAlert.addTextField { textField in
-                    textField.placeholder = "Enter the name"
-                }
-                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned enterNameAlert] _ in
-                    let answer = enterNameAlert.textFields?[0]
-                    self.viewModel.createNewFolder(answer?.text ?? "")
-                }
-                enterNameAlert.addAction(submitAction)
-                self.present(enterNameAlert, animated: true)
-            }
-            let newFile = UIAlertAction(title: "New File", style: .default)
-            let cancle = UIAlertAction(title: "Cancle", style: .cancel)
-            
-            actionSheet.addAction(newFolder)
-            actionSheet.addAction(newFile)
-            actionSheet.addAction(cancle)
-            self.present(actionSheet, animated: true)
-        },
+        uploadButton.addAction(UIAction.createNewFolder(view: self,
+                                                        viewModel: viewModel),
                                for: .touchUpInside)
     }
     
@@ -208,8 +190,13 @@ private extension HomeViewController {
             make.center.equalToSuperview()
         }
         collectionView.snp.makeConstraints { make in
-            make.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.top.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
             make.left.equalToSuperview().inset(16)
+            make.right.equalToSuperview()
+        }
+        chageLayoutButton.snp.makeConstraints { make in
+            make.top.equalTo(collectionView).inset(-32)
+            make.right.equalTo(collectionView).inset(16)
         }
         uploadButton.snp.makeConstraints { make in
             make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
@@ -229,7 +216,7 @@ private extension HomeViewController {
         }
     }
 }
-
+ 
 extension HomeViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -260,48 +247,16 @@ extension HomeViewController: UICollectionViewDelegate {
         //var publicUrl = model.publicUrl
         let name = model.name
         let path = model.path
-        
-        
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak self] _ in
-            guard let self = self else { return UIMenu() }
-            let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-                self.viewModel.deleteFile(name)
-            }
-            let shareLinkAction = UIAction(title: "Share link", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                self.viewModel.publishFile(path)
-                let avc = UIActivityViewController(activityItems: [model.publicUrl ?? ""], applicationActivities: nil)
-                self.present(avc, animated: true)
-            }
-            let shareFileAction = UIAction(title: "Share file", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                //self.viewModel.publicFile(path)
-                
-                let avc = UIActivityViewController(activityItems: [model.file], applicationActivities: nil)
-                self.present(avc, animated: true)
-            }
-            let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
-                let enterNameAlert = UIAlertController(title: "New name", message: nil, preferredStyle: .alert)
-                enterNameAlert.addTextField { textField in
-                    textField.placeholder = "Enter the name"
-                    
-                }
-                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned enterNameAlert] _ in
-                    if let answer = enterNameAlert.textFields?[0], let newName = answer.text {
-                        self.viewModel.renameFile(oldName: name, newName: newName)
-                    }
-                }
-                enterNameAlert.addAction(submitAction)
-                self.present(enterNameAlert, animated: true)
-            }
-            let shareMenu = UIMenu(title: "Share", children: [shareLinkAction, shareFileAction])
-            return UIMenu(title: "", children: [deleteAction, shareMenu, renameAction])
-        }
+        let file = model.file
+        let publicUrl = model.publicUrl
+        return UIContextMenuConfiguration.contextMenuConfiguration(for: .last, viewModel: viewModel, name: name, path: path, file: file, publicUrl: publicUrl, viewController: self)
     }
 }
 
 extension HomeViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        min(cellDataSource.count, 10)
+        cellDataSource.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -311,14 +266,7 @@ extension HomeViewController: UICollectionViewDataSource {
             fatalError("Wrong cell")
         }
         cell.lastUpdatedConfigure(model)
+        print(model.type)
         return cell
-    }
-}
-
-extension HomeViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        insetForSectionAt section: Int) -> UIEdgeInsets {
-        UIEdgeInsets(top: 0, left: 30.0, bottom: 0, right: 16.0)
     }
 }

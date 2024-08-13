@@ -80,14 +80,18 @@ final class CollectionViewCell: UICollectionViewCell {
         }
         nameLabel.text = model.name
         DispatchQueue.main.async {
-            let url = URL(string: model.previewImage ?? "")
-                self.contentImageView.sd_setImage(with: url, placeholderImage: UIImage(resource: .file), options: [.retryFailed, .progressiveLoad], completed: nil)
+            self.contentImageView.setImage(urlString: model.previewImage!)
         }
     }
     
     func publickConfigure(_ model: PublicItem) {
         nameLabel.text = model.name
         dateLabel.text = model.created
+        if let preview = URL(string: model.preview ?? "") {
+            DispatchQueue.main.async {
+                self.contentImageView.sd_setImage(with: preview, placeholderImage: .file)
+            }
+        }
     }
     
 }
@@ -159,5 +163,11 @@ extension UIImageView {
                 }
             }
         }
+    }
+}
+
+extension UIImageView {
+    func setImage(urlString: String) {
+        self.kf.setImage(with: URL(string: urlString))
     }
 }

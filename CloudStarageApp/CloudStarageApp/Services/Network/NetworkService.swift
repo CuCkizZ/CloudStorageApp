@@ -9,20 +9,6 @@ import Foundation
 import YandexLoginSDK
 import Alamofire
 
-protocol NetworkServiceProtocol {
-    func getToket()
-    func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void)
-    func fetchAccountData(completion: @escaping (Result<Data, Error>) -> Void)
-    func createNewFolder(_ name: String)
-    func deleteFolder(urlString: String, name: String)
-    func fetchLastData(completion: @escaping (Result<Data, Error>) -> Void)
-    func fetchPublicData(completion: @escaping (Result<Data, Error>) -> Void)
-    func fetchCurrentData(path: String, completion: @escaping (Result<Data, Error>) -> Void)
-    func toPublicFile(path: String)
-    func unpublishFile(path: String)
-    func renameFile(oldName: String, newName: String)
-}
-
 private enum Constants {
 //    static let token = "OAuth y0_AgAAAAB3PvZkAADLWwAAAAELlSb3AADQZy6bNutAiZm4EhJkt3zSpFwhuQ"
     static let header = "Authorization"
@@ -39,7 +25,7 @@ final class NetworkService: NetworkServiceProtocol {
     init() {
         self.headers = [
             "Accept" : "application/json",
-            "Authorization" : "OAuth y0_AgAAAAA_XDUnAAOVdwAAAAENaADxAABTMXcP7xNOjKzXv96i4_Qc-NPOvQ"
+            "Authorization" : "OAuth y0_AgAAAAB3PvZkAADLWwAAAAELlSb3AADQZy6bNutAiZm4EhJkt3zSpFwhuQ"
         ]
     }
     
@@ -68,7 +54,7 @@ final class NetworkService: NetworkServiceProtocol {
         AF.request("https://login.yandex.ru/info", parameters: parameters, headers: headers).response { response in
             switch response.result {
             case .success(let value):
-                print("Response: \(value)")
+                print("Response: \(String(describing: value))")
             case .failure(let error):
                 print("Error: \(error)")
             }
@@ -81,7 +67,7 @@ final class NetworkService: NetworkServiceProtocol {
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
-            if let error = response.error {
+            if let _ = response.error {
                 completion(.failure(.internetError))
                 return
             }

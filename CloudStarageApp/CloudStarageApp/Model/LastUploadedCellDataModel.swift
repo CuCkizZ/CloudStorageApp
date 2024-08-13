@@ -12,7 +12,7 @@ struct LastUploadedCellDataModel {
     let publicUrl: String?
     let name: String
     let date: String
-    let type: String?
+    let type: String
     let previewImage: String?
     let file: String
     let path: String

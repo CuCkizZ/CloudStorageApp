@@ -19,8 +19,6 @@ final class StorageViewController: UIViewController {
     private lazy var activityIndicator = UIActivityIndicatorView()
     private var viewModel: StorageViewModelProtocol
     private var cellDataSource: [CellDataModel] = []
-    var path = "disk:/"
-    var titleName = "Storage"
     
     private lazy var uploadButton = CSUploadButton()
     private lazy var selectedStyle: PresentationStyle = .table
@@ -101,7 +99,7 @@ private extension StorageViewController {
     func SetupNavBar() {
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: selectedStyle.buttonImage, style: .plain, target: self, action: #selector(changeContentLayout))
         navigationController?.navigationBar.prefersLargeTitles = true
-        title = titleName
+        title = "Storage"
     }
     
     func setupCollectionView() {
@@ -116,12 +114,16 @@ private extension StorageViewController {
         collectionView.addSubview(refresher)
     }
     
+    private func modelReturn(indexPath: IndexPath) -> CellDataModel {
+        return cellDataSource[indexPath.row]
+    }
+    
     @objc func pullToRefresh() {
         viewModel.fetchData()
         refresher.endRefreshing()
     }
     
-    @objc private func changeContentLayout() {
+    @objc func changeContentLayout() {
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             if layout.itemSize == CGSize(width: view.bounds.width, height: 33) {
                 layout.itemSize = CGSize(width: 100, height: 100)
@@ -146,30 +148,8 @@ private extension StorageViewController {
     }
     
     private func uploadButtonPressed() {
-        uploadButton.addAction(UIAction { [weak self] action in
-            guard let self = self else { return }
-            let actionSheet = UIAlertController(title: "What to do", message: nil, preferredStyle: .actionSheet)
-            let newFolder = UIAlertAction(title: "New Folde", style: .default) { _ in
-                
-                let enterNameAlert = UIAlertController(title: "New folder", message: nil, preferredStyle: .alert)
-                enterNameAlert.addTextField { textField in
-                    textField.placeholder = "Enter the name"
-                }
-                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned enterNameAlert] _ in
-                    let answer = enterNameAlert.textFields?[0]
-                    self.viewModel.createNewFolder(answer?.text ?? "")
-                }
-                enterNameAlert.addAction(submitAction)
-                self.present(enterNameAlert, animated: true)
-            }
-            let newFile = UIAlertAction(title: "New File", style: .default)
-            let cancle = UIAlertAction(title: "Cancle", style: .cancel)
-            
-            actionSheet.addAction(newFolder)
-            actionSheet.addAction(newFile)
-            actionSheet.addAction(cancle)
-            self.present(actionSheet, animated: true)
-        },
+        uploadButton.addAction(UIAction.createNewFolder(view: self,
+                                                        viewModel: viewModel),
                                for: .touchUpInside)
     }
     
@@ -203,32 +183,11 @@ extension StorageViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
-        let model = cellDataSource[indexPath.row]
-        let name = cellDataSource[indexPath.item].name
-        _ = cellDataSource[indexPath.row].path
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
-            let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-                self.viewModel.deleteFile(name)
-            }
-            let shareAction = UIAction(title: "Share", image: UIImage(systemName: "square.and.arrow.up")) { _ in
-                self.viewModel.presentShareScene(shareLink: model.type ?? "type")
-            }
-            let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
-                let enterNameAlert = UIAlertController(title: "New name", message: nil, preferredStyle: .alert)
-                enterNameAlert.addTextField { textField in
-                    textField.placeholder = "Enter the name"
-                    
-                }
-                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned enterNameAlert] _ in
-                    if let answer = enterNameAlert.textFields?[0], let newName = answer.text {
-                        self.viewModel.renameFile(oldName: name, newName: newName)
-                    }
-                }
-                enterNameAlert.addAction(submitAction)
-                self.present(enterNameAlert, animated: true)
-            }
-            return UIMenu(title: "", children: [deleteAction, shareAction, renameAction])
-        }
+        let model = modelReturn(indexPath: indexPath)
+        let name = model.name
+        let path = model.path
+        let file = model.file
+        return UIContextMenuConfiguration.contextMenuConfiguration(for: .full, viewModel: viewModel, name: name, path: path, file: file, publicUrl: "", viewController: self)
     }
 }
 
@@ -248,12 +207,13 @@ extension StorageViewController: UICollectionViewDataSource {
     }
 }
 
-extension StorageViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        insetForSectionAt section: Int) -> UIEdgeInsets {
-        UIEdgeInsets(top: 0, left: 30.0, bottom: 0, right: 16.0)
+extension StorageViewController: StorageViewControllerProtocol {
+    func logout() {
+        
+    }
+    
+    func reloadCollectionView(collectionView: UICollectionView) {
+        
     }
 }
-
 

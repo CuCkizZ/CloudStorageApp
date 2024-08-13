@@ -7,31 +7,19 @@
 
 import Foundation
 
-protocol HomeViewModelProtocol: AnyObject {
-    var isLoading: Observable<Bool> { get set }
+protocol HomeViewModelProtocol: BaseViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[LastUploadedCellDataModel]> { get set }
-    var searchKeyword: String { get set }
-    var model: [LastItem] { get set }
-    
-    func numbersOfRowInSection() -> Int
-    func fetchData()
-    func mapModel() 
     func presentDocumet(name: String, type: ConfigureTypes, fyleType: String)
     func presentShareView(shareLink: String)
     func publishFile(_ path: String)
-    func createNewFolder(_ name: String)
-    func deleteFile(_ name: String)
-    func renameFile(oldName: String, newName: String)
 }
 
 final class HomeViewModel {
-    private let coordinator: HomeCoordinator
-    var searchKeyword: String = ""
     
+    private let coordinator: HomeCoordinator
     var isLoading: Observable<Bool> = Observable(false)
     var cellDataSource: Observable<[LastUploadedCellDataModel]> = Observable(nil)
-    internal var model: [LastItem] = []
-    
+    private var model: [LastItem] = []
     
     init(coordinator: HomeCoordinator) {
         self.coordinator = coordinator
@@ -81,9 +69,10 @@ extension HomeViewModel: HomeViewModelProtocol {
     func publishFile(_ path: String) {
         NetworkManager.shared.toPublicFile(path: path)
     }
-
-
-                
+    
+    func unpublishFile(_ path: String) {
+        NetworkManager.shared.unpublishFile(path)
+    }
     
     func renameFile(oldName: String, newName: String) {
         NetworkManager.shared.renameFile(oldName: oldName, newName: newName)

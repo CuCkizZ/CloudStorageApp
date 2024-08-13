@@ -119,6 +119,10 @@ private extension PublicStorageViewController {
         collectionView.addSubview(refresher)
     }
     
+    private func modelReturn(indexPath: IndexPath) -> PublicItem {
+        return cellDataSource[indexPath.row]
+    }
+    
     //   MARK: Objc Methods
     
     @objc func pullToRefresh() {
@@ -151,30 +155,8 @@ private extension PublicStorageViewController {
     }
     
     private func uploadButtonPressed() {
-        uploadButton.addAction(UIAction { [weak self] action in
-            guard let self = self else { return }
-            let actionSheet = UIAlertController(title: "What to do", message: nil, preferredStyle: .actionSheet)
-            let newFolder = UIAlertAction(title: "New Folde", style: .default) { _ in
-                
-                let enterNameAlert = UIAlertController(title: "New folder", message: nil, preferredStyle: .alert)
-                enterNameAlert.addTextField { textField in
-                    textField.placeholder = "Enter the name"
-                }
-                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned enterNameAlert] _ in
-                    let answer = enterNameAlert.textFields?[0]
-                    self.viewModel.createNewFolder(answer?.text ?? "")
-                }
-                enterNameAlert.addAction(submitAction)
-                self.present(enterNameAlert, animated: true)
-            }
-            let newFile = UIAlertAction(title: "New File", style: .default)
-            let cancle = UIAlertAction(title: "Cancle", style: .cancel)
-            
-            actionSheet.addAction(newFolder)
-            actionSheet.addAction(newFile)
-            actionSheet.addAction(cancle)
-            self.present(actionSheet, animated: true)
-        },
+        uploadButton.addAction(UIAction.createNewFolder(view: self,
+                                                        viewModel: viewModel),
                                for: .touchUpInside)
     }
     
@@ -209,69 +191,29 @@ extension PublicStorageViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
-        let model = cellDataSource[indexPath.row]
-        guard let linkString = model.publicUrl else { return nil }
-        guard let file = model.file else { return nil }
+        let model = modelReturn(indexPath: indexPath)
         let name = model.name
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
-            let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash"), attributes: .destructive) { _ in
-                self.viewModel.deleteFile(name)
-            }
-            
-            let unpublishAction = UIAction(title: "Unpublish", image: UIImage(systemName: "link")) { _ in
-                self.viewModel.unpublishFile(model.path)
-            }
-            
-            let shareLinkAction = UIAction(title: "Share link", image: UIImage(systemName: "link.badge.plus")) { _ in
-                let avc = UIActivityViewController(activityItems: [linkString], applicationActivities: nil)
-                self.present(avc, animated: true)
-            }
-            let shareFileAction = UIAction(title: "Share file", image: UIImage(systemName: "arrow.up.doc")) { _ in
-                let avc = UIActivityViewController(activityItems: [file], applicationActivities: nil)
-                self.present(avc, animated: true)
-            }
-            let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
-                let enterNameAlert = UIAlertController(title: "New name", message: nil, preferredStyle: .alert)
-                enterNameAlert.addTextField { textField in
-                    textField.placeholder = "Enter the name"
-                    
-                }
-                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned enterNameAlert] _ in
-                    if let answer = enterNameAlert.textFields?[0], let newName = answer.text {
-                        self.viewModel.renameFile(oldName: name, newName: newName)
-                    }
-                }
-                enterNameAlert.addAction(submitAction)
-                self.present(enterNameAlert, animated: true)
-            }
-            let shareMenu = UIMenu(title: "Share", image: UIImage(systemName: "square.and.arrow.up"), children: [shareLinkAction, shareFileAction])
-            return UIMenu(title: "", children: [deleteAction, unpublishAction, shareMenu, renameAction])
-        }
+        let path = model.path
+        let file = model.file
+        let publicUrl = model.publicUrl
+        let type = model.type
+        return UIContextMenuConfiguration.contextMenuConfiguration(for: .publish, viewModel: viewModel, name: name, path: path, file: file ?? "", publicUrl: publicUrl, type: type, viewController: self)
     }
 }
 
 extension PublicStorageViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        min(cellDataSource.count, 10)
+        cellDataSource.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let model = modelReturn(indexPath: indexPath)
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
                                                             for: indexPath) as? CollectionViewCell else {
             fatalError("Wrong cell")
         }
-        let model = cellDataSource[indexPath.row]
-        
         cell.publickConfigure(model)
         return cell
-    }
-}
-
-extension PublicStorageViewController: UICollectionViewDelegateFlowLayout {
-    func collectionView(_ collectionView: UICollectionView,
-                        layout collectionViewLayout: UICollectionViewLayout,
-                        insetForSectionAt section: Int) -> UIEdgeInsets {
-        UIEdgeInsets(top: 0, left: 30.0, bottom: 0, right: 16.0)
     }
 }
 

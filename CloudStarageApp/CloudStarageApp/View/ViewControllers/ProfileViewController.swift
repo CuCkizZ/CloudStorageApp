@@ -4,7 +4,7 @@ import SnapKit
 final class ProfileViewController: UIViewController {
     
     private var viewModel: ProfileViewModelProtocol
-    private var dataSource: ProfileModel?
+    private var dataSource: ProfileDataSource?
     private let activityIndicator = UIActivityIndicatorView()
     
     private var totalStorageLabel = UILabel()
