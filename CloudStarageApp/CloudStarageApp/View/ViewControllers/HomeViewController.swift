@@ -151,6 +151,7 @@ private extension HomeViewController {
     
     @objc func pullToRefresh() {
         viewModel.fetchData()
+        collectionView.reloadData()
         refresher.endRefreshing()
     }
     
@@ -194,8 +195,8 @@ private extension HomeViewController {
             make.right.equalToSuperview()
         }
         chageLayoutButton.snp.makeConstraints { make in
-            make.top.equalTo(collectionView).inset(-35)
-            make.right.equalTo(collectionView).inset(20)
+            make.top.equalTo(collectionView).inset(-32)
+            make.right.equalTo(collectionView).inset(16)
         }
         uploadButton.snp.makeConstraints { make in
             make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)

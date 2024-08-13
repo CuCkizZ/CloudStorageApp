@@ -80,8 +80,7 @@ final class CollectionViewCell: UICollectionViewCell {
         }
         nameLabel.text = model.name
         DispatchQueue.main.async {
-            let url = URL(string: model.previewImage ?? "")
-                self.contentImageView.sd_setImage(with: url, placeholderImage: UIImage(resource: .file), options: [.retryFailed, .progressiveLoad], completed: nil)
+            self.contentImageView.setImage(urlString: model.previewImage!)
         }
     }
     
@@ -164,5 +163,11 @@ extension UIImageView {
                 }
             }
         }
+    }
+}
+
+extension UIImageView {
+    func setImage(urlString: String) {
+        self.kf.setImage(with: URL(string: urlString))
     }
 }
