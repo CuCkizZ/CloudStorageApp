@@ -33,8 +33,7 @@ extension UIContextMenuConfiguration {
                 let shareLinkAction = UIAction(title: "Share a link", image: UIImage(systemName: "link.badge.plus")) { _ in
                     viewModel.publishFile(path)
                     guard let publicUrl = publicUrl else { return }
-                    let avc = UIActivityViewController(activityItems: [publicUrl], applicationActivities: nil)
-                    viewController.present(avc, animated: true)
+                    viewModel.presentAvc(item: publicUrl)
                 }
                 
                 let shareFileAction = UIAction(title: "Share a file", image: UIImage(systemName: "arrow.up.doc")) { _ in

@@ -87,6 +87,10 @@ extension HomeViewModel: HomeViewModelProtocol {
         coordinator.presentShareScene(shareLink: shareLink)
     }
     
+    func presentAvc(item: String) {
+        coordinator.presentAtivityVc(item: item)
+    }
+    
     func presentDocumet(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
         coordinator.goToDocument(name: name, type: type, fileType: fileType)
     }

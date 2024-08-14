@@ -19,4 +19,5 @@ protocol BaseViewModelProtocol {
     func renameFile(oldName: String, newName: String)
     func presentDocumet(name: String, type: TypeOfConfigDocumentVC, fileType: String)
     func presentImage(url: URL)
+    func presentAvc(item: String)
 }

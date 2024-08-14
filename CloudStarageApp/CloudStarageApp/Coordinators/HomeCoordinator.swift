@@ -44,6 +44,12 @@ extension HomeCoordinator {
         }
     }
     
+    func presentAtivityVc(item: String) {
+        guard let navigationController = navigationController else { return }
+        let avc = factory.makeActivityVc(item: item, coordinator: self)
+        navigationController.present(avc, animated: true)
+    }
+    
     func presentImageScene(url: URL)  {
         guard let navigationController = navigationController else { return }
         let vc = factory.makeImageScene(url: url, coordinator: self)

@@ -173,5 +173,11 @@ struct SceneFactory {
         let vc = ShareActivityViewController(viewModel: vm, shareLink: shareLink)
         return vc
     }
+    
+    static func makeActivityVc(item: String, coordinator: Coordinator) -> UIActivityViewController {
+        let avc = UIActivityViewController(activityItems: [item], applicationActivities: nil)
+        return avc
+    }
+    
 }
 

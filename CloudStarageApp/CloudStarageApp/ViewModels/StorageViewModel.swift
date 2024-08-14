@@ -41,6 +41,10 @@ final class StorageViewModel {
 }
     
 extension StorageViewModel: StorageViewModelProtocol {
+    func presentAvc(item: String) {
+        
+    }
+    
     func presentImage(url: URL) {
         coordinator.presentImageScene(url: url)
     }

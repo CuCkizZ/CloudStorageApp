@@ -37,6 +37,10 @@ final class PublicStorageViewModel {
 }
 
 extension PublicStorageViewModel: PublickStorageViewModelProtocol {
+    func presentAvc(item: String) {
+        
+    }
+    
     func presentImage(url: URL) {
         
     }
