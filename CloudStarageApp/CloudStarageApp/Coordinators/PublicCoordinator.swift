@@ -23,10 +23,18 @@ final class PublicCoordinator: Coordinator {
 }
 
 extension PublicCoordinator {
+    
     func showPublic() {
         guard let navigationController = navigationController else { return }
         let vc = factory.makePublicScene(coordinator: self)
         navigationController.pushViewController(vc, animated: true)
         print("public presented")
     }
+    
+    func presentAtivityVc(item: String) {
+        guard let navigationController = navigationController else { return }
+        let avc = factory.makeActivityVc(item: item, coordinator: self)
+        navigationController.present(avc, animated: true)
+    }
+    
 }

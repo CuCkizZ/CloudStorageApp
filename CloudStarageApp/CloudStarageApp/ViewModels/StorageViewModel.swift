@@ -42,7 +42,7 @@ final class StorageViewModel {
     
 extension StorageViewModel: StorageViewModelProtocol {
     func presentAvc(item: String) {
-        
+        coordinator.presentAtivityVc(item: item)
     }
     
     func presentImage(url: URL) {
