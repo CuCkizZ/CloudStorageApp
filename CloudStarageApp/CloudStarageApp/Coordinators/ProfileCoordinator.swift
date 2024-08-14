@@ -16,6 +16,7 @@ final class ProfileCoordinator: Coordinator {
         
     }
     override func finish() {
+        //goToPublic()
         finishDelegate?.coordinatorDidFinish(childCoordinator: self)
         print("Profile done")
     }
@@ -29,11 +30,11 @@ extension ProfileCoordinator {
         navigationController.pushViewController(profileVC, animated: true)
     }
     
-    func goToPublic() {
-        guard let navigationController = navigationController else { return }
-        let publicVC = factory.makePublicScene(coordinator: self)
-        navigationController.pushViewController(publicVC, animated: true)
-    }
+//    func goToPublic() {
+//        guard let navigationController = navigationController else { return }
+//        let publicVC = factory.makePublicScene(coordinator: self)
+//        navigationController.pushViewController(publicVC, animated: true)
+//    }
     
     func presentShareScene(shareLink: String) {
         guard let navigationController = navigationController else { return }
