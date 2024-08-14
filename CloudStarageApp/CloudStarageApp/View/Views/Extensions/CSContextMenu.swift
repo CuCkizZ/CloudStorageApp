@@ -23,6 +23,8 @@ extension UIContextMenuConfiguration {
                                          publicUrl: String?,
                                          type: String = "file",
                                          viewController: UIViewController) -> UIContextMenuConfiguration? {
+        var menu = UIMenu()
+        var newAction = menu.children
         switch modelType {
         case .last:
             return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
@@ -37,8 +39,7 @@ extension UIContextMenuConfiguration {
                 }
                 
                 let shareFileAction = UIAction(title: "Share a file", image: UIImage(systemName: "arrow.up.doc")) { _ in
-                    let avc = UIActivityViewController(activityItems: [file], applicationActivities: nil)
-                    viewController.present(avc, animated: true)
+                    viewModel.presentAvc(item: file)
                 }
                 
                 let unpublishAction = UIAction(title: "Unpublish", image: UIImage(systemName: "link")) { _ in
@@ -73,14 +74,17 @@ extension UIContextMenuConfiguration {
                 
                 let shareLinkAction = UIAction(title: "Share a link", image: UIImage(systemName: "link.badge.plus")) { _ in
                     viewModel.publishFile(path)
-                    guard let publicUrl = publicUrl else { return }
-                    let avc = UIActivityViewController(activityItems: [publicUrl], applicationActivities: nil)
-                    viewController.present(avc, animated: true)
+                    if let publicUrl = publicUrl {
+                        viewModel.presentAvc(item: publicUrl)
+                    }
                 }
                 
                 let shareFileAction = UIAction(title: "Share a file", image: UIImage(systemName: "arrow.up.doc")) { _ in
-                    let avc = UIActivityViewController(activityItems: [file], applicationActivities: nil)
-                    viewController.present(avc, animated: true)
+                    viewModel.presentAvc(item: file)
+                }
+                
+                let unpublishAction = UIAction(title: "Unpublish", image: UIImage(systemName: "link")) { _ in
+                    viewModel.unpublishFile(path)
                 }
                 
                 let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
@@ -93,11 +97,22 @@ extension UIContextMenuConfiguration {
                             viewModel.renameFile(oldName: name, newName: newName)
                         }
                     }
+                    
                     enterNameAlert.addAction(submitAction)
                     viewController.present(enterNameAlert, animated: true)
                 }
-                let shareMenu = UIMenu(title: "Share",image: UIImage(systemName: "square.and.arrow.up"), children: [shareLinkAction, shareFileAction])
-                return UIMenu(title: "", children: [deleteAction, shareMenu, renameAction])
+                var shareMenu = UIMenu(title: "Share",image: UIImage(systemName: "square.and.arrow.up"), children: [shareLinkAction, shareFileAction])
+                
+                if type == "file" && publicUrl != nil {
+                    menu = UIMenu(title: "", children: [deleteAction, shareMenu, unpublishAction, renameAction])
+                } else if type == "dir" && publicUrl != nil {
+                    menu = UIMenu(title: "", children: [deleteAction, shareLinkAction, unpublishAction, renameAction])
+                } else if type == "dir"  {
+                    menu = UIMenu(title: "", children: [deleteAction, shareLinkAction, renameAction])
+                } else {
+                    menu = UIMenu(title: "", children: [deleteAction, shareMenu, renameAction])
+                }
+                return menu
             }
         case .publish:
             return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
@@ -111,12 +126,10 @@ extension UIContextMenuConfiguration {
                 
                 let shareLinkAction = UIAction(title: "Share a link", image: UIImage(systemName: "link.badge.plus")) { _ in
                     guard let publicUrl = publicUrl else { return }
-                    let avc = UIActivityViewController(activityItems: [publicUrl], applicationActivities: nil)
-                    viewController.present(avc, animated: true)
+                    viewModel.presentAvc(item: publicUrl)
                 }
                 let shareFileAction = UIAction(title: "Share a file", image: UIImage(systemName: "arrow.up.doc")) { _ in
-                    let avc = UIActivityViewController(activityItems: [file], applicationActivities: nil)
-                    viewController.present(avc, animated: true)
+                    viewModel.presentAvc(item: file)
                 }
                 let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
                     let enterNameAlert = UIAlertController(title: "New name", message: nil, preferredStyle: .alert)

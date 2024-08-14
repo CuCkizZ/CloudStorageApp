@@ -216,11 +216,15 @@ extension StorageViewController: UICollectionViewDelegate {
         let name = model.name
         let path = model.path
         let file = model.file
-        return UIContextMenuConfiguration.contextMenuConfiguration(for: .full, 
+        let type = model.type ?? "dir"
+        let publicUrl = model.publicUrl
+        print(type)
+        return UIContextMenuConfiguration.contextMenuConfiguration(for: .full,
                                                                    viewModel: viewModel,
                                                                    name: name,
                                                                    path: path,
-                                                                   file: file, publicUrl: "",
+                                                                   file: file, publicUrl: publicUrl,
+                                                                   type: type,
                                                                    viewController: self)
     }
 }
