@@ -76,8 +76,8 @@ final class LoginViewController: UIViewController {
                 customValues: self.customValues.isEmpty ? nil : self.customValues,
                 authorizationStrategy: authorizationStrategy
             )
-        } catch {
-            self.errorOccured(error)
+        } catch { 
+            errorOccured(error)
         }
     }
 }
@@ -119,7 +119,7 @@ private extension LoginViewController {
     func presentLogin() {
         let alertController: UIAlertController
         
-        if let loginResult = self.loginResult {
+        if let loginResult = loginResult {
             alertController = UIAlertController(
                 title: "Login Result",
                 message: loginResult.asString,
@@ -141,7 +141,7 @@ private extension LoginViewController {
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
         alertController.addAction(cancelAction)
         
-        self.present(alertController, animated: true)
+        present(alertController, animated: true)
     }
     
     @objc func buttonPressed() {
@@ -164,9 +164,9 @@ private extension LoginViewController {
     @objc func logout() {
         do {
             try YandexLoginSDK.shared.logout()
-            self.loginResult = nil
+            loginResult = nil
         } catch {
-            self.errorOccured(error)
+            errorOccured(error)
         }
     }
     
@@ -199,7 +199,7 @@ private extension LoginViewController {
 extension LoginViewController: YandexLoginSDKObserver {
     
     func didFinishLogin(with result: Result<LoginResult, Error>) {
-        switch result {
+        switch result { 
         case .success(let loginResult):
             self.loginResult = loginResult
         case .failure(let error):
@@ -244,6 +244,6 @@ extension LoginViewController {
         let okAction = UIAlertAction(title: "OK", style: .cancel)
         
         alertController.addAction(okAction)
-        self.present(alertController, animated: true)
+        present(alertController, animated: true)
     }
 }

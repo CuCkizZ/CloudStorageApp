@@ -49,15 +49,29 @@ final class PresentImageViewController: UIViewController {
     }
 
     private func addGesture() {
-        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePanGesture))
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture))
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTapGesture))
         viewImage.addGestureRecognizer(pinchGesture)
+        viewImage.addGestureRecognizer(doubleTapGesture)
     }
     
+    @objc func handleDoubleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
+        if gestureRecognizer.state == .ended {
+            let isZoomed = viewImage.transform.a > 1.0 
+            UIView.animate(withDuration: 0.3) { [weak self] in
+                guard let self = self else { return }
+                if isZoomed {
+                    self.resetViewSize()
+                } else {
+                    self.viewImage.transform = self.viewImage.transform.scaledBy(x: 3, y: 3)
+                }
+            }
+        }
+    }
     
-    @objc func handlePanGesture(_ gestureRecognizer: UIPinchGestureRecognizer) {
-        
+    @objc func handlePinchGesture(_ gestureRecognizer: UIPinchGestureRecognizer) {
         switch gestureRecognizer.state {
-        case .changed:
+        case .changed, .ended:
             let newSize = CGSize(width: viewImage.frame.width * gestureRecognizer.scale,
                                  height: viewImage.frame.height * gestureRecognizer.scale)
             
@@ -67,14 +81,15 @@ final class PresentImageViewController: UIViewController {
             } else {
                 resetViewSize()
             }
-        case .ended, .cancelled, .failed:
+        case .cancelled, .failed:
             resetViewSize()
         default:
             break
         }
     }
     private func resetViewSize() {
-        UIView.animate(withDuration: 0.3) {
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            guard let self = self else { return }
             self.viewImage.transform = CGAffineTransform.identity
             self.viewImage.frame.size = self.initialSize
         }
@@ -82,7 +97,8 @@ final class PresentImageViewController: UIViewController {
     
     
     func configure(_ url: URL) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             self.imageView.sd_setImage(with: url)
             self.activityIndicator.stopAnimating()
             //self.activityIndicator.isHidden = true

@@ -197,7 +197,14 @@ extension PublicStorageViewController: UICollectionViewDelegate {
         let file = model.file
         let publicUrl = model.publicUrl
         let type = model.type
-        return UIContextMenuConfiguration.contextMenuConfiguration(for: .publish, viewModel: viewModel, name: name, path: path, file: file ?? "", publicUrl: publicUrl, type: type, viewController: self)
+        return UIContextMenuConfiguration.contextMenuConfiguration(for: .publish, 
+                                                                   viewModel: viewModel,
+                                                                   name: name,
+                                                                   path: path,
+                                                                   file: file ?? "",
+                                                                   publicUrl: publicUrl,
+                                                                   type: type,
+                                                                   viewController: self)
     }
 }
 

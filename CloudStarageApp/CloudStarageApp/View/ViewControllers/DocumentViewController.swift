@@ -43,7 +43,8 @@ final class DocumentViewController: UIViewController {
         guard let url = URL(string: fileType) else { return }
         switch type {
         case .pdf:
-            DispatchQueue.global().async {
+            DispatchQueue.global().async { [weak self] in
+                guard let self = self else { return }
                 if let data = try? Data(contentsOf: url),
                    let document = PDFDocument(data: data) {
                     DispatchQueue.main.async {
@@ -53,7 +54,8 @@ final class DocumentViewController: UIViewController {
             }
         case .web:
             let myRequest = URLRequest(url: url)
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
                 self.webView.load(myRequest)
             }
         }

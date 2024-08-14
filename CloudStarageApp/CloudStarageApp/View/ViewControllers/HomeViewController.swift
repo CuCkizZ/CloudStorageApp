@@ -245,7 +245,13 @@ extension HomeViewController: UICollectionViewDelegate {
         let path = model.path
         let file = model.file
         let publicUrl = model.publicUrl
-        return UIContextMenuConfiguration.contextMenuConfiguration(for: .last, viewModel: viewModel, name: name, path: path, file: file, publicUrl: publicUrl, viewController: self)
+        return UIContextMenuConfiguration.contextMenuConfiguration(for: .last, 
+                                                                   viewModel: viewModel,
+                                                                   name: name,
+                                                                   path: path, 
+                                                                   file: file,
+                                                                   publicUrl: publicUrl,
+                                                                   viewController: self)
     }
 }
 
@@ -262,7 +268,6 @@ extension HomeViewController: UICollectionViewDataSource {
             fatalError("Wrong cell")
         }
         cell.lastUpdatedConfigure(model)
-        print(model.type)
         return cell
     }
 }
