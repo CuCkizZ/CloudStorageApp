@@ -9,7 +9,7 @@ import Foundation
 
 protocol HomeViewModelProtocol: BaseViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[LastUploadedCellDataModel]> { get set }
-    func presentDocumet(name: String, type: ConfigureTypes, fyleType: String)
+    func presentDocumet(name: String, type: TypeOfConfigDocumentVC, fileType: String)
     func presentShareView(shareLink: String)
     func publishFile(_ path: String)
 }

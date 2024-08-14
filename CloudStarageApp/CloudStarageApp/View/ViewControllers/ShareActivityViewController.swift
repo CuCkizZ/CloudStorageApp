@@ -13,7 +13,7 @@ import SnapKit
 final class ShareActivityViewController: UIViewController {
     
     private let viewModel: ShareActivityViewModel
-    private var typeOfView: ConfigureTypes?
+    private var typeOfView: TypeOfConfigDocumentVC?
     
     private lazy var fileButton = UIButton()
     private lazy var linkButton = UIButton()
