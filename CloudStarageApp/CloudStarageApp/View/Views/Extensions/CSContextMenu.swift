@@ -24,7 +24,6 @@ extension UIContextMenuConfiguration {
                                          type: String = "file",
                                          viewController: UIViewController) -> UIContextMenuConfiguration? {
         var menu = UIMenu()
-        var newAction = menu.children
         switch modelType {
         case .last:
             return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
@@ -101,7 +100,7 @@ extension UIContextMenuConfiguration {
                     enterNameAlert.addAction(submitAction)
                     viewController.present(enterNameAlert, animated: true)
                 }
-                var shareMenu = UIMenu(title: "Share",image: UIImage(systemName: "square.and.arrow.up"), children: [shareLinkAction, shareFileAction])
+                let shareMenu = UIMenu(title: "Share",image: UIImage(systemName: "square.and.arrow.up"), children: [shareLinkAction, shareFileAction])
                 
                 if type == "file" && publicUrl != nil {
                     menu = UIMenu(title: "", children: [deleteAction, shareMenu, unpublishAction, renameAction])

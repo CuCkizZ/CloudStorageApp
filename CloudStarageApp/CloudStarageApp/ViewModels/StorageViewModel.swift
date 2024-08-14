@@ -119,11 +119,13 @@ extension StorageViewModel: StorageViewModelProtocol {
     }
     
     func createNewFolder(_ name: String) {
-            NetworkManager.shared.createNewFolder(name)
+        if name.isEmpty == true {
+            NetworkManager.shared.createNewFolder("New Folder")
             DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
                 guard let self = self else { return }
                 self.fetchData()
             }
+        }
     }
     
     func renameFile(oldName: String, newName: String) {
