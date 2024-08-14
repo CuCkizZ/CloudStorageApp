@@ -225,31 +225,33 @@ extension HomeViewController: UICollectionViewDelegate {
         let name = model.name
         
         if fileType.contains("officedocument") {
-            viewModel.presentDocumet(name: name, type: .web, fyleType: fileType)
+            viewModel.presentDocumet(name: name, type: .web, fileType: fileType)
         } else if fileType.contains("image") {
-            let vm = PresentImageViewModel()
-            let vc = PresentImageViewController(viewModel: vm)
             let urlString = cellDataSource[indexPath.row].sizes
             if let originalUrlString = urlString.first(where: { $0.name == "ORIGINAL" })?.url {
                 if let url = URL(string: originalUrlString) {
-                    vc.configure(url)
+                    viewModel.presentImage(url: url)
                 }
-                navigationController?.pushViewController(vc, animated: true)
             }
         } else {
-            viewModel.presentDocumet(name: name, type: .pdf, fyleType: fileType)
+            viewModel.presentDocumet(name: name, type: .pdf, fileType: fileType)
         }
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
         let model = modelReturn(indexPath: indexPath)
-        //var publicUrl = model.publicUrl
         let name = model.name
         let path = model.path
         let file = model.file
         let publicUrl = model.publicUrl
-        return UIContextMenuConfiguration.contextMenuConfiguration(for: .last, viewModel: viewModel, name: name, path: path, file: file, publicUrl: publicUrl, viewController: self)
+        return UIContextMenuConfiguration.contextMenuConfiguration(for: .last, 
+                                                                   viewModel: viewModel,
+                                                                   name: name,
+                                                                   path: path, 
+                                                                   file: file,
+                                                                   publicUrl: publicUrl,
+                                                                   viewController: self)
     }
 }
 
@@ -266,7 +268,6 @@ extension HomeViewController: UICollectionViewDataSource {
             fatalError("Wrong cell")
         }
         cell.lastUpdatedConfigure(model)
-        print(model.type)
         return cell
     }
 }

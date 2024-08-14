@@ -119,7 +119,7 @@ class NetworkManager {
     
     
     func createNewFolder(_ name: String) {
-        client.createNewFolder(name)
+        client.createNewFolder(name: name)
     }
     
     func toPublicFile(path: String) {

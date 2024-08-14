@@ -14,11 +14,11 @@ private enum PresentationStyle: String, CaseIterable {
 }
 
 final class PublicStorageViewController: UIViewController {
-    private var refresher = UIRefreshControl()
     
+    private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
-    private var viewModel: PublickStorageViewModelProtocol
-    private lazy var cellDataSource: [PublicItem] = []
+    private let viewModel: PublickStorageViewModelProtocol
+    private var cellDataSource: [PublicItem] = []
     
     //MARK: CollectionView
     private lazy var uploadButton = CSUploadButton()
@@ -32,8 +32,6 @@ final class PublicStorageViewController: UIViewController {
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
-    
-    
     
     init(viewModel: PublickStorageViewModelProtocol) {
         self.viewModel = viewModel
@@ -197,7 +195,14 @@ extension PublicStorageViewController: UICollectionViewDelegate {
         let file = model.file
         let publicUrl = model.publicUrl
         let type = model.type
-        return UIContextMenuConfiguration.contextMenuConfiguration(for: .publish, viewModel: viewModel, name: name, path: path, file: file ?? "", publicUrl: publicUrl, type: type, viewController: self)
+        return UIContextMenuConfiguration.contextMenuConfiguration(for: .publish, 
+                                                                   viewModel: viewModel,
+                                                                   name: name,
+                                                                   path: path,
+                                                                   file: file ?? "",
+                                                                   publicUrl: publicUrl,
+                                                                   type: type,
+                                                                   viewController: self)
     }
 }
 

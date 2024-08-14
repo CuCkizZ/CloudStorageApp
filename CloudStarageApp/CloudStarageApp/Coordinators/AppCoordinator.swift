@@ -53,6 +53,17 @@ private extension AppCoordinator {
                                             navigationController: navigationController, finisDelegate: self)
         loginCoordinator.start()
     }
+    
+    func showPublicScene() {
+            print("Attempting to show PublicViewController")
+            guard let navigationController = navigationController else {
+                print("Navigation controller is nil")
+                return
+            }
+            let publicCoordinator = factory.makePublicFlow(coordinator: self,
+                                             navigationController: navigationController, finisDelegate: self)
+            publicCoordinator.start()
+        }
 }
 
 extension AppCoordinator {
@@ -60,6 +71,11 @@ extension AppCoordinator {
     func showMainFlow() {
         showMainScene()
     }
+    
+    func showPublicFlow() {
+        showPublicScene()
+    }
+    
 }
 
 // MARK: CoorditatorFinishDelegate
@@ -79,7 +95,8 @@ extension AppCoordinator: CoorditatorFinishDelegate {
             showMainFlow()
             navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         case .profile:
-            navigationController?.pushViewController(UIViewController(), animated: true)
+            showPublicFlow()
+            navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         case .publicCoordinator:
             showMainFlow()
         case .logout: 

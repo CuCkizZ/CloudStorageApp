@@ -3,6 +3,7 @@ import SDWebImage
 
 struct CellDataModel {
     let publickKey: String?
+    let publicUrl: String?
     let name: String
     let date: String
     let type: String?
@@ -14,6 +15,7 @@ struct CellDataModel {
     
     init(_ item: Item) {
         self.publickKey = item.publicKey
+        self.publicUrl = item.publicUrl
         self.name = item.name
         self.date = dateFormatter(dateString: item.created)
         self.type = item.type

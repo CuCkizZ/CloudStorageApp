@@ -10,8 +10,8 @@ import Foundation
 protocol StorageViewModelProtocol: BaseViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
     
-    func fetchCurrentData(name: String, path: String)
-    func presentVc(path: String)
+    func fetchCurrentData(navigationTitle: String, path: String)
+    func presentVc(title: String, path: String)
     func presentShareScene(shareLink: String)
 }
 
@@ -28,20 +28,28 @@ final class StorageViewModel {
     
     init(coordinator: StorageCoordinator) {
         self.coordinator = coordinator
-        self.fetchData()
+        //self.fetchData()
     }
     
     func mapModel() {
         cellDataSource.value = model.compactMap { CellDataModel($0) }
     }
 
-    func returnPath() -> String {
-        "dsa"
+    func fetchdadada() {
     }
     
 }
     
 extension StorageViewModel: StorageViewModelProtocol {
+    func presentAvc(item: String) {
+        coordinator.presentAtivityVc(item: item)
+    }
+    
+    func presentImage(url: URL) {
+        coordinator.presentImageScene(url: url)
+    }
+    
+    
     func unpublishFile(_ path: String) {
         NetworkManager.shared.unpublishFile(path)
     }
@@ -67,36 +75,39 @@ extension StorageViewModel: StorageViewModelProtocol {
         }
     }
     
-    func fetchCurrentData(name: String, path: String) {
-        
-//        if isLoading.value ?? true {
-//            return
-//        }
-//        isLoading.value = true
-//        //coordinator.paggination()
-//        NetworkManager.shared.fetchCurentData(path: path) { [weak self] result in
-//            guard let self = self else { return }
-//            DispatchQueue.main.async {
-//                switch result {
-//                case .success(let file):
-//                    self.model = file
-//                    self.mapModel()
-//                    self.isLoading.value = false
-//                    print("\(path)")
-//                case .failure(let error):
-//                    print("model failrue: \(error)")
-//                }
-//            }
-//        }
+    func fetchCurrentData(navigationTitle: String, path: String) {
+        if isLoading.value ?? true {
+            return
+        }
+        isLoading.value = true
+        //coordinator.paggination()
+        NetworkManager.shared.fetchCurentData(path: path) { [weak self] result in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let file):
+                    self.model = file
+                    self.mapModel()
+                    self.isLoading.value = false
+                    print("\(path)")
+                case .failure(let error):
+                    print("model failrue: \(error)")
+                }
+            }
+        }
     }
-    
-    func presentVc(path: String) {
+
+    func presentVc(title: String, path: String) {
         coordinator.showStorageScene()
-        fetchCurrentData(name: "dsa", path: path)
+        //fetchCurrentData(title: title, path: path)
     }
     
     func presentShareScene(shareLink: String) {
         coordinator.presentShareScene(shareLink: shareLink)
+    }
+    
+    func presentDocumet(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
+        coordinator.goToDocument(name: name, type: type, fileType: fileType)
     }
     
     func publishFile(_ path: String) {
@@ -108,11 +119,13 @@ extension StorageViewModel: StorageViewModelProtocol {
     }
     
     func createNewFolder(_ name: String) {
-            NetworkManager.shared.createNewFolder(name)
+        if name.isEmpty == true {
+            NetworkManager.shared.createNewFolder("New Folder")
             DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
                 guard let self = self else { return }
                 self.fetchData()
             }
+        }
     }
     
     func renameFile(oldName: String, newName: String) {

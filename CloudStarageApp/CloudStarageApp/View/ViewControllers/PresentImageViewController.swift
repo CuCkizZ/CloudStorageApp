@@ -17,22 +17,19 @@ final class PresentImageViewController: UIViewController {
     private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var shareButton = UIButton()
     private lazy var deleteButton = UIButton()
-    var viewImage = UIView()
     
-    private lazy var pinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
+    private var initialSize: CGSize!
+       private let minimumSize: CGFloat = 100.0 // Установите минимальное значение размера здесь
+
+    private lazy var viewImage = UIView(frame: CGRect(x: 0, y: 0, width: 200, height: 200))
+    
+    // private lazy var pinchGestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture(_:)))
     
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         return imageView
-    }()
-    
-    private lazy var scrollView: UIScrollView = {
-        let scrollView = UIScrollView(frame: view.bounds)
-        scrollView.minimumZoomScale = 1.0
-        scrollView.maximumZoomScale = 6.0
-        return scrollView
     }()
 
     init(viewModel: PresentImageViewModelProtocol) {
@@ -46,14 +43,62 @@ final class PresentImageViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        activityIndicator.isHidden = false
-        self.activityIndicator.startAnimating()
         
         setupLayout()
+        addGesture()
+    }
+
+    private func addGesture() {
+        let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture))
+        let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTapGesture))
+        viewImage.addGestureRecognizer(pinchGesture)
+        viewImage.addGestureRecognizer(doubleTapGesture)
     }
     
+    @objc func handleDoubleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
+        if gestureRecognizer.state == .ended {
+            let isZoomed = viewImage.transform.a > 1.0 
+            UIView.animate(withDuration: 0.3) { [weak self] in
+                guard let self = self else { return }
+                if isZoomed {
+                    self.resetViewSize()
+                } else {
+                    self.viewImage.transform = self.viewImage.transform.scaledBy(x: 3, y: 3)
+                }
+            }
+        }
+    }
+    
+    @objc func handlePinchGesture(_ gestureRecognizer: UIPinchGestureRecognizer) {
+        switch gestureRecognizer.state {
+        case .changed, .ended:
+            let newSize = CGSize(width: viewImage.frame.width * gestureRecognizer.scale,
+                                 height: viewImage.frame.height * gestureRecognizer.scale)
+            
+            if newSize.width >= minimumSize && newSize.height >= minimumSize {
+                viewImage.transform = viewImage.transform.scaledBy(x: gestureRecognizer.scale, y: gestureRecognizer.scale)
+                gestureRecognizer.scale = 1
+            } else {
+                resetViewSize()
+            }
+        case .cancelled, .failed:
+            resetViewSize()
+        default:
+            break
+        }
+    }
+    private func resetViewSize() {
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            guard let self = self else { return }
+            self.viewImage.transform = CGAffineTransform.identity
+            self.viewImage.frame.size = self.initialSize
+        }
+    }
+    
+    
     func configure(_ url: URL) {
-        DispatchQueue.main.async {
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             self.imageView.sd_setImage(with: url)
             self.activityIndicator.stopAnimating()
             //self.activityIndicator.isHidden = true
@@ -66,36 +111,25 @@ private extension PresentImageViewController {
     
     func setupLayout() {
         view.backgroundColor = .white
+        viewImage.backgroundColor = .blue
         setupViews()
         setupButtons()
         setupConstraints()
-        viewImage = viewForZooming(in: scrollView)
     }
     
     func setupViews() {
-        view.addSubview(scrollView)
         view.addSubview(shareButton)
         view.addSubview(deleteButton)
         view.addSubview(activityIndicator)
-        scrollView.addSubview(imageView)
-        scrollView.addSubview(viewImage)
-        scrollView.addGestureRecognizer(pinchGestureRecognizer)
+        view.addSubview(viewImage)
+        viewImage.addSubview(imageView)
+        initialSize = viewImage.frame.size
+        viewImage.center = view.center
     }
     
     func setupButtons() {
         shareButton.setImage(UIImage(systemName: "square.and.arrow.up"), for: .normal)
         deleteButton.setImage(UIImage(systemName: "trash"), for: .normal)
-    }
-    
-    func viewForZooming(in scrollView: UIScrollView) -> UIView {
-        return imageView
-    }
-
-    @objc func handlePinchGesture(_ gestureRecognizer: UIPinchGestureRecognizer) {
-        if gestureRecognizer.state == .changed {
-            scrollView.zoomScale *= gestureRecognizer.scale
-            gestureRecognizer.scale = 1
-        }
     }
     
     func setupConstraints() {
@@ -104,7 +138,7 @@ private extension PresentImageViewController {
         }
         imageView.snp.makeConstraints { make in
             make.center.equalToSuperview()
-            make.height.width.equalTo(300)
+            make.edges.equalToSuperview()
         }
         shareButton.snp.makeConstraints { make in
             make.left.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)

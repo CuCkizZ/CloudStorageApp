@@ -21,9 +21,9 @@ class HomeCoordinator: Coordinator {
 
 extension HomeCoordinator {
     
-    func goToDocument(name: String, type: ConfigureTypes, fyleType: String) {
+    func goToDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
         guard let navigationController = navigationController else { return }
-        let vc = factory.makeDocumentScene(name: name, type: type, fyleType: fyleType, coordinator: self)
+        let vc = factory.makeDocumentScene(name: name, type: type, fileType: fileType, coordinator: self)
         navigationController.pushViewController(vc, animated: true)
     }
     
@@ -43,4 +43,17 @@ extension HomeCoordinator {
             navigationController.present(vc, animated: true)
         }
     }
+    
+    func presentAtivityVc(item: String) {
+        guard let navigationController = navigationController else { return }
+        let avc = factory.makeActivityVc(item: item, coordinator: self)
+        navigationController.present(avc, animated: true)
+    }
+    
+    func presentImageScene(url: URL)  {
+        guard let navigationController = navigationController else { return }
+        let vc = factory.makeImageScene(url: url, coordinator: self)
+        navigationController.pushViewController(vc, animated: true)
+    }
+    
 }

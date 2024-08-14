@@ -64,6 +64,16 @@ struct SceneFactory {
         return loginCoordinator
     }
     
+    static func makePublicFlow(coordinator: AppCoordinator,
+                              navigationController: UINavigationController,
+                              finisDelegate: CoorditatorFinishDelegate) -> PublicCoordinator {
+        let publicCoordinator = PublicCoordinator(type: .profile,
+                                                navigationController: navigationController,
+                                                finishDelegate: finisDelegate)
+        coordinator.addChildCoordinator(publicCoordinator)
+        return publicCoordinator
+    }
+    
     static func makeMainFlow(coordinator: AppCoordinator,
                              finishDelegate: CoorditatorFinishDelegate) -> TabBarController {
         
@@ -110,41 +120,42 @@ struct SceneFactory {
         return homeVC
     }
     
-    static func makeDocumentScene(name: String, type: ConfigureTypes, fyleType: String, coordinator: HomeCoordinator) -> DocumentViewController {
-        let vm = DocumentViewModel(coordinator: coordinator, fyleType: fyleType)
+    static func makeDocumentScene(name: String, type: TypeOfConfigDocumentVC, fileType: String, coordinator: Coordinator) -> DocumentViewController {
+        let vm = DocumentViewModel(coordinator: coordinator, fileType: fileType)
         let vc = DocumentViewController(viewModel: vm)
         switch type {
         case .pdf:
-            vc.configure(name: name, type: .pdf, fileType: fyleType)
+            vc.configure(name: name, type: .pdf, fileType: fileType)
         case .web:
-            vc.configure(name: name, type: .web, fileType: fyleType)
+            vc.configure(name: name, type: .web, fileType: fileType)
         }
+        return vc
+    }
+    
+    static func makeImageScene(url: URL, coordinator: Coordinator) -> PresentImageViewController {
+        let vm = PresentImageViewModel(coordinator: coordinator)
+        let vc = PresentImageViewController(viewModel: vm)
+        vc.configure(url)
         return vc
     }
     
 //    MARK: StorageCoordinator
     
-    static func makeStorageScene(titleName: String, coordinator: StorageCoordinator) -> StorageViewController {
+    static func makeStorageScene(navigationTitle: String, coordinator: StorageCoordinator) -> StorageViewController {
         let vm = StorageViewModel(coordinator: coordinator)
-        let vc = StorageViewController(viewModel: vm)
+        let vc = StorageViewController(viewModel: vm, navigationTitle: navigationTitle)
         return vc
     }
-    
-//    static func makePaggScene(name: String, coordinator: StorageCoordinator) -> PagginationViewController {
-//        let vm = PagginationViewModel(coordinator: coordinator)
-//        let vc = PagginationViewController(titleNav: name, viewModel: vm)
-//        return vc
-//    }
     
 //    MARK: ProfileCoordinator
     
     static func makeProfileScene(coordinator: ProfileCoordinator) -> ProfileViewController {
-        let viewModel = ProfileViewModel(coordinator: coordinator)
-        let view = ProfileViewController(viewModel: viewModel)
-        return view
+        let vm = ProfileViewModel(coordinator: coordinator)
+        let vc = ProfileViewController(viewModel: vm)
+        return vc
     }
     
-    static func makePublicScene(coordinator: ProfileCoordinator) -> PublicStorageViewController {
+    static func makePublicScene(coordinator: PublicCoordinator) -> PublicStorageViewController {
         let vm = PublicStorageViewModel(coordinator: coordinator)
         let vc = PublicStorageViewController(viewModel: vm)
         return vc
@@ -162,5 +173,11 @@ struct SceneFactory {
         let vc = ShareActivityViewController(viewModel: vm, shareLink: shareLink)
         return vc
     }
+    
+    static func makeActivityVc(item: String, coordinator: Coordinator) -> UIActivityViewController {
+        let avc = UIActivityViewController(activityItems: [item], applicationActivities: nil)
+        return avc
+    }
+    
 }
 

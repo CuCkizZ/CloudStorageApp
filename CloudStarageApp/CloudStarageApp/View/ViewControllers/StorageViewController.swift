@@ -31,9 +31,12 @@ final class StorageViewController: UIViewController {
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
+    
+    var navigationTitle: String
 
-    init(viewModel: StorageViewModelProtocol) {
+    init(viewModel: StorageViewModelProtocol, navigationTitle: String) {
         self.viewModel = viewModel
+        self.navigationTitle = navigationTitle
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -97,9 +100,10 @@ private extension StorageViewController {
     }
     
     func SetupNavBar() {
+        guard let navigationController = navigationController else { return }
         navigationItem.rightBarButtonItem = UIBarButtonItem(image: selectedStyle.buttonImage, style: .plain, target: self, action: #selector(changeContentLayout))
-        navigationController?.navigationBar.prefersLargeTitles = true
-        title = "Storage"
+        navigationController.navigationBar.prefersLargeTitles = true
+        navigationItem.title = navigationTitle
     }
     
     func setupCollectionView() {
@@ -166,19 +170,44 @@ private extension StorageViewController {
             make.height.width.equalTo(40)
         }
     }
+    
+    func presentByTap(type: TypeOfConfigDocumentVC) {
+        let name = ""
+        let fileType = ""
+        switch type {
+        case .pdf, .web:
+            viewModel.presentDocumet(name: name, type: .web, fileType: fileType)
+        }
+    }
+    
 }
 
 // MARK: UICollectionViewDelegate, UICollectionViewDataSource
 
 extension StorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        _ = cellDataSource[indexPath.row].name
-        _ = cellDataSource[indexPath.row].path
-        // self.titleName = name
-        //self.path = cellpath
-        //viewModel.presentVc(path: path)
-        //print(name)
-        // print(path)
+        let model = modelReturn(indexPath: indexPath)
+        let name = model.name
+        let path = model.path
+        let fileType = model.file
+        
+        if fileType.contains("officedocument") {
+            viewModel.presentDocumet(name: name, type: .web, fileType: fileType)
+        } else if fileType.contains("image") {
+            let urlString = cellDataSource[indexPath.row].sizes
+            if let originalUrlString = urlString.first(where: { $0.name == "ORIGINAL" })?.url {
+                if let url = URL(string: originalUrlString) {
+                    viewModel.presentImage(url: url)
+                }
+            }
+        } else if fileType.isEmpty {
+            let newVC = StorageViewController(viewModel: viewModel, navigationTitle: name)
+            navigationController?.pushViewController(newVC, animated: true)
+            viewModel.fetchCurrentData(navigationTitle: name, path: path)
+        } else {
+            viewModel.presentDocumet(name: name, type: .pdf, fileType: fileType)
+        }
+       print(fileType)
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
@@ -187,7 +216,16 @@ extension StorageViewController: UICollectionViewDelegate {
         let name = model.name
         let path = model.path
         let file = model.file
-        return UIContextMenuConfiguration.contextMenuConfiguration(for: .full, viewModel: viewModel, name: name, path: path, file: file, publicUrl: "", viewController: self)
+        let type = model.type ?? "dir"
+        let publicUrl = model.publicUrl
+        print(type)
+        return UIContextMenuConfiguration.contextMenuConfiguration(for: .full,
+                                                                   viewModel: viewModel,
+                                                                   name: name,
+                                                                   path: path,
+                                                                   file: file, publicUrl: publicUrl,
+                                                                   type: type,
+                                                                   viewController: self)
     }
 }
 

@@ -98,7 +98,8 @@ private extension ProfileViewController {
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
             print("Cancel")
         }))
-        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { action in
+        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
+            guard let self = self else { return }
             self.buttonTapped()
         }))
         present(alert, animated: true)
@@ -139,8 +140,13 @@ private extension ProfileViewController {
         goToPublicButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
     }
     
+//    MARK: Present Published Files
+    
     @objc func buttonTapped() {
-        viewModel.pushToPublic()
+        let vm = PublicStorageViewModel()
+        let vc = PublicStorageViewController(viewModel: vm)
+        navigationController?.pushViewController(vc, animated: true)
+        //viewModel.pushToPublic()
     }
     
     func updateViewLayer() {

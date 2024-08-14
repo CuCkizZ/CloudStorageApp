@@ -18,7 +18,7 @@ protocol PublickStorageViewModelProtocol: BaseViewModelProtocol, AnyObject {
     
 }
 final class PublicStorageViewModel {
-    private var coordinator: ProfileCoordinator
+    private var coordinator: PublicCoordinator?
     var searchKeyword: String = ""
     
     var isLoading: Observable<Bool> = Observable(false)
@@ -26,7 +26,7 @@ final class PublicStorageViewModel {
     var model: [PublicItem] = []
     
     
-    init(coordinator: ProfileCoordinator) {
+    init(coordinator: PublicCoordinator? = nil) {
         self.coordinator = coordinator
         fetchData()
     }
@@ -37,6 +37,18 @@ final class PublicStorageViewModel {
 }
 
 extension PublicStorageViewModel: PublickStorageViewModelProtocol {
+    func presentAvc(item: String) {
+        coordinator?.presentAtivityVc(item: item)
+    }
+    
+    func presentImage(url: URL) {
+        
+    }
+    
+    func presentDocumet(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
+        
+    }
+    
     func publishFile(_ path: String) {
         NetworkManager.shared.toPublicFile(path: path)
     }
@@ -86,7 +98,7 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     }
     
     func presentShareView(shareLink: String) {
-        coordinator.presentShareScene(shareLink: shareLink)
+        //coordinator.presentShareScene(shareLink: shareLink)
     }
     
     func unpublishFile(_ path: String) {

@@ -10,7 +10,7 @@ import PDFKit
 import SnapKit
 import WebKit
 
-enum ConfigureTypes {
+enum TypeOfConfigDocumentVC {
     case pdf
     case web
 }
@@ -18,7 +18,7 @@ enum ConfigureTypes {
 final class DocumentViewController: UIViewController {
     
     private let viewModel: DocumentViewModel
-    private var typeOfView: ConfigureTypes?
+    private var typeOfView: TypeOfConfigDocumentVC?
     
     private lazy var webView = WKWebView()
     private lazy var pdfView = PDFView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
@@ -37,13 +37,14 @@ final class DocumentViewController: UIViewController {
         setupLayout()
     }
     
-    func configure(name: String, type: ConfigureTypes, fileType: String) {
+    func configure(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
         title = name
         self.typeOfView = type
         guard let url = URL(string: fileType) else { return }
         switch type {
         case .pdf:
-            DispatchQueue.global().async {
+            DispatchQueue.global().async { [weak self] in
+                guard let self = self else { return }
                 if let data = try? Data(contentsOf: url),
                    let document = PDFDocument(data: data) {
                     DispatchQueue.main.async {
@@ -53,7 +54,8 @@ final class DocumentViewController: UIViewController {
             }
         case .web:
             let myRequest = URLRequest(url: url)
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
+                guard let self = self else { return }
                 self.webView.load(myRequest)
             }
         }
@@ -68,7 +70,7 @@ private extension DocumentViewController {
         setupConstraints(type: typeOfView)
     }
     
-    func setupView(type: ConfigureTypes) {
+    func setupView(type: TypeOfConfigDocumentVC) {
         switch type {
         case .pdf:
             view.addSubview(pdfView)
@@ -79,7 +81,7 @@ private extension DocumentViewController {
         }
     }
     
-    func setupConstraints(type: ConfigureTypes) {
+    func setupConstraints(type: TypeOfConfigDocumentVC) {
         switch type {
         case .pdf:
             pdfView.snp.makeConstraints { make in
