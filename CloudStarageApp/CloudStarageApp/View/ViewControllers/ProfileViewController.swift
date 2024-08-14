@@ -139,8 +139,13 @@ private extension ProfileViewController {
         goToPublicButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
     }
     
+//    MARK: Present Published Files
+    
     @objc func buttonTapped() {
-        viewModel.pushToPublic()
+        let vm = PublicStorageViewModel()
+        let vc = PublicStorageViewController(viewModel: vm)
+        navigationController?.pushViewController(vc, animated: true)
+        //viewModel.pushToPublic()
     }
     
     func updateViewLayer() {

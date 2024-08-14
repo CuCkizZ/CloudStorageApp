@@ -200,15 +200,14 @@ extension StorageViewController: UICollectionViewDelegate {
                     viewModel.presentImage(url: url)
                 }
             }
+        } else if fileType.isEmpty {
+            let newVC = StorageViewController(viewModel: viewModel, navigationTitle: name)
+            navigationController?.pushViewController(newVC, animated: true)
+            viewModel.fetchCurrentData(navigationTitle: name, path: path)
         } else {
             viewModel.presentDocumet(name: name, type: .pdf, fileType: fileType)
         }
-       
-        let newVC = StorageViewController(viewModel: viewModel, navigationTitle: name)
-        //navigationController?.pushViewController(newVC, animated: true)
-        viewModel.fetchCurrentData(navigationTitle: name, path: path)
-        print(name)
-        print(path)
+       print(fileType)
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {

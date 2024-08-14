@@ -64,6 +64,16 @@ struct SceneFactory {
         return loginCoordinator
     }
     
+    static func makePublicFlow(coordinator: AppCoordinator,
+                              navigationController: UINavigationController,
+                              finisDelegate: CoorditatorFinishDelegate) -> PublicCoordinator {
+        let publicCoordinator = PublicCoordinator(type: .profile,
+                                                navigationController: navigationController,
+                                                finishDelegate: finisDelegate)
+        coordinator.addChildCoordinator(publicCoordinator)
+        return publicCoordinator
+    }
+    
     static func makeMainFlow(coordinator: AppCoordinator,
                              finishDelegate: CoorditatorFinishDelegate) -> TabBarController {
         
@@ -137,21 +147,15 @@ struct SceneFactory {
         return vc
     }
     
-//    static func makePaggScene(name: String, coordinator: StorageCoordinator) -> PagginationViewController {
-//        let vm = PagginationViewModel(coordinator: coordinator)
-//        let vc = PagginationViewController(titleNav: name, viewModel: vm)
-//        return vc
-//    }
-    
 //    MARK: ProfileCoordinator
     
     static func makeProfileScene(coordinator: ProfileCoordinator) -> ProfileViewController {
-        let viewModel = ProfileViewModel(coordinator: coordinator)
-        let view = ProfileViewController(viewModel: viewModel)
-        return view
+        let vm = ProfileViewModel(coordinator: coordinator)
+        let vc = ProfileViewController(viewModel: vm)
+        return vc
     }
     
-    static func makePublicScene(coordinator: ProfileCoordinator) -> PublicStorageViewController {
+    static func makePublicScene(coordinator: PublicCoordinator) -> PublicStorageViewController {
         let vm = PublicStorageViewModel(coordinator: coordinator)
         let vc = PublicStorageViewController(viewModel: vm)
         return vc

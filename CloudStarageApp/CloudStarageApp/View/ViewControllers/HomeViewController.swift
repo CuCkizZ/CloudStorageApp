@@ -241,7 +241,6 @@ extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
         let model = modelReturn(indexPath: indexPath)
-        //var publicUrl = model.publicUrl
         let name = model.name
         let path = model.path
         let file = model.file
