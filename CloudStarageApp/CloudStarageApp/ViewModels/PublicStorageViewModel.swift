@@ -37,6 +37,14 @@ final class PublicStorageViewModel {
 }
 
 extension PublicStorageViewModel: PublickStorageViewModelProtocol {
+    func presentImage(url: URL) {
+        
+    }
+    
+    func presentDocumet(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
+        
+    }
+    
     func publishFile(_ path: String) {
         NetworkManager.shared.toPublicFile(path: path)
     }

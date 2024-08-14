@@ -122,11 +122,18 @@ struct SceneFactory {
         return vc
     }
     
+    static func makeImageScene(url: URL, coordinator: Coordinator) -> PresentImageViewController {
+        let vm = PresentImageViewModel(coordinator: coordinator)
+        let vc = PresentImageViewController(viewModel: vm)
+        vc.configure(url)
+        return vc
+    }
+    
 //    MARK: StorageCoordinator
     
-    static func makeStorageScene(titleName: String, coordinator: StorageCoordinator) -> StorageViewController {
+    static func makeStorageScene(navigationTitle: String, coordinator: StorageCoordinator) -> StorageViewController {
         let vm = StorageViewModel(coordinator: coordinator)
-        let vc = StorageViewController(viewModel: vm)
+        let vc = StorageViewController(viewModel: vm, navigationTitle: navigationTitle)
         return vc
     }
     

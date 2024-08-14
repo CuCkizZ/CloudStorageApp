@@ -172,13 +172,29 @@ private extension StorageViewController {
 
 extension StorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        _ = cellDataSource[indexPath.row].name
-        _ = cellDataSource[indexPath.row].path
-        // self.titleName = name
-        //self.path = cellpath
-        //viewModel.presentVc(path: path)
-        //print(name)
-        // print(path)
+        let model = modelReturn(indexPath: indexPath)
+        let name = model.name
+        let path = model.path
+        let fileType = model.file
+        
+        if fileType.contains("officedocument") {
+            viewModel.presentDocumet(name: name, type: .web, fileType: fileType)
+        } else if fileType.contains("image") {
+            let urlString = cellDataSource[indexPath.row].sizes
+            if let originalUrlString = urlString.first(where: { $0.name == "ORIGINAL" })?.url {
+                if let url = URL(string: originalUrlString) {
+                    viewModel.presentImage(url: url)
+                }
+            }
+        } else {
+            viewModel.presentDocumet(name: name, type: .pdf, fileType: fileType)
+        }
+       
+        let newVC = StorageViewController(viewModel: viewModel, navigationTitle: name)
+        //navigationController?.pushViewController(newVC, animated: true)
+        viewModel.fetchCurrentData(navigationTitle: name, path: path)
+        print(name)
+        print(path)
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {

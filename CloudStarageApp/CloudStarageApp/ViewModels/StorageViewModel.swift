@@ -42,6 +42,11 @@ final class StorageViewModel {
 }
     
 extension StorageViewModel: StorageViewModelProtocol {
+    func presentImage(url: URL) {
+        coordinator.presentImageScene(url: url)
+    }
+    
+    
     func unpublishFile(_ path: String) {
         NetworkManager.shared.unpublishFile(path)
     }
