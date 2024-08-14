@@ -9,11 +9,11 @@ import Foundation
 
 final class DocumentViewModel {
     
-    private let coordinator: HomeCoordinator
-    var fyleType: String
+    private let coordinator: Coordinator
+    var fileType: String
     
-    init(coordinator: HomeCoordinator, fyleType: String) {
+    init(coordinator: Coordinator, fileType: String) {
         self.coordinator = coordinator
-        self.fyleType = fyleType
+        self.fileType = fileType
     }
 }

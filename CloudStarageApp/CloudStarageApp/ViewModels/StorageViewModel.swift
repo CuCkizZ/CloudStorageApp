@@ -10,8 +10,8 @@ import Foundation
 protocol StorageViewModelProtocol: BaseViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
     
-    func fetchCurrentData(name: String, path: String)
-    func presentVc(path: String)
+    func fetchCurrentData(navigationTitle: String, path: String)
+    func presentVc(title: String, path: String)
     func presentShareScene(shareLink: String)
 }
 
@@ -28,15 +28,14 @@ final class StorageViewModel {
     
     init(coordinator: StorageCoordinator) {
         self.coordinator = coordinator
-        self.fetchData()
+        //self.fetchData()
     }
     
     func mapModel() {
         cellDataSource.value = model.compactMap { CellDataModel($0) }
     }
 
-    func returnPath() -> String {
-        "dsa"
+    func fetchdadada() {
     }
     
 }
@@ -72,36 +71,39 @@ extension StorageViewModel: StorageViewModelProtocol {
         }
     }
     
-    func fetchCurrentData(name: String, path: String) {
-        
-//        if isLoading.value ?? true {
-//            return
-//        }
-//        isLoading.value = true
-//        //coordinator.paggination()
-//        NetworkManager.shared.fetchCurentData(path: path) { [weak self] result in
-//            guard let self = self else { return }
-//            DispatchQueue.main.async {
-//                switch result {
-//                case .success(let file):
-//                    self.model = file
-//                    self.mapModel()
-//                    self.isLoading.value = false
-//                    print("\(path)")
-//                case .failure(let error):
-//                    print("model failrue: \(error)")
-//                }
-//            }
-//        }
+    func fetchCurrentData(navigationTitle: String, path: String) {
+        if isLoading.value ?? true {
+            return
+        }
+        isLoading.value = true
+        //coordinator.paggination()
+        NetworkManager.shared.fetchCurentData(path: path) { [weak self] result in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let file):
+                    self.model = file
+                    self.mapModel()
+                    self.isLoading.value = false
+                    print("\(path)")
+                case .failure(let error):
+                    print("model failrue: \(error)")
+                }
+            }
+        }
     }
-    
-    func presentVc(path: String) {
+
+    func presentVc(title: String, path: String) {
         coordinator.showStorageScene()
-        fetchCurrentData(name: "dsa", path: path)
+        //fetchCurrentData(title: title, path: path)
     }
     
     func presentShareScene(shareLink: String) {
         coordinator.presentShareScene(shareLink: shareLink)
+    }
+    
+    func presentDocumet(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
+        coordinator.goToDocument(name: name, type: type, fileType: fileType)
     }
     
     func publishFile(_ path: String) {

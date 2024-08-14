@@ -225,19 +225,16 @@ extension HomeViewController: UICollectionViewDelegate {
         let name = model.name
         
         if fileType.contains("officedocument") {
-            viewModel.presentDocumet(name: name, type: .web, fyleType: fileType)
+            viewModel.presentDocumet(name: name, type: .web, fileType: fileType)
         } else if fileType.contains("image") {
-            let vm = PresentImageViewModel()
-            let vc = PresentImageViewController(viewModel: vm)
             let urlString = cellDataSource[indexPath.row].sizes
             if let originalUrlString = urlString.first(where: { $0.name == "ORIGINAL" })?.url {
                 if let url = URL(string: originalUrlString) {
-                    vc.configure(url)
+                    viewModel.presentImage(url: url)
                 }
-                navigationController?.pushViewController(vc, animated: true)
             }
         } else {
-            viewModel.presentDocumet(name: name, type: .pdf, fyleType: fileType)
+            viewModel.presentDocumet(name: name, type: .pdf, fileType: fileType)
         }
     }
     
