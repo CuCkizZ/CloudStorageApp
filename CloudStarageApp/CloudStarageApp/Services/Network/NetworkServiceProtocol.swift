@@ -11,7 +11,7 @@ protocol NetworkServiceProtocol {
     func getToket()
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void)
     func fetchAccountData(completion: @escaping (Result<Data, Error>) -> Void)
-    func createNewFolder(_ name: String)
+    func createNewFolder(name: String)
     func deleteFolder(urlString: String, name: String)
     func fetchLastData(completion: @escaping (Result<Data, Error>) -> Void)
     func fetchPublicData(completion: @escaping (Result<Data, Error>) -> Void)

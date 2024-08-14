@@ -138,7 +138,7 @@ final class NetworkService: NetworkServiceProtocol {
         }
     }
     
-    func createNewFolder(_ name: String) {
+    func createNewFolder(name: String) {
         let urlString = "https://cloud-api.yandex.net/v1/disk/resources?path=disk:/\(name)"
         guard let url = URL(string: urlString) else { return }
         
