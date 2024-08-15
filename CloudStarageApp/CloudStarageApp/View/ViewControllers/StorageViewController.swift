@@ -21,6 +21,7 @@ final class StorageViewController: UIViewController {
     private var cellDataSource: [CellDataModel] = []
     
     private lazy var uploadButton = CSUploadButton()
+    private let changeLayoutButton = CSChangeLayoutButton()
     private lazy var selectedStyle: PresentationStyle = .table
     
     private lazy var collectionView: UICollectionView = {
@@ -87,23 +88,36 @@ private extension StorageViewController {
         setupView()
         SetupNavBar()
         setupButtonTap()
+        setupLayoutButton()
         setupConstraints()
-        
     }
     
     func setupView() {
         view.addSubview(activityIndicator)
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
+        view.addSubview(changeLayoutButton)
         view.backgroundColor = .white
         setupCollectionView()
     }
     
     func SetupNavBar() {
         guard let navigationController = navigationController else { return }
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: selectedStyle.buttonImage, style: .plain, target: self, action: #selector(changeContentLayout))
+        navigationItem.rightBarButtonItem = navigationController.setRightButton()
         navigationController.navigationBar.prefersLargeTitles = true
         navigationItem.title = navigationTitle
+    }
+    
+    func setupLayoutButton() {
+        changeLayoutButton.setImage(selectedStyle.buttonImage, for: .normal)
+        changeLayoutButton.addTarget(self, action: #selector(changeContentLayout), for: .touchUpInside)
+    }
+    
+    func changeLayoutAction() {
+        changeLayoutButton.action = { [weak self] in
+            guard let self = self else { return }
+            self.changeContentLayout()
+        }
     }
     
     func setupCollectionView() {
@@ -165,9 +179,12 @@ private extension StorageViewController {
             make.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
             make.left.equalToSuperview().inset(16)
         }
+        changeLayoutButton.snp.makeConstraints { make in
+            make.top.equalTo(collectionView).inset(-32)
+            make.right.equalTo(collectionView).inset(16)
+        }
         uploadButton.snp.makeConstraints { make in
             make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
-            make.height.width.equalTo(40)
         }
     }
     
@@ -218,7 +235,6 @@ extension StorageViewController: UICollectionViewDelegate {
         let file = model.file
         let type = model.type ?? "dir"
         let publicUrl = model.publicUrl
-        print(type)
         return UIContextMenuConfiguration.contextMenuConfiguration(for: .full,
                                                                    viewModel: viewModel,
                                                                    name: name,

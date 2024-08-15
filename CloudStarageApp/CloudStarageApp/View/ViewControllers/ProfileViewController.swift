@@ -88,22 +88,27 @@ private extension ProfileViewController {
     }
     
     func SetupNavBar() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .actions, style: .plain, target: self, action: #selector(rightBarButtonAction))
-        navigationController?.navigationBar.prefersLargeTitles = true
+        guard let navigationController = navigationController else { return }
+        navigationItem.rightBarButtonItem = navigationController.setRightButton()
+        navigationController.navigationBar.prefersLargeTitles = true
         title = "Profile"
     }
     
-    @objc func rightBarButtonAction() {
-        let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
-            print("Cancel")
-        }))
-        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
-            guard let self = self else { return }
-            self.buttonTapped()
-        }))
-        present(alert, animated: true)
-    }
+//    @objc func rightBarButtonAction() {
+//        let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
+//        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+//            print("Cancel")
+//        }))
+//        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
+//            guard let self = self else { return }
+//            self.viewModel.logOut()
+//        }))
+//        present(alert, animated: true)
+//    }
+    
+//    @objc func logout() {
+//        viewModel.logOut()
+//    }
     
     func configure() {
         guard let model = viewModel.dataSource else { return }

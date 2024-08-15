@@ -20,12 +20,8 @@ final class HomeViewController: UIViewController {
     private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var uploadButton = CSUploadButton()
-    private lazy var chageLayoutButton: UIButton = {
-        let button = UIButton()
-        button.setImage(selectedStyle.buttonImage, for: .normal)
-        button.addTarget(self, action: #selector(changeContentLayout), for: .touchUpInside)
-        return button
-    }()
+    
+    private let changeLayoutButton = CSChangeLayoutButton()
     
     private var selectedStyle: PresentationStyle = .table
     private lazy var collectionView: UICollectionView = {
@@ -56,6 +52,7 @@ final class HomeViewController: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(showOfflineDeviceUI(notification:)), name: NSNotification.Name.connectivityStatus, object: nil)
         activityIndicator.hidesWhenStopped = true
+        
         
         setupLayout()
         bindView()
@@ -117,22 +114,35 @@ private extension HomeViewController {
         setupNavBar()
         setupButtonUp()
         setupConstraints()
+        setupLayoutButton()
     }
     
     func setupView() {
         view.addSubview(activityIndicator)
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
-        view.addSubview(chageLayoutButton)
+        view.addSubview(changeLayoutButton)
         view.backgroundColor = .white
         setupCollectionView()
     }
     
     func setupNavBar() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: selectedStyle.buttonImage, style: .plain, target: self, action: #selector(changeContentLayout))
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationController?.hidesBottomBarWhenPushed = true
+        guard let navigationController = navigationController else { return }
+        navigationItem.rightBarButtonItem = navigationController.setRightButton()
+        navigationController.navigationBar.prefersLargeTitles = true
         title = "Latests"
+    }
+    
+    func setupLayoutButton() {
+        changeLayoutButton.setImage(selectedStyle.buttonImage, for: .normal)
+        changeLayoutButton.addTarget(self, action: #selector(changeContentLayout), for: .touchUpInside)
+    }
+    
+    func changeLayoutAction() {
+        changeLayoutButton.action = { [weak self] in
+            guard let self = self else { return }
+            self.changeContentLayout()
+        }
     }
     
     func setupCollectionView() {
@@ -163,10 +173,12 @@ private extension HomeViewController {
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             if layout.itemSize == CGSize(width: view.bounds.width, height: 33) {
                 layout.itemSize = CGSize(width: 100, height: 100)
-                navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "file")
+                selectedStyle = .table
+                changeLayoutButton.setImage(selectedStyle.buttonImage, for: .normal)
             } else {
                 layout.itemSize = CGSize(width: view.bounds.width, height: 33)
-                navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "profileTab")
+                selectedStyle = .defaultGrid
+                changeLayoutButton.setImage(selectedStyle.buttonImage, for: .normal)
             }
             collectionView.collectionViewLayout.invalidateLayout()
         }
@@ -194,13 +206,12 @@ private extension HomeViewController {
             make.left.equalToSuperview().inset(16)
             make.right.equalToSuperview()
         }
-        chageLayoutButton.snp.makeConstraints { make in
+        changeLayoutButton.snp.makeConstraints { make in
             make.top.equalTo(collectionView).inset(-32)
             make.right.equalTo(collectionView).inset(16)
         }
         uploadButton.snp.makeConstraints { make in
             make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
-            make.height.width.equalTo(40)
         }
     }
     

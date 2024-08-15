@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SnapKit
 
 class CSUploadButton: UIButton {
     
@@ -21,10 +22,19 @@ class CSUploadButton: UIButton {
     }
     
     private func setupButton() {
-        self.setImage(UIImage(resource: .uploadButton), for: .normal)
-        self.clipsToBounds = true
-        self.layer.cornerRadius = 20
-        self.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
+        let view = UIView()
+        setImage(UIImage(systemName: "folder.badge.plus"), for: .normal)
+        backgroundColor = .systemGray6
+        clipsToBounds = true
+        layer.cornerRadius = 20
+        addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
+    
+        self.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            self.widthAnchor.constraint(equalToConstant: 50),
+            self.heightAnchor.constraint(equalToConstant: 50)
+        ])
+        
     }
     
     @objc func buttonPressed() {

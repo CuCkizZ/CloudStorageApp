@@ -22,6 +22,7 @@ final class PublicStorageViewController: UIViewController {
     
     //MARK: CollectionView
     private lazy var uploadButton = CSUploadButton()
+    private let changeLayoutButton = CSChangeLayoutButton()
     
     private var selectedStyle: PresentationStyle = .table
     private lazy var collectionView: UICollectionView = {
@@ -87,6 +88,7 @@ private extension PublicStorageViewController {
         setupView()
         SetupNavBar()
         setupButtonUp()
+        setupLayoutButton()
         setupConstraints()
     }
     
@@ -94,16 +96,29 @@ private extension PublicStorageViewController {
         view.addSubview(activityIndicator)
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
+        view.addSubview(changeLayoutButton)
         view.backgroundColor = .white
         setupCollectionView()
     }
     
     func SetupNavBar() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: selectedStyle.buttonImage, style: .plain, target: self, action: #selector(changeContentLayout))
-        navigationController?.navigationBar.prefersLargeTitles = true
+        guard let navigationController = navigationController else { return }
+        navigationItem.rightBarButtonItem = navigationController.setRightButton()
+        navigationController.navigationBar.prefersLargeTitles = true
         title = "Published"
     }
     
+    func setupLayoutButton() {
+        changeLayoutButton.setImage(selectedStyle.buttonImage, for: .normal)
+        changeLayoutButton.addTarget(self, action: #selector(changeContentLayout), for: .touchUpInside)
+    }
+    
+    func changeLayoutAction() {
+        changeLayoutButton.action = { [weak self] in
+            guard let self = self else { return }
+            self.changeContentLayout()
+        }
+    }
     
     func setupCollectionView() {
         collectionView.backgroundColor = .systemBackground
@@ -175,9 +190,12 @@ private extension PublicStorageViewController {
             make.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
             make.left.equalToSuperview().inset(16)
         }
+        changeLayoutButton.snp.makeConstraints { make in
+            make.top.equalTo(collectionView).inset(-32)
+            make.right.equalTo(collectionView).inset(16)
+        }
         uploadButton.snp.makeConstraints { make in
             make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
-            make.height.width.equalTo(40)
         }
     }
 }
