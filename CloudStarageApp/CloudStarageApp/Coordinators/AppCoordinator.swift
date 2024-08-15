@@ -64,6 +64,20 @@ private extension AppCoordinator {
                                              navigationController: navigationController, finisDelegate: self)
             publicCoordinator.start()
         }
+    
+    func logout() {
+        guard let navigationController = navigationController else { return }
+        let homeCoordinator = HomeCoordinator(type: .home, navigationController: navigationController)
+        homeCoordinator.finish()
+        let storageCoordinator = StorageCoordinator(type: .storage, navigationController: navigationController)
+        storageCoordinator.finish()
+        let profileCoordinator = ProfileCoordinator(type: .profile, navigationController: navigationController)
+        profileCoordinator.finish()
+        
+        let loginCoordinator = LoginCoordinator(type: .login, navigationController: navigationController)
+        loginCoordinator.start()
+        self.window?.rootViewController = navigationController
+    }
 }
 
 extension AppCoordinator {
@@ -95,13 +109,13 @@ extension AppCoordinator: CoorditatorFinishDelegate {
             showMainFlow()
             navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         case .profile:
-            showPublicFlow()
+            logout()
+            //showPublicFlow()
             navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         case .publicCoordinator:
             showMainFlow()
         case .logout: 
             showAuthFlow()
-            tabBarController.removeFromParent()
         default:
             navigationController?.popToRootViewController(animated: false)
         }

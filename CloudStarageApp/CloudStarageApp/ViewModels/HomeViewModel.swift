@@ -16,7 +16,7 @@ protocol HomeViewModelProtocol: BaseViewModelProtocol, AnyObject {
 
 final class HomeViewModel {
     
-    private let coordinator: HomeCoordinator
+    private weak var coordinator: HomeCoordinator!
     var isLoading: Observable<Bool> = Observable(false)
     var cellDataSource: Observable<[LastUploadedCellDataModel]> = Observable(nil)
     private var model: [LastItem] = []

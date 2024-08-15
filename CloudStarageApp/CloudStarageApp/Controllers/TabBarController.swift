@@ -39,3 +39,22 @@ final class TabBarController: UITabBarController {
         self.tabBar.items?.removeAll()
     }
 }
+
+extension UINavigationController {
+    func setRightButton() -> UIBarButtonItem {
+        return UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logout))
+    }
+    
+    @objc func logout() {
+        let coordinator: CoordinatorProtocol = Coordinator(type: .logout, navigationController: self)
+        let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+            print("Cancel")
+        }))
+        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { /*[weak self]*/ action in
+            //guard let self = self else { return }
+            coordinator.start()
+        }))
+        present(alert, animated: true)
+    }
+}

@@ -6,15 +6,8 @@ private enum Constants {
         static let text1 = "Теперь все ваши документы в одном месте"
         static let text2 = "Доступ к файлам без интернета"
         static let text3 = "Делитесь вашими файлами с другими"
-        static let image1 = "image1"
-        static let image2 = "image2"
-        static let image3 = "image3"
     }
 }
-
-//protocol SceneFactoryProtocol: AnyObject {
-//    static func makeOnbording(coordinaror: OnboardingCoordinator) -> OnboardingViewController
-//}
 
 struct SceneFactory {
     
@@ -24,13 +17,13 @@ struct SceneFactory {
         var pages = [OnboardingPageViewController]()
         
         let firstVC = OnboardingPageViewController()
-        firstVC.configure(Constants.Onboarding.text1, Constants.Onboarding.image1)
+        firstVC.configure(Constants.Onboarding.text1, .image1)
         
         let secondVc = OnboardingPageViewController()
-        secondVc.configure(Constants.Onboarding.text2, Constants.Onboarding.image2)
+        secondVc.configure(Constants.Onboarding.text2, .image2)
         
         let thirdVc = OnboardingPageViewController()
-        thirdVc.configure(Constants.Onboarding.text3, Constants.Onboarding.image3)
+        thirdVc.configure(Constants.Onboarding.text3, .image3)
         
         pages.append(firstVC)
         pages.append(secondVc)
@@ -41,7 +34,7 @@ struct SceneFactory {
         return view
     }
     
-//    //    MARK: AppCoordinator
+//    MARK: AppCoordinator
     
     static func makeOnboardingFlow(coordinator: AppCoordinator,
                                    navigationController: UINavigationController,
@@ -168,6 +161,7 @@ struct SceneFactory {
     }
     
 //    MARK: ShareViewController
+    
     static func makeShareSceneApp(shareLink: String, coordinator: Coordinator) -> ShareActivityViewController {
         let vm = ShareActivityViewModel()
         let vc = ShareActivityViewController(viewModel: vm, shareLink: shareLink)

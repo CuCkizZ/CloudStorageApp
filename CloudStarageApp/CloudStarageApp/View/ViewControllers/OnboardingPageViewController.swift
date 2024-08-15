@@ -36,9 +36,9 @@ final class OnboardingPageViewController: UIViewController {
         setupConstraints()
     }
     
-    func configure(_ text: String, _ image: String) {
+    func configure(_ text: String, _ image: ImageResource) {
         textLabel.text = text
-        greetingImage.image = UIImage(named: image)
+        greetingImage.image = UIImage(resource: image)
     }
 }
 

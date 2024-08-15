@@ -54,5 +54,6 @@ extension ProfileCoordinator {
     }
     
     func Logout() {
+        
     }
 }
