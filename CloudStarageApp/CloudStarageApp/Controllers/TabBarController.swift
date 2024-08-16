@@ -51,9 +51,8 @@ extension UINavigationController {
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
             print("Cancel")
         }))
-        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { /*[weak self]*/ action in
-            //guard let self = self else { return }
-            coordinator.start()
+        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { action in
+            coordinator.logouted()
         }))
         present(alert, animated: true)
     }

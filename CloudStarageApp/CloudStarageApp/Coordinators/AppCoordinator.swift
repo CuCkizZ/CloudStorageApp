@@ -108,6 +108,8 @@ extension AppCoordinator: CoorditatorFinishDelegate {
         case .login:
             showMainFlow()
             navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
+        case .home:
+            removeChildCoordinator(self)
         case .profile:
             logout()
             //showPublicFlow()

@@ -15,11 +15,15 @@ class HomeCoordinator: Coordinator {
         showHomeScene()
     }
     override func finish() {
+        finishDelegate?.coordinatorDidFinish(childCoordinator: self)
         print("Im done")
     }
 }
 
 extension HomeCoordinator {
+    
+    func logout() {
+    }
     
     func goToDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
         guard let navigationController = navigationController else { return }

@@ -27,6 +27,7 @@ protocol CoordinatorProtocol: AnyObject {
     
     func start()
     func finish()
+    func logouted()
 }
 
 extension CoordinatorProtocol {
@@ -70,6 +71,7 @@ class Coordinator: CoordinatorProtocol {
         childCoordinators.removeAll()
     }
     
+    
     func start() {
         print("Coordinator starts")
     }
@@ -77,4 +79,12 @@ class Coordinator: CoordinatorProtocol {
     func finish() {
         print("Coordinator finished")
     }
+    
+    func logouted() {
+        childCoordinators.forEach { $0.finish() }
+        childCoordinators.removeAll()
+    }
+    
+}
+extension Coordinator {
 }
