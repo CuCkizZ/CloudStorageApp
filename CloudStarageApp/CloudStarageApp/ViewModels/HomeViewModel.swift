@@ -24,7 +24,7 @@ final class HomeViewModel {
     var cellDataSource: Observable<[LastUploadedCellDataModel]> = Observable(nil)
     private var model: [LastItem] = []
     private let networkMonitor = NWPathMonitor()
-    var isConnected: Observable<Bool> = Observable(nil)
+    var isConnected: Observable<Bool> = Observable(true)
     
     init(coordinator: HomeCoordinator) {
         self.coordinator = coordinator

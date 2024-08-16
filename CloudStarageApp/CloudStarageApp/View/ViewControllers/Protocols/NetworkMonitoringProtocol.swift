@@ -5,9 +5,7 @@
 //  Created by Nikita Beglov on 16.08.2024.
 //
 
-import UIKit
-import Network
-import SnapKit
+import UIKit.UIView
 
 protocol NetworkMonitoringProtocol {
     func setupNetworkStatusView(_ networkStatusView: UIView)
