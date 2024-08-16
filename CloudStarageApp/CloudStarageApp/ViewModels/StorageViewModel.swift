@@ -134,6 +134,7 @@ extension StorageViewModel: StorageViewModelProtocol {
     }
     
     func numbersOfRowInSection() -> Int {
+        print(model.count)
         return model.count
     }
     

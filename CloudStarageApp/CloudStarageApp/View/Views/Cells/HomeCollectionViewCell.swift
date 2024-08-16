@@ -81,7 +81,7 @@ final class CollectionViewCell: UICollectionViewCell {
         
         nameLabel.text = model.name
         DispatchQueue.main.async {
-            self.contentImageView.setImage(urlString: model.previewImage!)
+            self.contentImageView.setImage(urlString: model.previewImage ?? "")
         }
     }
     

@@ -60,6 +60,23 @@ final class ProfileViewController: UIViewController {
             }
         }
     }
+    
+    @objc func rightBarButtonAction() {
+            let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
+            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+                print("Cancel")
+            }))
+            alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
+                guard let self = self else { return }
+                self.viewModel.logOut()
+            }))
+            present(alert, animated: true)
+        }
+        
+        @objc func logout() {
+            viewModel.logOut()
+        }
+    
 }
 
 // MARK: Private Methods
@@ -89,26 +106,11 @@ private extension ProfileViewController {
     
     func SetupNavBar() {
         guard let navigationController = navigationController else { return }
-        navigationItem.rightBarButtonItem = navigationController.setRightButton()
+        //navigationItem.rightBarButtonItem = navigationController.setRightButton()
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(rightBarButtonAction))
         navigationController.navigationBar.prefersLargeTitles = true
         title = "Profile"
     }
-    
-//    @objc func rightBarButtonAction() {
-//        let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
-//        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
-//            print("Cancel")
-//        }))
-//        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
-//            guard let self = self else { return }
-//            self.viewModel.logOut()
-//        }))
-//        present(alert, animated: true)
-//    }
-    
-//    @objc func logout() {
-//        viewModel.logOut()
-//    }
     
     func configure() {
         guard let model = viewModel.dataSource else { return }
@@ -145,7 +147,7 @@ private extension ProfileViewController {
         goToPublicButton.addTarget(self, action: #selector(buttonTapped), for: .touchUpInside)
     }
     
-//    MARK: Present Published Files
+    //    MARK: Present Published Files
     
     @objc func buttonTapped() {
         let vm = PublicStorageViewModel()
@@ -156,29 +158,57 @@ private extension ProfileViewController {
     
     func updateViewLayer() {
         guard let model = viewModel.dataSource else { return }
-        let totalSpace = (model.totalSpace / 1000000000)
-        let usageSt = CGFloat(model.usedSpace / 1000000000) / 4
-        print(totalSpace)
-        let animation = CABasicAnimation(keyPath: "strokeEnd")
-        animation.fromValue = totalShapeLayer.strokeEnd
-        animation.toValue = 1
-        animation.duration = 1
-        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
         
-        totalShapeLayer.strokeEnd = 1
-        totalShapeLayer.add(animation, forKey: "strokeEnd")
+       // let totalSpaceInGB = CGFloat(model.totalSpace) / 1000000000
+        let usedSpaceFraction = CGFloat(model.usedSpace) / CGFloat(model.totalSpace)
         
-        animation.fromValue = usageShapeLayer.strokeEnd
-        animation.toValue = usageSt
-        animation.duration = 1
-        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
-        
-        usageShapeLayer.strokeEnd = usageSt
-        usageShapeLayer.add(animation, forKey: "strokeEnd")
+        animateLayer(layer: totalShapeLayer, toValue: 1)
+        animateLayer(layer: usageShapeLayer, toValue: usedSpaceFraction)
     }
     
-//    MARK: Constraints
-
+    private func animateLayer(layer: CAShapeLayer, toValue: CGFloat) {
+        let animation = CABasicAnimation(keyPath: "strokeEnd")
+        animation.fromValue = layer.strokeEnd
+        animation.toValue = toValue
+        animation.duration = 1
+        animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
+        
+        layer.strokeEnd = toValue
+        layer.add(animation, forKey: "strokeEnd")
+    }
+    
+    
+    func setupShapeLayer() {
+        let center = CGPoint(x: view.bounds.midX, y: view.bounds.midY - 150)
+        let radius = min(view.bounds.width, view.bounds.height) / 4
+        let startAngle = -CGFloat.pi / 2
+        let endAngle = 2 * CGFloat.pi - CGFloat.pi / 2
+        
+        configureShapeLayer(shapeLayer: totalShapeLayer, center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, strokeColor: AppColors.customGray.cgColor)
+        configureShapeLayer(shapeLayer: usageShapeLayer, center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, strokeColor: AppColors.storagePink.cgColor, lineCap: .round)
+        
+        view.layer.addSublayer(totalShapeLayer)
+        view.layer.addSublayer(usageShapeLayer)
+    }
+    
+    private func configureShapeLayer(shapeLayer: CAShapeLayer, 
+                                     center: CGPoint,
+                                     radius: CGFloat,
+                                     startAngle: CGFloat,
+                                     endAngle: CGFloat, 
+                                     strokeColor: CGColor,
+                                     lineCap: CAShapeLayerLineCap = .butt) {
+        let path = UIBezierPath(arcCenter: center, radius: radius,
+                                startAngle: startAngle, endAngle: endAngle, clockwise: true)
+        shapeLayer.path = path.cgPath
+        shapeLayer.fillColor = UIColor.clear.cgColor
+        shapeLayer.strokeColor = strokeColor
+        shapeLayer.lineWidth = 40
+        shapeLayer.lineCap = .round
+        shapeLayer.strokeStart = 0
+        shapeLayer.strokeEnd = 0
+    }
+    
     func setupConstraints() {
         totalStorageLabel.snp.makeConstraints { make in
             make.centerX.equalTo(view.safeAreaLayoutGuide)
@@ -187,55 +217,27 @@ private extension ProfileViewController {
         usedImageView.snp.makeConstraints { make in
             make.left.equalToSuperview().inset(20)
             make.centerY.equalToSuperview()
-            make.height.width.equalTo(30)
+            make.size.equalTo(30)
         }
         leftImageView.snp.makeConstraints { make in
             make.left.equalToSuperview().inset(20)
-            make.top.equalTo(usedImageView.snp.bottom).inset(-10)
-            make.height.width.equalTo(30)
+            make.top.equalTo(usedImageView.snp.bottom).offset(10)
+            make.size.equalTo(30)
         }
         usedStorageLabel.snp.makeConstraints { make in
-            make.left.equalTo(usedImageView.snp.right).inset(-10)
+            make.left.equalTo(usedImageView.snp.right).offset(10)
             make.centerY.equalToSuperview()
         }
         leftStorageLabel.snp.makeConstraints { make in
-            make.left.equalTo(leftImageView.snp.right).inset(-10)
-            make.top.equalTo(usedStorageLabel.snp.bottom).inset(-20)
+            make.left.equalTo(leftImageView.snp.right).offset(10)
+            make.top.equalTo(usedStorageLabel.snp.bottom).offset(20)
         }
         goToPublicButton.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
-            make.top.equalTo(leftStorageLabel.snp.bottom).inset(-50)
-            
+            make.top.equalTo(leftStorageLabel.snp.bottom).offset(50)
         }
     }
 }
 
-// MARK: ShapeLayoutSetupExtension
-
-extension ProfileViewController {
-    func setupShapeLayer() {
-        let center = CGPoint(x: view.bounds.midX, y: view.bounds.midY - 150)
-        let radius = min(view.bounds.width, view.bounds.height) / 4
-        let usagePath = UIBezierPath(arcCenter: center, radius: radius, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi - CGFloat.pi / 2, clockwise: true)
-        let totalPath = UIBezierPath(arcCenter: center, radius: radius, startAngle: -CGFloat.pi / 2, endAngle: 2 * CGFloat.pi - CGFloat.pi / 2, clockwise: true)
-        
-        usageShapeLayer.path = usagePath.cgPath
-        usageShapeLayer.fillColor = UIColor.clear.cgColor
-        usageShapeLayer.lineJoin = .round
-        usageShapeLayer.strokeColor = AppColors.storagePink.cgColor
-        usageShapeLayer.lineWidth = 40
-        usageShapeLayer.strokeStart = 0.000001
-        usageShapeLayer.strokeEnd = 0.000000
-    
-        totalShapeLayer.path = totalPath.cgPath
-        totalShapeLayer.fillColor = UIColor.white.cgColor
-        totalShapeLayer.strokeColor = AppColors.customGray.cgColor
-        totalShapeLayer.lineWidth = 40
-        totalShapeLayer.strokeStart = 0.000001
-        totalShapeLayer.strokeEnd = 1
-
-        view.layer.addSublayer(totalShapeLayer)
-        view.layer.addSublayer(usageShapeLayer)
-    }
+extension UIViewController {
 }
-

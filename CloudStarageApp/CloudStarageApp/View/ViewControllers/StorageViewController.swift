@@ -15,15 +15,15 @@ private enum PresentationStyle: String, CaseIterable {
 
 final class StorageViewController: UIViewController {
     // MARK: Model
-    private lazy var refresher = UIRefreshControl()
-    private lazy var activityIndicator = UIActivityIndicatorView()
     private var viewModel: StorageViewModelProtocol
     private var cellDataSource: [CellDataModel] = []
     
+    private lazy var refresher = UIRefreshControl()
+    private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var uploadButton = CSUploadButton()
-    private let changeLayoutButton = CSChangeLayoutButton()
+    private lazy var changeLayoutButton = CSChangeLayoutButton()
     private lazy var selectedStyle: PresentationStyle = .table
-    
+    var navigationTitle: String
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: view.bounds.width, height: 33)
@@ -33,7 +33,7 @@ final class StorageViewController: UIViewController {
         return collection
     }()
     
-    var navigationTitle: String
+   
 
     init(viewModel: StorageViewModelProtocol, navigationTitle: String) {
         self.viewModel = viewModel
@@ -88,6 +88,7 @@ private extension StorageViewController {
         setupView()
         SetupNavBar()
         setupButtonTap()
+        uploadButtonPressed()
         setupLayoutButton()
         setupConstraints()
     }

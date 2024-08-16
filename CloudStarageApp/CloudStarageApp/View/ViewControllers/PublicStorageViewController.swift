@@ -89,6 +89,7 @@ private extension PublicStorageViewController {
         SetupNavBar()
         setupButtonUp()
         setupLayoutButton()
+        uploadButtonPressed()
         setupConstraints()
     }
     
@@ -190,10 +191,7 @@ private extension PublicStorageViewController {
             make.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
             make.left.equalToSuperview().inset(16)
         }
-        changeLayoutButton.snp.makeConstraints { make in
-            make.top.equalTo(collectionView).inset(-32)
-            make.right.equalTo(collectionView).inset(16)
-        }
+        
         uploadButton.snp.makeConstraints { make in
             make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
         }

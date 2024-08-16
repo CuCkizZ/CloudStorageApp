@@ -8,8 +8,6 @@
 import UIKit
 import SnapKit
 
-
-
 final class ShareActivityViewController: UIViewController {
     
     private let viewModel: ShareActivityViewModel
@@ -52,11 +50,6 @@ private extension ShareActivityViewController {
         stack.axis = .vertical
         stack.alignment = .center
         stack.spacing = 16
-        stack.snp.makeConstraints { make in
-            make.top.equalToSuperview()
-            make.centerX.equalToSuperview()
-            make.left.right.equalToSuperview()
-        }
     }
     
     func configure() {
@@ -80,6 +73,12 @@ private extension ShareActivityViewController {
         fileButton.layer.cornerRadius = 10
         linkButton.layer.cornerRadius = 10
         
+        
+        stack.snp.makeConstraints { make in
+            make.top.equalToSuperview()
+            make.centerX.equalToSuperview()
+            make.left.right.equalToSuperview()
+        }
         textShare.snp.makeConstraints { make in
             make.height.equalTo(50)
             make.width.equalTo(300)

@@ -9,8 +9,6 @@ protocol LoginViewInput: AnyObject {
 
 final class LoginViewController: UIViewController {
     
-    
-    
     private let viewModel: LoginViewOutput
     
     private var customValues: [String: String] = [:]
@@ -125,7 +123,6 @@ private extension LoginViewController {
                 message: loginResult.asString,
                 preferredStyle: .alert
             )
-            
             let copyAction = UIAlertAction(title: "Copy and Close", style: .default) { _ in
                 UIPasteboard.general.string = loginResult.asString
             }
@@ -137,7 +134,6 @@ private extension LoginViewController {
                 preferredStyle: .alert
             )
         }
-        
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
         alertController.addAction(cancelAction)
         
@@ -151,10 +147,6 @@ private extension LoginViewController {
     func loadAnimating() {
         loadingView.isHidden = false
         loadingView.backgroundColor = .gray.withAlphaComponent(0.5)
-        
-        loadingView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
-        }
     }
     
     func stopAnimating() {
@@ -176,7 +168,6 @@ private extension LoginViewController {
             make.horizontalEdges.equalToSuperview().inset(20)
             make.height.equalTo(50)
         }
-        
         loginButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(50)
             make.horizontalEdges.equalToSuperview().inset(20)
@@ -187,9 +178,11 @@ private extension LoginViewController {
             make.horizontalEdges.equalToSuperview().inset(20)
             make.height.equalTo(50)
         }
-        
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
+        }
+        loadingView.snp.makeConstraints { make in
+            make.edges.equalToSuperview()
         }
     }
 }
@@ -226,7 +219,6 @@ extension LoginViewController {
     
     func errorOccured(_ error: Error) {
         let alertController: UIAlertController
-        
         if let yandexLoginSDKError = error as? YandexLoginSDKError {
             alertController = UIAlertController(
                 title: "A LoginSDK Error Occured",
@@ -240,9 +232,7 @@ extension LoginViewController {
                 preferredStyle: .alert
             )
         }
-        
         let okAction = UIAlertAction(title: "OK", style: .cancel)
-        
         alertController.addAction(okAction)
         present(alertController, animated: true)
     }

@@ -20,9 +20,7 @@ final class HomeViewController: UIViewController {
     private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var uploadButton = CSUploadButton()
-    
-    private let changeLayoutButton = CSChangeLayoutButton()
-    
+    private lazy var changeLayoutButton = CSChangeLayoutButton()
     private var selectedStyle: PresentationStyle = .table
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -52,7 +50,6 @@ final class HomeViewController: UIViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(showOfflineDeviceUI(notification:)), name: NSNotification.Name.connectivityStatus, object: nil)
         activityIndicator.hidesWhenStopped = true
-        
         
         setupLayout()
         bindView()
@@ -113,6 +110,7 @@ private extension HomeViewController {
         setupView()
         setupNavBar()
         setupButtonUp()
+        uploadButtonPressed()
         setupConstraints()
         setupLayoutButton()
     }
@@ -239,7 +237,7 @@ extension HomeViewController: UICollectionViewDelegate {
             viewModel.presentDocumet(name: name, type: .web, fileType: fileType)
         } else if fileType.contains("image") {
             let urlString = cellDataSource[indexPath.row].sizes
-            if let originalUrlString = urlString.first(where: { $0.name == "ORIGINAL" })?.url {
+            if let originalUrlString = urlString?.first(where: { $0.name == "ORIGINAL" })?.url {
                 if let url = URL(string: originalUrlString) {
                     viewModel.presentImage(url: url)
                 }

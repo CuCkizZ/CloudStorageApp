@@ -24,7 +24,6 @@ final class OnboardingViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -38,11 +37,10 @@ private extension OnboardingViewController {
     
     func setupPageView() {
         view.backgroundColor = .white
+        view.addSubview(pageViewController.view)
         pageViewController.delegate = self
         pageViewController.dataSource = self
-        
         addChild(pageViewController)
-        view.addSubview(pageViewController.view)
         pageViewController.didMove(toParent: self)
         guard let firstPage = pages.first else { return }
         pageViewController.setViewControllers([firstPage], direction: .forward, animated: true)
@@ -57,6 +55,7 @@ private extension OnboardingViewController {
         
         view.addSubview(pageControl)
         view.addSubview(onboardingButton)
+        
         pageControl.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(140)
             make.centerX.equalToSuperview()
@@ -69,7 +68,6 @@ private extension OnboardingViewController {
             guard let self = self else { return }
             self.buttonPressed()
         }
-        
         onboardingButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(50)
             make.horizontalEdges.equalToSuperview().inset(20)
@@ -95,9 +93,7 @@ private extension OnboardingViewController {
 }
 
 
-extension OnboardingViewController: OnboardingViewControllerProtocol {
-    
-}
+extension OnboardingViewController: OnboardingViewControllerProtocol {}
 
 extension OnboardingViewController: UIPageViewControllerDataSource {
     
@@ -116,7 +112,6 @@ extension OnboardingViewController: UIPageViewControllerDataSource {
         else { return nil }
         return pages[currentIndex + 1]
     }
-    
 }
 
 extension OnboardingViewController: UIPageViewControllerDelegate {
