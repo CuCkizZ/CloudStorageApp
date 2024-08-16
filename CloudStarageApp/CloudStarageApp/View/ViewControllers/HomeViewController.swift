@@ -17,11 +17,15 @@ final class HomeViewController: UIViewController {
     
     private let viewModel: HomeViewModelProtocol
     private lazy var cellDataSource: [LastUploadedCellDataModel] = []
+    
+    //   UI
+    
     private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var uploadButton = CSUploadButton()
     private lazy var changeLayoutButton = CSChangeLayoutButton()
     private var selectedStyle: PresentationStyle = .table
+    private lazy var networkStatusView = UIView()
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: view.bounds.width, height: 33)
@@ -31,8 +35,7 @@ final class HomeViewController: UIViewController {
         return collection
     }()
     
-    private let networkStatusView = UIView()
-
+    
     init(viewModel: HomeViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -46,6 +49,8 @@ final class HomeViewController: UIViewController {
         super.viewWillAppear(animated)
         
     }
+    
+    //    MARK: ViewDidLoad
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -70,7 +75,12 @@ final class HomeViewController: UIViewController {
             print("Not connected")
         }
     }
+}
     
+// MARK: BindingExtension
+
+private extension HomeViewController {
+
     func bindView() {
         viewModel.cellDataSource.bind { [weak self] files in
             guard let self = self, let files = files else { return }
@@ -101,15 +111,12 @@ final class HomeViewController: UIViewController {
             DispatchQueue.main.async {
                 if isConndeted {
                     self.hideNetworkStatusView(self.networkStatusView)
-                    print("hide:  \(isConndeted)")
                 } else {
                     self.showNetworkStatusView(self.networkStatusView)
-                    print("show: \(isConndeted)")
                 }
             }
         }
     }
-    
     
     func bindGettingLink() {
         viewModel.isLoading.bind { [weak self] isLoading in
@@ -125,7 +132,7 @@ final class HomeViewController: UIViewController {
         }
     }
 }
-    
+
     // MARK: Layout
     
 private extension HomeViewController {
@@ -191,7 +198,7 @@ private extension HomeViewController {
         uploadButtonPressed()
     }
     
-    @objc private func changeContentLayout() {
+    @objc func changeContentLayout() {
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             if layout.itemSize == CGSize(width: view.bounds.width, height: 33) {
                 layout.itemSize = CGSize(width: 100, height: 100)
@@ -213,7 +220,7 @@ private extension HomeViewController {
         }
     }
     
-    private func uploadButtonPressed() {
+    func uploadButtonPressed() {
         uploadButton.addAction(UIAction.createNewFolder(view: self,
                                                         viewModel: viewModel),
                                for: .touchUpInside)
@@ -237,7 +244,7 @@ private extension HomeViewController {
         }
     }
     
-    private func modelReturn(indexPath: IndexPath) -> LastUploadedCellDataModel {
+    func modelReturn(indexPath: IndexPath) -> LastUploadedCellDataModel {
         return cellDataSource[indexPath.row]
     }
     
