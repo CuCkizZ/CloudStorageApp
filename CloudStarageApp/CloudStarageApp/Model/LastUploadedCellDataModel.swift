@@ -16,7 +16,7 @@ struct LastUploadedCellDataModel {
     let previewImage: String?
     let file: String
     let path: String
-    let sizes: [LastSize]
+    let sizes: [LastSize]?
     let size: Int?
     
     init(_ item: LastItem) {

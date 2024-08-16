@@ -76,8 +76,8 @@ struct Exif: Codable {
 
 // MARK: - Size
 struct Size: Codable {
-    let url: String
-    let name: String
+    let url: String?
+    let name: String?
 }
 
 // This file was generated from JSON Schema using quicktype, do not modify it directly.
@@ -103,10 +103,10 @@ struct LastItem: Codable {
     let resourceId: String
     let modified: String
     let mimeType: String
-    let sizes: [LastSize]
+    let sizes: [LastSize]?
     let file: String
     let mediaType: String
-    let preview: String
+    let preview: String?
     let path, sha256, type, md5: String
     let revision: Int
     let publicKey: String?
@@ -126,7 +126,7 @@ struct LastExif: Codable {
 
 // MARK: - Size
 struct LastSize: Codable {
-    let url: String
-    let name: String
+    let url: String?
+    let name: String?
 }
 
