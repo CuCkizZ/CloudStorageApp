@@ -24,6 +24,7 @@ final class StorageViewController: UIViewController {
     private lazy var changeLayoutButton = CSChangeLayoutButton()
     private lazy var selectedStyle: PresentationStyle = .table
     var navigationTitle: String
+    private var fetchPath: String = "disk:/"
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: view.bounds.width, height: 33)
@@ -33,11 +34,12 @@ final class StorageViewController: UIViewController {
         return collection
     }()
     
-   
+    private let networkStatusView = UIView()
 
-    init(viewModel: StorageViewModelProtocol, navigationTitle: String) {
+    init(viewModel: StorageViewModelProtocol, navigationTitle: String, fetchpath: String) {
         self.viewModel = viewModel
         self.navigationTitle = navigationTitle
+        self.fetchPath = fetchpath
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -51,6 +53,10 @@ final class StorageViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        bindNetworkMonitor()
+        setupNetworkStatusView(networkStatusView)
+        
         setupLayout()
         bindView()
         bindViewModel()
@@ -74,6 +80,20 @@ final class StorageViewController: UIViewController {
                 } else {
                     self.activityIndicator.stopAnimating()
                     self.activityIndicator.isHidden = true
+                }
+            }
+        }
+    }
+    
+    func bindNetworkMonitor() {
+        setupNetworkStatusView(networkStatusView)
+        viewModel.isConnected.bind { [weak self] isConndeted in
+            guard let self = self, let isConndeted = isConndeted else { return }
+            DispatchQueue.main.async {
+                if isConndeted {
+                    self.hideNetworkStatusView(self.networkStatusView)
+                } else {
+                    self.showNetworkStatusView(self.networkStatusView)
                 }
             }
         }
@@ -138,7 +158,10 @@ private extension StorageViewController {
     }
     
     @objc func pullToRefresh() {
-        viewModel.fetchData()
+       // guard let fetchPath = fetchPath else { return }
+        viewModel.fetchCurrentData(navigationTitle: "refreshed", path: fetchPath)
+        print("pul to refresh: " + fetchPath)
+       // viewModel.fetchData()
         refresher.endRefreshing()
     }
     
@@ -188,16 +211,6 @@ private extension StorageViewController {
             make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
         }
     }
-    
-    func presentByTap(type: TypeOfConfigDocumentVC) {
-        let name = ""
-        let fileType = ""
-        switch type {
-        case .pdf, .web:
-            viewModel.presentDocumet(name: name, type: .web, fileType: fileType)
-        }
-    }
-    
 }
 
 // MARK: UICollectionViewDelegate, UICollectionViewDataSource
@@ -207,10 +220,11 @@ extension StorageViewController: UICollectionViewDelegate {
         let model = modelReturn(indexPath: indexPath)
         let name = model.name
         let path = model.path
+        self.fetchPath = path
         let fileType = model.file
         
         if fileType.contains("officedocument") {
-            viewModel.presentDocumet(name: name, type: .web, fileType: fileType)
+            viewModel.presentDocument(name: name, type: .web, fileType: fileType)
         } else if fileType.contains("image") {
             let urlString = cellDataSource[indexPath.row].sizes
             if let originalUrlString = urlString.first(where: { $0.name == "ORIGINAL" })?.url {
@@ -218,14 +232,14 @@ extension StorageViewController: UICollectionViewDelegate {
                     viewModel.presentImage(url: url)
                 }
             }
+        } else if fileType.contains("type=video") {
+            print("video")
         } else if fileType.isEmpty {
-            let newVC = StorageViewController(viewModel: viewModel, navigationTitle: name)
-            navigationController?.pushViewController(newVC, animated: true)
-            viewModel.fetchCurrentData(navigationTitle: name, path: path)
+            viewModel.presentVc(title: name, path: path)
+           // viewModel.fetchCurrentData(navigationTitle: name, path: path)
         } else {
-            viewModel.presentDocumet(name: name, type: .pdf, fileType: fileType)
+            viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
         }
-       print(fileType)
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {

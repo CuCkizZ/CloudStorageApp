@@ -9,15 +9,18 @@ import Foundation
 
 protocol BaseViewModelProtocol {
     var isLoading: Observable<Bool> { get set }
+    var isConnected: Observable<Bool> { get set }
+    
     func numbersOfRowInSection() -> Int
     func fetchData()
-    func mapModel() 
+    func startMonitoringNetwork()
+    func mapModel()
     func unpublishFile(_ path: String)
     func createNewFolder(_ name: String)
     func deleteFile(_ name: String)
     func publishFile(_ path: String)
     func renameFile(oldName: String, newName: String)
-    func presentDocumet(name: String, type: TypeOfConfigDocumentVC, fileType: String)
+    func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String)
     func presentImage(url: URL)
     func presentAvc(item: String)
 }

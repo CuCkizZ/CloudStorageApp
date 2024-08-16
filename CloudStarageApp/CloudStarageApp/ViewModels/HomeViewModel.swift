@@ -5,34 +5,59 @@
 //  Created by Nikita Beglov on 17.07.2024.
 //
 
+import Network
 import Foundation
 
 protocol HomeViewModelProtocol: BaseViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[LastUploadedCellDataModel]> { get set }
-    func presentDocumet(name: String, type: TypeOfConfigDocumentVC, fileType: String)
+    func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String)
     func presentShareView(shareLink: String)
     func publishFile(_ path: String)
+    
+    func startMonitoringNetwork()
 }
 
 final class HomeViewModel {
     
-    private weak var coordinator: HomeCoordinator!
+    private let coordinator: HomeCoordinator
     var isLoading: Observable<Bool> = Observable(false)
     var cellDataSource: Observable<[LastUploadedCellDataModel]> = Observable(nil)
     private var model: [LastItem] = []
+    private let networkMonitor = NWPathMonitor()
+    var isConnected: Observable<Bool> = Observable(nil)
     
     init(coordinator: HomeCoordinator) {
         self.coordinator = coordinator
         fetchData()
+        startMonitoringNetwork()
     }
     
     func mapModel() {
         cellDataSource.value = model.compactMap { LastUploadedCellDataModel($0) }
     }
+    
 
 }
     
 extension HomeViewModel: HomeViewModelProtocol {
+    
+    func startMonitoringNetwork() {
+        let queue = DispatchQueue.global(qos: .background)
+        networkMonitor.start(queue: queue)
+        networkMonitor.pathUpdateHandler = { [weak self] path in
+                guard let self = self else { return }
+                switch path.status {
+                case .unsatisfied:
+                    self.isConnected.value = false
+                case .satisfied:
+                    self.isConnected.value = true
+                case .requiresConnection:
+                    self.isConnected.value = true
+                @unknown default:
+                    break
+            }
+        }
+    }
     
     func fetchData() {
         if isLoading.value ?? true {
@@ -91,8 +116,8 @@ extension HomeViewModel: HomeViewModelProtocol {
         coordinator.presentAtivityVc(item: item)
     }
     
-    func presentDocumet(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
-        coordinator.goToDocument(name: name, type: type, fileType: fileType)
+    func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
+        coordinator.presentDocument(name: name, type: type, fileType: fileType)
     }
     
     func presentImage(url: URL) {

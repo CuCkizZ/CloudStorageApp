@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Network
 
 protocol PublickStorageViewModelProtocol: BaseViewModelProtocol, AnyObject {
     
@@ -16,19 +17,23 @@ protocol PublickStorageViewModelProtocol: BaseViewModelProtocol, AnyObject {
     func unpublicResource()
     func presentShareView(shareLink: String)
     
+    
 }
 final class PublicStorageViewModel {
     private var coordinator: PublicCoordinator?
     var searchKeyword: String = ""
     
     var isLoading: Observable<Bool> = Observable(false)
+    var isConnected: Observable<Bool> = Observable(nil)
     var cellDataSource: Observable<[PublicItem]> = Observable(nil)
+    private let networkMonitor = NWPathMonitor()
     var model: [PublicItem] = []
     
     
     init(coordinator: PublicCoordinator? = nil) {
         self.coordinator = coordinator
         fetchData()
+        startMonitoringNetwork()
     }
     
     func mapModel() {
@@ -38,19 +43,37 @@ final class PublicStorageViewModel {
 
 extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     func presentAvc(item: String) {
-        coordinator?.presentAtivityVc(item: item)
+        
     }
     
     func presentImage(url: URL) {
-        
+        coordinator?.presentImageScene(url: url)
     }
     
-    func presentDocumet(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
-        
+    func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
+        coordinator?.presentDocument(name: name, type: type, fileType: fileType)
     }
     
     func publishFile(_ path: String) {
         NetworkManager.shared.toPublicFile(path: path)
+    }
+    
+    func startMonitoringNetwork() {
+        let queue = DispatchQueue.global(qos: .background)
+        networkMonitor.start(queue: queue)
+        networkMonitor.pathUpdateHandler = { [weak self] path in
+                guard let self = self else { return }
+                switch path.status {
+                case .unsatisfied:
+                    self.isConnected.value = false
+                case .satisfied:
+                    self.isConnected.value = true
+                case .requiresConnection:
+                    self.isConnected.value = true
+                @unknown default:
+                    break
+            }
+        }
     }
     
     func fetchData() {

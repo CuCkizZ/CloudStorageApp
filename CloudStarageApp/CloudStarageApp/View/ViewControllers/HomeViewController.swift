@@ -31,6 +31,8 @@ final class HomeViewController: UIViewController {
         return collection
     }()
     
+    private let networkStatusView = UIView()
+
     init(viewModel: HomeViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -47,6 +49,11 @@ final class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        bindNetworkMonitor()
+        setupNetworkStatusView(networkStatusView)
+        
+        
         
         NotificationCenter.default.addObserver(self, selector: #selector(showOfflineDeviceUI(notification:)), name: NSNotification.Name.connectivityStatus, object: nil)
         activityIndicator.hidesWhenStopped = true
@@ -87,6 +94,23 @@ final class HomeViewController: UIViewController {
         }
     }
     
+    func bindNetworkMonitor() {
+        self.setupNetworkStatusView(networkStatusView)
+        viewModel.isConnected.bind { [weak self] isConndeted in
+            guard let self = self, let isConndeted = isConndeted else { return }
+            DispatchQueue.main.async {
+                if isConndeted {
+                    self.hideNetworkStatusView(self.networkStatusView)
+                    print("hide:  \(isConndeted)")
+                } else {
+                    self.showNetworkStatusView(self.networkStatusView)
+                    print("show: \(isConndeted)")
+                }
+            }
+        }
+    }
+    
+    
     func bindGettingLink() {
         viewModel.isLoading.bind { [weak self] isLoading in
             guard let self = self, let isLoading = isLoading else { return }
@@ -101,9 +125,9 @@ final class HomeViewController: UIViewController {
         }
     }
 }
-
-// MARK: Layout
-
+    
+    // MARK: Layout
+    
 private extension HomeViewController {
     
     func setupLayout() {
@@ -225,7 +249,7 @@ private extension HomeViewController {
         }
     }
 }
- 
+    
 extension HomeViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -234,7 +258,7 @@ extension HomeViewController: UICollectionViewDelegate {
         let name = model.name
         
         if fileType.contains("officedocument") {
-            viewModel.presentDocumet(name: name, type: .web, fileType: fileType)
+            viewModel.presentDocument(name: name, type: .web, fileType: fileType)
         } else if fileType.contains("image") {
             let urlString = cellDataSource[indexPath.row].sizes
             if let originalUrlString = urlString?.first(where: { $0.name == "ORIGINAL" })?.url {
@@ -243,7 +267,7 @@ extension HomeViewController: UICollectionViewDelegate {
                 }
             }
         } else {
-            viewModel.presentDocumet(name: name, type: .pdf, fileType: fileType)
+            viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
         }
     }
     
@@ -254,16 +278,16 @@ extension HomeViewController: UICollectionViewDelegate {
         let path = model.path
         let file = model.file
         let publicUrl = model.publicUrl
-        return UIContextMenuConfiguration.contextMenuConfiguration(for: .last, 
+        return UIContextMenuConfiguration.contextMenuConfiguration(for: .last,
                                                                    viewModel: viewModel,
                                                                    name: name,
-                                                                   path: path, 
+                                                                   path: path,
                                                                    file: file,
                                                                    publicUrl: publicUrl,
                                                                    viewController: self)
     }
 }
-
+    
 extension HomeViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {

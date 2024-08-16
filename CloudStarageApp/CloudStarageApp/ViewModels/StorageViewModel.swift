@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import Network
 
 protocol StorageViewModelProtocol: BaseViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
@@ -21,6 +22,8 @@ final class StorageViewModel {
     private var model: [Item] = []
     
     var isLoading: Observable<Bool> = Observable(false)
+    var isConnected: Observable<Bool> = Observable(nil)
+    private let networkMonitor = NWPathMonitor()
     var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
     
     var path: String?
@@ -29,6 +32,7 @@ final class StorageViewModel {
     init(coordinator: StorageCoordinator) {
         self.coordinator = coordinator
         //self.fetchData()
+        startMonitoringNetwork()
     }
     
     func mapModel() {
@@ -41,6 +45,8 @@ final class StorageViewModel {
 }
     
 extension StorageViewModel: StorageViewModelProtocol {
+    
+    
     func presentAvc(item: String) {
         coordinator.presentAtivityVc(item: item)
     }
@@ -75,6 +81,24 @@ extension StorageViewModel: StorageViewModelProtocol {
         }
     }
     
+    func startMonitoringNetwork() {
+        let queue = DispatchQueue.global(qos: .background)
+        networkMonitor.start(queue: queue)
+        networkMonitor.pathUpdateHandler = { [weak self] path in
+                guard let self = self else { return }
+                switch path.status {
+                case .unsatisfied:
+                    self.isConnected.value = false
+                case .satisfied:
+                    self.isConnected.value = true
+                case .requiresConnection:
+                    self.isConnected.value = true
+                @unknown default:
+                    break
+            }
+        }
+    }
+    
     func fetchCurrentData(navigationTitle: String, path: String) {
         if isLoading.value ?? true {
             return
@@ -98,7 +122,7 @@ extension StorageViewModel: StorageViewModelProtocol {
     }
 
     func presentVc(title: String, path: String) {
-        coordinator.showStorageScene()
+        coordinator.paggination(navigationTitle: title, path: path)
         //fetchCurrentData(title: title, path: path)
     }
     
@@ -106,8 +130,8 @@ extension StorageViewModel: StorageViewModelProtocol {
         coordinator.presentShareScene(shareLink: shareLink)
     }
     
-    func presentDocumet(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
-        coordinator.goToDocument(name: name, type: type, fileType: fileType)
+    func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
+        coordinator.presentDocument(name: name, type: type, fileType: fileType)
     }
     
     func publishFile(_ path: String) {
@@ -134,7 +158,6 @@ extension StorageViewModel: StorageViewModelProtocol {
     }
     
     func numbersOfRowInSection() -> Int {
-        print(model.count)
         return model.count
     }
     

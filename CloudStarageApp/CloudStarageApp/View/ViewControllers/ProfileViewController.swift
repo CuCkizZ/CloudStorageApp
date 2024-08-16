@@ -17,6 +17,8 @@ final class ProfileViewController: UIViewController {
     private lazy var totalShapeLayer = CAShapeLayer()
     private lazy var usageShapeLayer = CAShapeLayer()
     
+    private let networkStatusView = UIView()
+    
     init(viewModel: ProfileViewModelProtocol) {
         self.viewModel = viewModel
         super .init(nibName: nil, bundle: nil)
@@ -33,10 +35,12 @@ final class ProfileViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-       
+        
+        bindNetworkMonitor()
+        setupNetworkStatusView(networkStatusView)
+        
         setupLayout()
         updateViewLayer()
-        setupLabel()
         bindViewModel()
         bindView()
     }
@@ -61,22 +65,35 @@ final class ProfileViewController: UIViewController {
         }
     }
     
-    @objc func rightBarButtonAction() {
-            let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
-            alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
-                print("Cancel")
-            }))
-            alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
-                guard let self = self else { return }
-                self.viewModel.logOut()
-            }))
-            present(alert, animated: true)
+    func bindNetworkMonitor() {
+        setupNetworkStatusView(networkStatusView)
+        viewModel.isConnected.bind { [weak self] isConnected in
+            guard let self = self, let isConndeted = isConnected else { return }
+            DispatchQueue.main.async {
+                if isConndeted {
+                    self.hideNetworkStatusView(self.networkStatusView)
+                } else {
+                    self.showNetworkStatusView(self.networkStatusView)
+                }
+            }
         }
-        
-        @objc func logout() {
-            viewModel.logOut()
-        }
+    }
     
+    @objc func rightBarButtonAction() {
+        let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+            print("Cancel")
+        }))
+        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
+            guard let self = self else { return }
+            self.viewModel.logOut()
+        }))
+        present(alert, animated: true)
+    }
+    
+    @objc func logout() {
+        viewModel.logOut()
+    }
 }
 
 // MARK: Private Methods
@@ -95,6 +112,7 @@ private extension ProfileViewController {
         SetupNavBar()
         setupConstraints()
         setupShapeLayer()
+        setupLabel()
         //configure(model: dataSource!)
     }
     
@@ -159,7 +177,7 @@ private extension ProfileViewController {
     func updateViewLayer() {
         guard let model = viewModel.dataSource else { return }
         
-       // let totalSpaceInGB = CGFloat(model.totalSpace) / 1000000000
+        // let totalSpaceInGB = CGFloat(model.totalSpace) / 1000000000
         let usedSpaceFraction = CGFloat(model.usedSpace) / CGFloat(model.totalSpace)
         
         animateLayer(layer: totalShapeLayer, toValue: 1)

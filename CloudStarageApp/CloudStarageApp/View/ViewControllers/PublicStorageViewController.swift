@@ -20,6 +20,12 @@ final class PublicStorageViewController: UIViewController {
     private let viewModel: PublickStorageViewModelProtocol
     private var cellDataSource: [PublicItem] = []
     
+    private let nothingLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Nothing to show"
+        return label
+    }()
+    
     //MARK: CollectionView
     private lazy var uploadButton = CSUploadButton()
     private let changeLayoutButton = CSChangeLayoutButton()
@@ -33,6 +39,8 @@ final class PublicStorageViewController: UIViewController {
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
+    
+    private let networkStatusView = UIView()
     
     init(viewModel: PublickStorageViewModelProtocol) {
         self.viewModel = viewModel
@@ -50,6 +58,9 @@ final class PublicStorageViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        bindNetworkMonitor()
+        setupNetworkStatusView(networkStatusView)
         
         setupLayout()
         bindView()
@@ -78,6 +89,21 @@ final class PublicStorageViewController: UIViewController {
             }
         }
     }
+    
+    func bindNetworkMonitor() {
+        setupNetworkStatusView(networkStatusView)
+        viewModel.isConnected.bind { [weak self] isConndeted in
+            guard let self = self, let isConndeted = isConndeted else { return }
+            DispatchQueue.main.async {
+                if isConndeted {
+                    self.hideNetworkStatusView(self.networkStatusView)
+                } else {
+                    self.showNetworkStatusView(self.networkStatusView)
+                }
+            }
+        }
+    }
+    
 }
 
 // MARK: Layout
@@ -88,6 +114,7 @@ private extension PublicStorageViewController {
         setupView()
         SetupNavBar()
         setupButtonUp()
+        setupLable()
         setupLayoutButton()
         uploadButtonPressed()
         setupConstraints()
@@ -142,6 +169,7 @@ private extension PublicStorageViewController {
     @objc func pullToRefresh() {
         viewModel.fetchData()
         refresher.endRefreshing()
+        setupLable()
     }
     
     @objc private func changeContentLayout() {
@@ -161,6 +189,16 @@ private extension PublicStorageViewController {
         uploadButton.action = { [weak self] in
             guard let self = self else { return }
             self.tap()
+        }
+    }
+    
+    func setupLable() {
+        //nothingLabel.isHidden = true
+        if cellDataSource.isEmpty == true {
+            nothingLabel.isHidden = false
+            view.addSubview(nothingLabel)
+        } else {
+            nothingLabel.isHidden = true
         }
     }
     
@@ -191,16 +229,41 @@ private extension PublicStorageViewController {
             make.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
             make.left.equalToSuperview().inset(16)
         }
-        
         uploadButton.snp.makeConstraints { make in
             make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+        }
+        nothingLabel.snp.makeConstraints { make in
+            make.center.equalToSuperview()
         }
     }
 }
 
 extension PublicStorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        viewModel.presentDetailVC(path: "")
+        let model = modelReturn(indexPath: indexPath)
+        let name = model.name
+        let path = model.path
+        if let fileType = model.file {
+            print(fileType)
+            if fileType.contains("officedocument") {
+                viewModel.presentDocument(name: name, type: .web, fileType: fileType)
+            } else if fileType.contains("image") {
+                let urlString = model.sizes
+                if let originalUrlString = urlString?.first(where: { $0.name == "ORIGINAL" })?.url {
+                    if let url = URL(string: originalUrlString) {
+                        viewModel.presentImage(url: url)
+                    }
+                } else if fileType.contains("type=video") {
+                    
+                } else if fileType.isEmpty {
+                    //                let newVC = StorageViewController(viewModel: viewModel, navigationTitle: name)
+                    //                navigationController?.pushViewController(newVC, animated: true)
+                    //                viewModel.fetchCurrentData(navigationTitle: name, path: path)
+                } else {
+                    viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
+                }
+            }
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
