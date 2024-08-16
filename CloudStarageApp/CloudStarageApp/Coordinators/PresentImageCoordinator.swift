@@ -26,11 +26,11 @@ extension PresentImageCoordinator {
     func presentImageScene() {
     }
     
-    func presentAtivityVc(item: String) {
-        guard let navigationController = navigationController else { return }
-        let avc = factory.makeActivityVc(item: item, coordinator: self)
-        navigationController.present(avc, animated: true)
-    }
+//    func presentAtivityVc(item: String) {
+//        guard let navigationController = navigationController else { return }
+//        let avc = factory.makeActivityVc(item: item, coordinator: self)
+//        navigationController.present(avc, animated: true)
+//    }
     
 }
     

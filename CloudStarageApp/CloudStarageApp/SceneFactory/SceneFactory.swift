@@ -134,9 +134,9 @@ struct SceneFactory {
     
 //    MARK: StorageCoordinator
     
-    static func makeStorageScene(navigationTitle: String, coordinator: StorageCoordinator) -> StorageViewController {
+    static func makeStorageScene(fetchpath: String, navigationTitle: String, coordinator: StorageCoordinator) -> StorageViewController {
         let vm = StorageViewModel(coordinator: coordinator)
-        let vc = StorageViewController(viewModel: vm, navigationTitle: navigationTitle)
+        let vc = StorageViewController(viewModel: vm, navigationTitle: navigationTitle, fetchpath: fetchpath)
         return vc
     }
     
