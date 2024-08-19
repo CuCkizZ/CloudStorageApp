@@ -234,7 +234,7 @@ extension StorageViewController: UICollectionViewDelegate {
         } else if fileType.contains("type=video") {
             print("video")
         } else if fileType.isEmpty {
-            viewModel.presentVc(title: name, path: path)
+            viewModel.paggination(title: name, path: path)
             self.fetchPath = ""
            // viewModel.fetchCurrentData(navigationTitle: name, path: path)
         } else {

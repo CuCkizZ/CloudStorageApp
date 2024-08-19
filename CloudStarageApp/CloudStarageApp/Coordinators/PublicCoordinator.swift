@@ -12,29 +12,29 @@ final class PublicCoordinator: Coordinator {
     private let factory = SceneFactory.self
     
     override func start() {
-        showPublic()
+        //showPublic()
         print("public coordinator started")
     }
     
     override func finish() {
         print("finish Login coordinator")
-        //finishDelegate?.coordinatorDidFinish(childCoordinator: self)
+        finishDelegate?.coordinatorDidFinish(childCoordinator: self)
     }
 }
 
 extension PublicCoordinator {
     
-    func showPublic() {
-        guard let navigationController = navigationController else { return }
-        let vc = factory.makePublicScene(coordinator: self)
-        navigationController.pushViewController(vc, animated: true)
-        print("public presented")
-    }
-    
-//    func presentAtivityVc(item: String) {
+//    func showPublic() {
 //        guard let navigationController = navigationController else { return }
-//        let avc = factory.makeActivityVc(item: item, coordinator: self)
-//        navigationController.present(avc, animated: true)
+//        let vc = factory.makePublicScene(fetchpath: "disk:/", navigationTitle: "Published", coordinator: self)
+//        navigationController.pushViewController(vc, animated: true)
+//        print("public presented")
 //    }
-    
+//    
+//    func paggination(navigationTitle: String, path: String) {
+//        guard let navigationController = navigationController else { return }
+//        let pageVC = factory.makePublicScene(fetchpath: path, navigationTitle: navigationTitle, coordinator: self)
+//        print("coordinator works")
+//        navigationController.pushViewController(pageVC, animated: true)
+//    }
 }

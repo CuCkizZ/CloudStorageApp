@@ -168,10 +168,7 @@ private extension ProfileViewController {
     //    MARK: Present Published Files
     
     @objc func buttonTapped() {
-        let vm = PublicStorageViewModel()
-        let vc = PublicStorageViewController(viewModel: vm)
-        navigationController?.pushViewController(vc, animated: true)
-        //viewModel.pushToPublic()
+        viewModel.pushToPublic()
     }
     
     func updateViewLayer() {

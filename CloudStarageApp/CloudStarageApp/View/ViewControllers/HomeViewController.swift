@@ -270,7 +270,9 @@ extension HomeViewController: UICollectionViewDelegate {
             let urlString = cellDataSource[indexPath.row].sizes
             if let originalUrlString = urlString?.first(where: { $0.name == "ORIGINAL" })?.url {
                 if let url = URL(string: originalUrlString) {
+                    //let vc = PresentImageViewController(viewModel)
                     viewModel.presentImage(url: url)
+                    
                 }
             }
         } else {

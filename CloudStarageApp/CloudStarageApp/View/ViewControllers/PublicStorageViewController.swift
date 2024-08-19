@@ -40,10 +40,15 @@ final class PublicStorageViewController: UIViewController {
         return collection
     }()
     
+    var navigationTitle: String
+    private var fetchPath: String
+    
     private let networkStatusView = UIView()
     
-    init(viewModel: PublickStorageViewModelProtocol) {
+    init(viewModel: PublickStorageViewModelProtocol, navigationTitle: String, fetchpath: String) {
         self.viewModel = viewModel
+        self.navigationTitle = navigationTitle
+        self.fetchPath = fetchpath
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -53,7 +58,11 @@ final class PublicStorageViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        if fetchPath == "" {
+            fetchPath = "disk:/"
+            viewModel.fetchData(path: fetchPath)
+        }
+        //viewModel.fetchCurrentData(navigationTitle: navigationTitle, path: fetchPath)
     }
     
     override func viewDidLoad() {
@@ -133,7 +142,7 @@ private extension PublicStorageViewController {
         guard let navigationController = navigationController else { return }
         navigationItem.rightBarButtonItem = navigationController.setRightButton()
         navigationController.navigationBar.prefersLargeTitles = true
-        title = "Published"
+        title = navigationTitle
     }
     
     func setupLayoutButton() {
@@ -167,7 +176,9 @@ private extension PublicStorageViewController {
     //   MARK: Objc Methods
     
     @objc func pullToRefresh() {
-        viewModel.fetchData()
+//        viewModel.fetchCurrentData(navigationTitle: navigationTitle, path: fetchPath)
+
+        viewModel.fetchData(path: fetchPath)
         refresher.endRefreshing()
         setupLable()
     }
@@ -243,8 +254,13 @@ extension PublicStorageViewController: UICollectionViewDelegate {
         let model = modelReturn(indexPath: indexPath)
         let name = model.name
         let path = model.path
-        if let fileType = model.file {
-            print(fileType)
+        self.fetchPath = path
+        let dir = model.type
+        if dir == "dir" {
+            viewModel.paggination(title: name, path: path)
+            fetchPath = "" 
+        }
+        if let fileType = model.mimeType {
             if fileType.contains("officedocument") {
                 viewModel.presentDocument(name: name, type: .web, fileType: fileType)
             } else if fileType.contains("image") {
@@ -253,17 +269,18 @@ extension PublicStorageViewController: UICollectionViewDelegate {
                     if let url = URL(string: originalUrlString) {
                         viewModel.presentImage(url: url)
                     }
-                } else if fileType.contains("type=video") {
-                    
-                } else if fileType.isEmpty {
-                    //                let newVC = StorageViewController(viewModel: viewModel, navigationTitle: name)
-                    //                navigationController?.pushViewController(newVC, animated: true)
-                    //                viewModel.fetchCurrentData(navigationTitle: name, path: path)
+                }  else if fileType.contains("video") {
+                    print("video")
+//                } else if dir == "dir" {
+//                    viewModel.paggination(title: name, path: path)
+//                    self.fetchPath = ""
                 } else {
                     viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
                 }
             }
+            print(fileType)
         }
+
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {

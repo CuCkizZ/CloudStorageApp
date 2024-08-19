@@ -14,7 +14,7 @@ protocol NetworkServiceProtocol {
     func createNewFolder(name: String)
     func deleteFolder(urlString: String, name: String)
     func fetchLastData(completion: @escaping (Result<Data, Error>) -> Void)
-    func fetchPublicData(completion: @escaping (Result<Data, Error>) -> Void)
+    func fetchPublicData(path: String, completion: @escaping (Result<Data, Error>) -> Void)
     func fetchCurrentData(path: String, completion: @escaping (Result<Data, Error>) -> Void)
     func toPublicFile(path: String)
     func unpublishFile(path: String)

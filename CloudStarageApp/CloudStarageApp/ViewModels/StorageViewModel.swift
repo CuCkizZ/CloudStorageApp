@@ -12,7 +12,7 @@ protocol StorageViewModelProtocol: BaseViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
     
     func fetchCurrentData(navigationTitle: String, path: String)
-    func presentVc(title: String, path: String)
+    func paggination(title: String, path: String)
     func presentShareScene(shareLink: String)
 }
 
@@ -121,7 +121,7 @@ extension StorageViewModel: StorageViewModelProtocol {
         }
     }
 
-    func presentVc(title: String, path: String) {
+    func paggination(title: String, path: String) {
         coordinator.paggination(navigationTitle: title, path: path)
         //fetchCurrentData(title: title, path: path)
     }

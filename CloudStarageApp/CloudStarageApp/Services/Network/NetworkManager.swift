@@ -64,8 +64,8 @@ class NetworkManager {
         }
     }
     
-    func fetchPublicData(completion: @escaping (Result<[PublicItem], Error>) -> Void) {
-        client.fetchPublicData { result in
+    func fetchPublicData(path: String, completion: @escaping (Result<[PublicItem], Error>) -> Void) {
+        client.fetchPublicData(path: path) { result in
             switch result {
             case .success(let data):
                 do {

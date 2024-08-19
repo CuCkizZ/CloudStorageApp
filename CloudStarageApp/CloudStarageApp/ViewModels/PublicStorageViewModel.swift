@@ -14,13 +14,14 @@ protocol PublickStorageViewModelProtocol: BaseViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[PublicItem]> { get set }
 
     func presentDetailVC(path: String)
-    func unpublicResource()
+    func unpublicResource(path: String)
     func presentShareView(shareLink: String)
-    
+    func paggination(title: String, path: String)
+    func fetchData(path: String)
     
 }
 final class PublicStorageViewModel {
-    private var coordinator: PublicCoordinator?
+    private var coordinator: ProfileCoordinator
     var searchKeyword: String = ""
     
     var isLoading: Observable<Bool> = Observable(false)
@@ -30,9 +31,8 @@ final class PublicStorageViewModel {
     var model: [PublicItem] = []
     
     
-    init(coordinator: PublicCoordinator? = nil) {
+    init(coordinator: ProfileCoordinator) {
         self.coordinator = coordinator
-        fetchData()
         startMonitoringNetwork()
     }
     
@@ -47,11 +47,11 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     }
     
     func presentImage(url: URL) {
-        coordinator?.presentImageScene(url: url)
+        coordinator.presentImageScene(url: url)
     }
     
     func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
-        coordinator?.presentDocument(name: name, type: type, fileType: fileType)
+        coordinator.presentDocument(name: name, type: type, fileType: fileType)
     }
     
     func publishFile(_ path: String) {
@@ -76,12 +76,14 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
         }
     }
     
-    func fetchData() {
+    func fetchData() {}
+    
+    func fetchData(path: String) {
         if isLoading.value ?? true {
             return
         }
         isLoading.value = true
-        NetworkManager.shared.fetchPublicData { [weak self] result in
+        NetworkManager.shared.fetchPublicData(path: path) { [weak self] result in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 switch result {
@@ -108,8 +110,13 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
         }
     }
     
-    func unpublicResource() {
-        
+    func paggination(title: String, path: String) {
+        coordinator.paggination(path: path, title: title)
+        //fetchCurrentData(title: title, path: path)
+    }
+    
+    func unpublicResource(path: String) {
+        NetworkManager.shared.unpublishFile(path)
     }
     
     func numbersOfRowInSection() -> Int {

@@ -16,6 +16,7 @@ protocol ProfileViewModelProtocol: AnyObject {
     func pushToPublic()
     func fetchData()
     func logOut()
+    func paggination(title: String, path: String)
 }
 
 final class ProfileViewModel {
@@ -73,7 +74,11 @@ extension ProfileViewModel: ProfileViewModelProtocol {
     }
     
     func pushToPublic() {
-        //coordinator.finish()
+        coordinator.goToPublic()
+    }
+    
+    func paggination(title: String, path: String) {
+        coordinator.paggination(path: path, title: title)
     }
     
     func logOut() {
