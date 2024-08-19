@@ -24,7 +24,7 @@ final class StorageViewController: UIViewController {
     private lazy var changeLayoutButton = CSChangeLayoutButton()
     private lazy var selectedStyle: PresentationStyle = .table
     var navigationTitle: String
-    private var fetchPath: String = "disk:/"
+    private var fetchPath: String
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: view.bounds.width, height: 33)
@@ -49,6 +49,7 @@ final class StorageViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        viewModel.fetchCurrentData(navigationTitle: navigationTitle, path: fetchPath)
     }
     
     override func viewDidLoad() {
@@ -106,7 +107,7 @@ private extension StorageViewController {
     
     func setupLayout() {
         setupView()
-        SetupNavBar()
+        setupNavBar()
         setupButtonTap()
         uploadButtonPressed()
         setupLayoutButton()
@@ -122,7 +123,7 @@ private extension StorageViewController {
         setupCollectionView()
     }
     
-    func SetupNavBar() {
+    func setupNavBar() {
         guard let navigationController = navigationController else { return }
         navigationItem.rightBarButtonItem = navigationController.setRightButton()
         navigationController.navigationBar.prefersLargeTitles = true
@@ -153,14 +154,12 @@ private extension StorageViewController {
         collectionView.addSubview(refresher)
     }
     
-    private func modelReturn(indexPath: IndexPath) -> CellDataModel {
+    func modelReturn(indexPath: IndexPath) -> CellDataModel {
         return cellDataSource[indexPath.row]
     }
     
     @objc func pullToRefresh() {
-       // guard let fetchPath = fetchPath else { return }
-        viewModel.fetchCurrentData(navigationTitle: "refreshed", path: fetchPath)
-        print("pul to refresh: " + fetchPath)
+        viewModel.fetchCurrentData(navigationTitle: navigationTitle, path: fetchPath)
        // viewModel.fetchData()
         refresher.endRefreshing()
     }
@@ -236,6 +235,7 @@ extension StorageViewController: UICollectionViewDelegate {
             print("video")
         } else if fileType.isEmpty {
             viewModel.presentVc(title: name, path: path)
+            self.fetchPath = ""
            // viewModel.fetchCurrentData(navigationTitle: name, path: path)
         } else {
             viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)

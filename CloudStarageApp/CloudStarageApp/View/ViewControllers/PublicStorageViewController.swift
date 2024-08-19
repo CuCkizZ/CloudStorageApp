@@ -81,7 +81,7 @@ final class PublicStorageViewController: UIViewController {
             DispatchQueue.main.async {
                 if isLoading {
                     self.activityIndicator.startAnimating()
-                    //self.collectionView.reloadData()
+                    self.collectionView.reloadData()
                 } else {
                     self.activityIndicator.stopAnimating()
                     self.activityIndicator.isHidden = true
