@@ -44,7 +44,8 @@ final class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        self.blackButton.addTarget(self, action: #selector(loginButtonPressed), for: .touchUpInside)
+        logoutButton.setTitle("logout")
+        blackButton.addTarget(self, action: #selector(loginButtonPressed), for: .touchUpInside)
 
         YandexLoginSDK.shared.add(observer: self)
         setupView()
@@ -74,9 +75,10 @@ final class LoginViewController: UIViewController {
                 customValues: self.customValues.isEmpty ? nil : self.customValues,
                 authorizationStrategy: authorizationStrategy
             )
-        } catch { 
+        } catch {
             errorOccured(error)
         }
+//            print(YandexLoginSDK)
     }
 }
 
@@ -154,12 +156,13 @@ private extension LoginViewController {
     }
 
     @objc func logout() {
-        do {
-            try YandexLoginSDK.shared.logout()
-            loginResult = nil
-        } catch {
-            errorOccured(error)
-        }
+  //      self.present(ViewController(), animated: true)
+//        do {
+//            try YandexLoginSDK.shared.logout()
+//            loginResult = nil
+//        } catch {
+//            errorOccured(error)
+//        }
     }
     
     func setupConstraints() {

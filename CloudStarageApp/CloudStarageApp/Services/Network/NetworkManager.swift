@@ -4,9 +4,10 @@
 //
 //  Created by Nikita Beglov on 26.07.2024.
 //
-
+import YandexLoginSDK
 import Foundation
 import Alamofire
+import UIKit
 
 class NetworkManager {
     
@@ -20,6 +21,8 @@ class NetworkManager {
     private let mapper = Mapper()
     private let client = NetworkService()
     static let shared = NetworkManager()
+    
+    private init() {}
     
     func getToken() {
         client.getToket()
@@ -125,7 +128,7 @@ class NetworkManager {
     func toPublicFile(path: String) {
         client.toPublicFile(path: path)
     }
-
+    
     
     func unpublishFile(_ path: String) {
         client.unpublishFile(path: path)
@@ -140,4 +143,28 @@ class NetworkManager {
         client.renameFile(oldName: oldName, newName: newName)
     }
     
+    
+    
+//    func saveLoginResult(_ loginResult: LoginResult) {
+//        do {
+//            try SharedStorages.loginResultStorage.save(object: loginResult.asDictionary)
+//        } catch {
+//            print("Failed to save login result: \(error)")
+//        }
+//    }
+//    
+//    func getLoginResult() -> LoginResult? {
+//        guard let loginResultAsDictionary = try? SharedStorages.loginResultStorage.loadObject() else {
+//            return nil
+//        }
+//        return LoginResult(dictionary: loginResultAsDictionary)
+//    }
+//    
+//    func authenticateAndNavigateToHome(from viewController: UIViewController) {
+//        // Проверяем, сохранен ли результат логина
+//        guard let loginResult = self.getLoginResult() else {
+//            print("No login result found, user might need to login.")
+//            return
+//        }
+//    }
 }
