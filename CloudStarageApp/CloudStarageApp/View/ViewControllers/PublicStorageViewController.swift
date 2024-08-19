@@ -255,32 +255,51 @@ extension PublicStorageViewController: UICollectionViewDelegate {
         let name = model.name
         let path = model.path
         self.fetchPath = path
-        let dir = model.type
-        if dir == "dir" {
-            viewModel.paggination(title: name, path: path)
-            fetchPath = "" 
-        }
-        if let fileType = model.mimeType {
-            if fileType.contains("officedocument") {
-                viewModel.presentDocument(name: name, type: .web, fileType: fileType)
-            } else if fileType.contains("image") {
-                let urlString = model.sizes
-                if let originalUrlString = urlString?.first(where: { $0.name == "ORIGINAL" })?.url {
-                    if let url = URL(string: originalUrlString) {
-                        viewModel.presentImage(url: url)
-                    }
-                }  else if fileType.contains("video") {
-                    print("video")
-//                } else if dir == "dir" {
-//                    viewModel.paggination(title: name, path: path)
-//                    self.fetchPath = ""
-                } else {
-                    viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
+        let mimeType = model.mimeType ?? "dir"
+        
+        switch mimeType {
+        case mimeType where mimeType.contains("officedocument"):
+            guard let filetype = model.file else { return }
+            viewModel.presentDocument(name: name, type: .web, fileType: filetype)
+        case mimeType where mimeType.contains("pdf"):
+            guard let filetype = model.file else { return }
+            viewModel.presentDocument(name: name, type: .pdf, fileType: filetype)
+        case mimeType where mimeType.contains("image"):
+            let urlString = model.sizes
+            if let originalUrlString = urlString?.first(where: { $0.name == "ORIGINAL" })?.url {
+                if let url = URL(string: originalUrlString) {
+                    viewModel.presentImage(url: url)
                 }
             }
-            print(fileType)
+        case mimeType where mimeType.contains("video"):
+            viewModel.presentDetailVC(path: path)
+        case "dir":
+            viewModel.paggination(title: name, path: path)
+        default:
+            break
         }
-
+        
+        
+        
+        
+//        if fileType.contains("officedocument") {
+//            viewModel.presentDocument(name: name, type: .web, fileType: fileType)
+//        } else if fileType.contains("image") {
+//            let urlString = model.sizes
+//            if let originalUrlString = urlString?.first(where: { $0.name == "ORIGINAL" })?.url {
+//                if let url = URL(string: originalUrlString) {
+//                    viewModel.presentImage(url: url)
+//                }
+//            }  else if fileType.contains("video") {
+//                print("video")
+//                //                } else if dir == "dir" {
+//                //                    viewModel.paggination(title: name, path: path)
+//                //                    self.fetchPath = ""
+//            } else {
+//                viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
+//            }
+//        }
+//        print(fileType)
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {

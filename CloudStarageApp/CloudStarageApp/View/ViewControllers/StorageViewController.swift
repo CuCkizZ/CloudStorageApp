@@ -222,23 +222,25 @@ extension StorageViewController: UICollectionViewDelegate {
         self.fetchPath = path
         let fileType = model.file
         
-        if fileType.contains("officedocument") {
+        switch fileType {
+        case fileType where fileType.contains("officedocument"):
             viewModel.presentDocument(name: name, type: .web, fileType: fileType)
-        } else if fileType.contains("image") {
+        case fileType where fileType.contains("pdf"):
+            viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
+        case fileType where fileType.contains("image"):
             let urlString = cellDataSource[indexPath.row].sizes
             if let originalUrlString = urlString.first(where: { $0.name == "ORIGINAL" })?.url {
                 if let url = URL(string: originalUrlString) {
                     viewModel.presentImage(url: url)
                 }
             }
-        } else if fileType.contains("type=video") {
+        case fileType where fileType.contains("video"):
             print("video")
-        } else if fileType.isEmpty {
+        case "":
             viewModel.paggination(title: name, path: path)
             self.fetchPath = ""
-           // viewModel.fetchCurrentData(navigationTitle: name, path: path)
-        } else {
-            viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
+        default:
+            break
         }
     }
     
