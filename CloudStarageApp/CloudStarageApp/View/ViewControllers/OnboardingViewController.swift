@@ -1,10 +1,6 @@
 import UIKit
 import SnapKit
 
-protocol OnboardingViewControllerProtocol {
-    
-}
-
 final class OnboardingViewController: UIViewController {
     
     private let viewModel: OnboardingViewModelProtocol

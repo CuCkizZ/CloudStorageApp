@@ -160,7 +160,6 @@ private extension StorageViewController {
     
     @objc func pullToRefresh() {
         viewModel.fetchCurrentData(navigationTitle: navigationTitle, path: fetchPath)
-       // viewModel.fetchData()
         refresher.endRefreshing()
     }
     
@@ -219,8 +218,8 @@ extension StorageViewController: UICollectionViewDelegate {
         let model = modelReturn(indexPath: indexPath)
         let name = model.name
         let path = model.path
-        self.fetchPath = path
         let fileType = model.file
+        self.fetchPath = path
         
         switch fileType {
         case fileType where fileType.contains("officedocument"):

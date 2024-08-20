@@ -126,7 +126,6 @@ final class NetworkService: NetworkServiceProtocol {
     func fetchPublicData(path: String, completion: @escaping (Result<Data, Error>) -> Void) {
         let urlStirng = "https://cloud-api.yandex.net/v1/disk/resources/public"
         guard let url = URL(string: urlStirng) else { return }
-        
         AF.request(url, method: .get, headers: headers).response { response in
             if let error = response.error {
                 completion(.failure(error))

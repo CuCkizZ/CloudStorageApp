@@ -1,10 +1,6 @@
 import UIKit
 import SnapKit
 
-//protocol PageProtocol: AnyObject {
-//    func configure(_ text: String, _ image: String) -> UIViewController
-//}
-
 final class OnboardingPageViewController: UIViewController {
         
     private lazy var greetingImage: UIImageView = {
@@ -58,3 +54,6 @@ private extension OnboardingPageViewController {
         }
     }
 }
+
+
+extension OnboardingPageViewController: OnboardingViewControllerProtocol {}

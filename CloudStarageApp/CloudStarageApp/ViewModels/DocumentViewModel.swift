@@ -7,6 +7,8 @@
 
 import Foundation
 
+protocol DocumentViewModelProtocol {}
+
 final class DocumentViewModel {
     
     private let coordinator: Coordinator
@@ -17,3 +19,5 @@ final class DocumentViewModel {
         self.fileType = fileType
     }
 }
+
+extension DocumentViewModel: DocumentViewModelProtocol {}

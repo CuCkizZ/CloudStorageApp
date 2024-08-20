@@ -71,19 +71,19 @@ struct SceneFactory {
                              finishDelegate: CoorditatorFinishDelegate) -> TabBarController {
         
         let homeNavigationController = UINavigationController()
-        let homeCoordinator = HomeCoordinator(type: .home, navigationController: homeNavigationController)
+        let homeCoordinator: Coordinator = HomeCoordinator(type: .home, navigationController: homeNavigationController)
         homeNavigationController.tabBarItem = UITabBarItem(title: "Latest", image: UIImage(resource: .homeTab), tag: 0)
         homeCoordinator.finishDelegate = finishDelegate
         homeCoordinator.start()
         
         let storageNavigationController = UINavigationController()
-        let storageCoordinator = StorageCoordinator(type: .storage, navigationController: storageNavigationController)
+        let storageCoordinator: Coordinator = StorageCoordinator(type: .storage, navigationController: storageNavigationController)
         storageNavigationController.tabBarItem = UITabBarItem(title: "Storage", image: UIImage(resource: .storageTab), tag: 1)
         storageCoordinator.finishDelegate = finishDelegate
         storageCoordinator.start()
         
         let profileNavigationController = UINavigationController()
-        let profileCoordinator = ProfileCoordinator(type: .profile, navigationController: profileNavigationController)
+        let profileCoordinator: Coordinator = ProfileCoordinator(type: .profile, navigationController: profileNavigationController)
         profileNavigationController.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(resource: .profileTab), tag: 2)
         profileCoordinator.finishDelegate = finishDelegate
         profileCoordinator.start()
@@ -100,7 +100,7 @@ struct SceneFactory {
 //    MARK: LoginCoordinator
     
     static func makeLoginScene(coordinator: LoginCoordinator) -> LoginViewController {
-        let viewModel = LoginViewModel(coordinator: coordinator)
+        let viewModel: LoginViewOutput = LoginViewModel(coordinator: coordinator)
         let loginVC = LoginViewController(viewModel: viewModel)
         return loginVC
     }
@@ -108,9 +108,9 @@ struct SceneFactory {
 //    MARK: HomeCoordinator
     
     static func makeHomeScene(coordinator: HomeCoordinator) -> HomeViewController {
-        let viewModel = HomeViewModel(coordinator: coordinator)
-        let homeVC = HomeViewController(viewModel: viewModel)
-        return homeVC
+        let vm: HomeViewModelProtocol = HomeViewModel(coordinator: coordinator)
+        let vc = HomeViewController(viewModel: vm)
+        return vc
     }
     
     static func makeDocumentScene(name: String, type: TypeOfConfigDocumentVC, fileType: String, coordinator: Coordinator) -> DocumentViewController {
@@ -135,7 +135,7 @@ struct SceneFactory {
 //    MARK: StorageCoordinator
     
     static func makeStorageScene(fetchpath: String, navigationTitle: String, coordinator: StorageCoordinator) -> StorageViewController {
-        let vm = StorageViewModel(coordinator: coordinator)
+        let vm: StorageViewModelProtocol = StorageViewModel(coordinator: coordinator)
         let vc = StorageViewController(viewModel: vm, navigationTitle: navigationTitle, fetchpath: fetchpath)
         return vc
     }
@@ -143,13 +143,13 @@ struct SceneFactory {
 //    MARK: ProfileCoordinator
     
     static func makeProfileScene(coordinator: ProfileCoordinator) -> ProfileViewController {
-        let vm = ProfileViewModel(coordinator: coordinator)
+        let vm: ProfileViewModelProtocol = ProfileViewModel(coordinator: coordinator)
         let vc = ProfileViewController(viewModel: vm)
         return vc
     }
     
     static func makePublicScene(fetchpath: String, navigationTitle: String, coordinator: ProfileCoordinator) -> PublicStorageViewController {
-        let vm = PublicStorageViewModel(coordinator: coordinator)
+        let vm: PublickStorageViewModelProtocol = PublicStorageViewModel(coordinator: coordinator)
         let vc = PublicStorageViewController(viewModel: vm, navigationTitle: navigationTitle, fetchpath: fetchpath)
         return vc
     }
@@ -172,6 +172,5 @@ struct SceneFactory {
         let avc = UIActivityViewController(activityItems: [item], applicationActivities: nil)
         return avc
     }
-    
 }
 
