@@ -18,12 +18,25 @@ final class PresentImageViewController: UIViewController {
     private lazy var nameLabel = UILabel()
     private lazy var dateLabel = UILabel()
     private lazy var sizeLabel = UILabel()
+    
+    private lazy var nameIcon = UIImageView(image: UIImage(systemName: "doc.richtext"))
+    private lazy var dateIcon = UIImageView(image: UIImage(systemName: "calendar.badge.plus"))
+    private lazy var sizeIcon = UIImageView(image: UIImage(systemName: "externaldrive"))
     private lazy var infoView = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height / 2))
+    
+    private lazy var iconStacView: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [nameIcon, dateIcon, sizeIcon])
+        stack.axis = .vertical
+        stack.alignment = .center
+        stack.spacing = 16
+        return stack
+    }()
+    
     private lazy var infoStackView: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [nameLabel, dateLabel, sizeLabel])
         stack.axis = .vertical
         stack.alignment = .center
-        //stack.backgroundColor = .gray
+        stack.spacing = 16
         return stack
     }()
     
@@ -110,9 +123,9 @@ final class PresentImageViewController: UIViewController {
     
     
     func configure(model: CellDataModel) {
-        
         nameLabel.text = model.name
-        dateLabel.text = model.date + String(describing: model.size)
+        dateLabel.text = model.date
+        sizeLabel.text = String(describing: model.size)
         self.activityIndicator.startAnimating()
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -148,6 +161,7 @@ private extension PresentImageViewController {
         view.addSubview(infoView)
         contentView.addSubview(imageView)
         infoView.addSubview(infoStackView)
+        infoView.addSubview(iconStacView)
         initialSize = contentView.frame.size
         contentView.center = view.center
     }
@@ -165,6 +179,10 @@ private extension PresentImageViewController {
     
     @objc func deleteButtonTapped() {
         
+    }
+    
+    func setupInfoView() {
+        infoView.backgroundColor = AppColors.customGray.withAlphaComponent(0.5)
     }
     
     @objc func infoButtonTapped() {
@@ -201,8 +219,12 @@ private extension PresentImageViewController {
             make.left.right.equalToSuperview()
             make.bottom.equalToSuperview()
         }
+        iconStacView.snp.makeConstraints { make in
+            make.left.top.bottom.equalToSuperview()
+        }
         infoStackView.snp.makeConstraints { make in
-            make.edges.equalToSuperview()
+            make.right.top.bottom.equalToSuperview()
+            make.left.equalTo(iconStacView.snp.right)
         }
     }
 }

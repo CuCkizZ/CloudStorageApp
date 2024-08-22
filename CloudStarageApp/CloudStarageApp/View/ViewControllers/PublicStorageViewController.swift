@@ -62,6 +62,7 @@ final class PublicStorageViewController: UIViewController {
     }
     
     func bindViewModel() {
+        self.activityIndicator.isHidden = false
         viewModel.isLoading.bind { [weak self] isLoading in
             guard let self = self, let isLoading = isLoading else { return }
             DispatchQueue.main.async {
