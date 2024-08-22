@@ -32,13 +32,13 @@ extension ProfileCoordinator {
     
     func goToPublic() {
         guard let navigationController = navigationController else { return }
-        let publicVC = factory.makePublicScene(fetchpath: "disk:/", navigationTitle: "Published", coordinator: self)
+        let publicVC = factory.makePublicScene(navigationTitle: "Published", coordinator: self)
         navigationController.pushViewController(publicVC, animated: true)
     }
     
     func paggination(path: String, title: String) {
         guard let navigationController = navigationController else { return }
-        let publicVC = factory.makePublicScene(fetchpath: path, navigationTitle: title, coordinator: self)
+        let publicVC = factory.makePublicScene(navigationTitle: title, coordinator: self)
         navigationController.pushViewController(publicVC, animated: true)
     }
     

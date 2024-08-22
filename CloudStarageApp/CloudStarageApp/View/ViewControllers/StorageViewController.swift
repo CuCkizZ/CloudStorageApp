@@ -1,30 +1,21 @@
 import UIKit
 import SnapKit
 
-private enum PresentationStyle: String, CaseIterable {
-    case table
-    case defaultGrid
-    
-    var buttonImage: UIImage {
-        switch self {
-        case .table: return #imageLiteral(resourceName: "file")
-        case .defaultGrid: return #imageLiteral(resourceName: "profileTab")
-        }
-    }
-}
-
 final class StorageViewController: UIViewController {
     // MARK: Model
     private var viewModel: StorageViewModelProtocol
     private var cellDataSource: [CellDataModel] = []
     
+    private var navigationTitle: String
+    private var fetchPath: String
+//    UI
+    
     private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
+    private lazy var networkStatusView = UIView()
     private lazy var uploadButton = CSUploadButton()
     private lazy var changeLayoutButton = CSChangeLayoutButton()
     private lazy var selectedStyle: PresentationStyle = .table
-    var navigationTitle: String
-    private var fetchPath: String
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: view.bounds.width, height: 33)
@@ -33,8 +24,6 @@ final class StorageViewController: UIViewController {
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
-    
-    private let networkStatusView = UIView()
 
     init(viewModel: StorageViewModelProtocol, navigationTitle: String, fetchpath: String) {
         self.viewModel = viewModel
@@ -55,12 +44,10 @@ final class StorageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        bindNetworkMonitor()
-        setupNetworkStatusView(networkStatusView)
-        
         setupLayout()
         bindView()
         bindViewModel()
+        bindNetworkMonitor()
     }
     
     func bindView() {
@@ -108,6 +95,7 @@ private extension StorageViewController {
     func setupLayout() {
         setupView()
         setupNavBar()
+        setupNetworkStatusView(networkStatusView)
         setupButtonTap()
         uploadButtonPressed()
         setupLayoutButton()
@@ -147,8 +135,8 @@ private extension StorageViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.reuseID)
-        collectionView.refreshControl = refresher
         collectionView.alwaysBounceVertical = true
+        collectionView.refreshControl = refresher
         refresher.tintColor = AppColors.customGray
         refresher.addTarget(self, action: #selector(pullToRefresh), for: .valueChanged)
         collectionView.addSubview(refresher)
@@ -157,6 +145,43 @@ private extension StorageViewController {
     func modelReturn(indexPath: IndexPath) -> CellDataModel {
         return cellDataSource[indexPath.row]
     }
+    
+    func setupButtonTap() {
+        uploadButton.action = { [weak self] in
+            guard let self = self else { return }
+            self.tap()
+        }
+    }
+    
+    func tap() {
+        uploadButtonPressed()
+    }
+    
+    func uploadButtonPressed() {
+        uploadButton.addAction(UIAction.createNewFolder(view: self,
+                                                        viewModel: viewModel),
+                               for: .touchUpInside)
+    }
+    
+    func setupConstraints() {
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        collectionView.snp.makeConstraints { make in
+            make.top.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.left.equalToSuperview().inset(16)
+            make.right.equalToSuperview()
+        }
+        changeLayoutButton.snp.makeConstraints { make in
+            make.top.equalTo(collectionView).inset(-32)
+            make.right.equalTo(collectionView).inset(16)
+        }
+        uploadButton.snp.makeConstraints { make in
+            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+        }
+    }
+    
+    //    MARK: @objc Methods
     
     @objc func pullToRefresh() {
         viewModel.fetchCurrentData(navigationTitle: navigationTitle, path: fetchPath)
@@ -173,40 +198,6 @@ private extension StorageViewController {
                 navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "profileTab")
             }
             collectionView.collectionViewLayout.invalidateLayout()
-        }
-    }
-    
-    func setupButtonTap() {
-        uploadButton.action = { [weak self] in
-            guard let self = self else { return }
-            self.tap()
-        }
-    }
-    
-    func tap() {
-        uploadButtonPressed()
-    }
-    
-    private func uploadButtonPressed() {
-        uploadButton.addAction(UIAction.createNewFolder(view: self,
-                                                        viewModel: viewModel),
-                               for: .touchUpInside)
-    }
-    
-    func setupConstraints() {
-        activityIndicator.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
-        collectionView.snp.makeConstraints { make in
-            make.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.left.equalToSuperview().inset(16)
-        }
-        changeLayoutButton.snp.makeConstraints { make in
-            make.top.equalTo(collectionView).inset(-32)
-            make.right.equalTo(collectionView).inset(16)
-        }
-        uploadButton.snp.makeConstraints { make in
-            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
         }
     }
 }

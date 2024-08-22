@@ -13,7 +13,7 @@ extension UIViewController: NetworkMonitoringProtocol {
     func setupNetworkStatusView(_ networkStatusView: UIView) {
         networkStatusView.backgroundColor = .red
         networkStatusView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 30)
-        networkStatusView.alpha = 0 // Начинаем с прозрачного состояния
+        networkStatusView.alpha = 0
         view.addSubview(networkStatusView)
         setupMonitoringLabel(networkStatusView)
     }
@@ -38,6 +38,21 @@ extension UIViewController: NetworkMonitoringProtocol {
         UIView.animate(withDuration: 0.5) {
             networkStatusView.frame.origin.y = -30
             networkStatusView.alpha = 0
+        }
+    }
+}
+
+extension UIViewController {
+    
+    enum PresentationStyle: String, CaseIterable {
+        case table
+        case defaultGrid
+        
+        var buttonImage: UIImage {
+            switch self {
+            case .table: return #imageLiteral(resourceName: "file")
+            case .defaultGrid: return #imageLiteral(resourceName: "profileTab")
+            }
         }
     }
 }

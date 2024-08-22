@@ -8,7 +8,7 @@
 import Foundation
 import Network
 
-protocol StorageViewModelProtocol: BaseViewModelProtocol, AnyObject {
+protocol StorageViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
     
     func fetchCurrentData(navigationTitle: String, path: String)
@@ -20,32 +20,28 @@ final class StorageViewModel {
     
     private let coordinator: StorageCoordinator
     private var model: [Item] = []
+    private let networkMonitor = NWPathMonitor()
+    private var path: String?
     
     var isLoading: Observable<Bool> = Observable(false)
     var isConnected: Observable<Bool> = Observable(nil)
-    private let networkMonitor = NWPathMonitor()
     var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
-    
-    var path: String?
-    
     
     init(coordinator: StorageCoordinator) {
         self.coordinator = coordinator
-        //self.fetchData()
         startMonitoringNetwork()
     }
     
-    func mapModel() {
+    private func mapModel() {
         cellDataSource.value = model.compactMap { CellDataModel($0) }
     }
-
-    func fetchdadada() {
-    }
-    
 }
     
 extension StorageViewModel: StorageViewModelProtocol {
     
+    func presentShareView(shareLink: String) {
+        
+    }
     
     func presentAvc(item: String) {
         coordinator.presentAtivityVc(item: item)
@@ -55,8 +51,7 @@ extension StorageViewModel: StorageViewModelProtocol {
         coordinator.presentImageScene(model: model)
     }
     
-    
-    func unpublishFile(_ path: String) {
+    func unpublishResource(_ path: String) {
         NetworkManager.shared.unpublishFile(path)
     }
     
@@ -123,7 +118,6 @@ extension StorageViewModel: StorageViewModelProtocol {
 
     func paggination(title: String, path: String) {
         coordinator.paggination(navigationTitle: title, path: path)
-        //fetchCurrentData(title: title, path: path)
     }
     
     func presentShareScene(shareLink: String) {
@@ -134,7 +128,7 @@ extension StorageViewModel: StorageViewModelProtocol {
         coordinator.presentDocument(name: name, type: type, fileType: fileType)
     }
     
-    func publishFile(_ path: String) {
+    func publishResource(_ path: String) {
         NetworkManager.shared.toPublicFile(path: path)
     }
     
@@ -159,10 +153,5 @@ extension StorageViewModel: StorageViewModelProtocol {
     
     func numbersOfRowInSection() -> Int {
         return model.count
-    }
-    
-    
-    func sortData() {
-        
     }
 }
