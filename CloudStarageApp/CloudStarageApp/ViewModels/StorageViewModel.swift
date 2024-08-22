@@ -52,7 +52,7 @@ extension StorageViewModel: StorageViewModelProtocol {
     }
     
     func presentImage(model: CellDataModel) {
-        //coordinator.presentImageScene(url: url)
+        coordinator.presentImageScene(model: model)
     }
     
     

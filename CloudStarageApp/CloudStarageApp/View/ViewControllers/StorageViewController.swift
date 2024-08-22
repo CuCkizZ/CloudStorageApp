@@ -221,18 +221,15 @@ extension StorageViewController: UICollectionViewDelegate {
         let fileType = model.file
         self.fetchPath = path
         
-        switch fileType {
-        case fileType where fileType.contains("officedocument"):
+        let mimeType = model.mimeType
+        
+        switch mimeType {
+        case mimeType where mimeType.contains("word") || mimeType.contains("officedocument"):
             viewModel.presentDocument(name: name, type: .web, fileType: fileType)
-        case fileType where fileType.contains("pdf"):
+        case mimeType where mimeType.contains("pdf"):
             viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
-        case fileType where fileType.contains("image"):
-            let urlString = cellDataSource[indexPath.row].sizes
-            if let originalUrlString = urlString.first(where: { $0.name == "ORIGINAL" })?.url {
-                if let url = URL(string: originalUrlString) {
-                    //viewModel.presentImage(url: url)
-                }
-            }
+        case mimeType where mimeType.contains("image"):
+            viewModel.presentImage(model: model)
         case fileType where fileType.contains("video"):
             print("video")
         case "":
@@ -249,7 +246,7 @@ extension StorageViewController: UICollectionViewDelegate {
         let name = model.name
         let path = model.path
         let file = model.file
-        let type = model.type ?? "dir"
+        let type = model.type
         let publicUrl = model.publicUrl
         return UIContextMenuConfiguration.contextMenuConfiguration(for: .full,
                                                                    viewModel: viewModel,
