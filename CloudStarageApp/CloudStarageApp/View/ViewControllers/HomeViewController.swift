@@ -1,18 +1,6 @@
 import UIKit
 import SnapKit
 
-private enum PresentationStyle: String, CaseIterable {
-    case table
-    case defaultGrid
-    
-    var buttonImage: UIImage {
-        switch self {
-        case .table: return #imageLiteral(resourceName: "file")
-        case .defaultGrid: return #imageLiteral(resourceName: "profileTab")
-        }
-    }
-}
-
 final class HomeViewController: UIViewController {
     
     private let viewModel: HomeViewModelProtocol
@@ -20,11 +8,12 @@ final class HomeViewController: UIViewController {
     
     //   UI
     
+    private lazy var selectedStyle: PresentationStyle = .table
+    
     private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var uploadButton = CSUploadButton()
     private lazy var changeLayoutButton = CSChangeLayoutButton()
-    private var selectedStyle: PresentationStyle = .table
     private lazy var networkStatusView = UIView()
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -55,25 +44,10 @@ final class HomeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        bindNetworkMonitor()
-        setupNetworkStatusView(networkStatusView)
-        
-        
-        
-        NotificationCenter.default.addObserver(self, selector: #selector(showOfflineDeviceUI(notification:)), name: NSNotification.Name.connectivityStatus, object: nil)
-        activityIndicator.hidesWhenStopped = true
-        
         setupLayout()
         bindView()
         bindViewModel()
-    }
-    
-    @objc func showOfflineDeviceUI(notification: Notification) {
-        if NetworkMonitor.shared.isConnected {
-            print("Connected")
-        } else {
-            print("Not connected")
-        }
+        bindNetworkMonitor()
     }
 }
     
@@ -117,20 +91,6 @@ private extension HomeViewController {
             }
         }
     }
-    
-    func bindGettingLink() {
-        viewModel.isLoading.bind { [weak self] isLoading in
-            guard let self = self, let isLoading = isLoading else { return }
-            DispatchQueue.main.async {
-                if isLoading {
-                    self.activityIndicator.isHidden = false
-                    self.activityIndicator.startAnimating()
-                } else {
-                    self.activityIndicator.stopAnimating()
-                }
-            }
-        }
-    }
 }
 
     // MARK: Layout
@@ -139,8 +99,9 @@ private extension HomeViewController {
     
     func setupLayout() {
         setupView()
+        setupNetworkStatusView(networkStatusView)
         setupNavBar()
-        setupButtonUp()
+        setupUploadButton()
         uploadButtonPressed()
         setupConstraints()
         setupLayoutButton()
@@ -152,6 +113,8 @@ private extension HomeViewController {
         view.addSubview(uploadButton)
         view.addSubview(changeLayoutButton)
         view.backgroundColor = .white
+        NotificationCenter.default.addObserver(self, selector: #selector(showOfflineDeviceUI(notification:)), name: NSNotification.Name.connectivityStatus, object: nil)
+        activityIndicator.hidesWhenStopped = true
         setupCollectionView()
     }
     
@@ -160,6 +123,10 @@ private extension HomeViewController {
         navigationItem.rightBarButtonItem = navigationController.setRightButton()
         navigationController.navigationBar.prefersLargeTitles = true
         title = "Latests"
+    }
+    
+    func modelReturn(indexPath: IndexPath) -> CellDataModel {
+        return cellDataSource[indexPath.row]
     }
     
     func setupLayoutButton() {
@@ -184,6 +151,45 @@ private extension HomeViewController {
         refresher.tintColor = AppColors.customGray
         refresher.addTarget(self, action: #selector(pullToRefresh), for: .valueChanged)
         collectionView.addSubview(refresher)
+    }
+    
+    func setupUploadButton() {
+        uploadButton.action = { [weak self] in
+            guard let self = self else { return }
+            self.tap()
+        }
+    }
+    
+    func uploadButtonPressed() {
+        uploadButton.addAction(UIAction.createNewFolder(view: self,
+                                                        viewModel: viewModel),
+                               for: .touchUpInside)
+    }
+    
+    func chechPublickKey(publicKey: String?) -> Bool {
+        if publicKey != nil {
+            return true
+        } else {
+            return false
+        }
+    }
+    
+    func setupConstraints() {
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        collectionView.snp.makeConstraints { make in
+            make.top.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.left.equalToSuperview().inset(16)
+            make.right.equalToSuperview()
+        }
+        changeLayoutButton.snp.makeConstraints { make in
+            make.top.equalTo(collectionView).inset(-32)
+            make.right.equalTo(collectionView).inset(16)
+        }
+        uploadButton.snp.makeConstraints { make in
+            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+        }
     }
     
     //   MARK: Objc Methods
@@ -213,50 +219,34 @@ private extension HomeViewController {
         }
     }
     
-    func setupButtonUp() {
-        uploadButton.action = { [weak self] in
-            guard let self = self else { return }
-            self.tap()
-        }
-    }
-    
-    func uploadButtonPressed() {
-        uploadButton.addAction(UIAction.createNewFolder(view: self,
-                                                        viewModel: viewModel),
-                               for: .touchUpInside)
-    }
-    
-    func setupConstraints() {
-        activityIndicator.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
-        collectionView.snp.makeConstraints { make in
-            make.top.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
-            make.left.equalToSuperview().inset(16)
-            make.right.equalToSuperview()
-        }
-        changeLayoutButton.snp.makeConstraints { make in
-            make.top.equalTo(collectionView).inset(-32)
-            make.right.equalTo(collectionView).inset(16)
-        }
-        uploadButton.snp.makeConstraints { make in
-            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
-        }
-    }
-    
-    func modelReturn(indexPath: IndexPath) -> CellDataModel {
-        return cellDataSource[indexPath.row]
-    }
-    
-    private func chechPublickKey(publicKey: String?) -> Bool {
-        if publicKey != nil {
-            return true
+    @objc func showOfflineDeviceUI(notification: Notification) {
+        if NetworkMonitor.shared.isConnected {
+            print("Connected")
         } else {
-            return false
+            print("Not connected")
         }
     }
 }
+
+//    MARK: CollectionViewDataSource + Delegate
+
+extension HomeViewController: UICollectionViewDataSource {
     
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        cellDataSource.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let model = modelReturn(indexPath: indexPath)
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
+                                                            for: indexPath) as? CollectionViewCell else {
+            fatalError("Wrong cell")
+        }
+        cell.configure(model)
+        return cell
+    }
+}
+
 extension HomeViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -293,20 +283,4 @@ extension HomeViewController: UICollectionViewDelegate {
                                                                    viewController: self)
     }
 }
-    
-extension HomeViewController: UICollectionViewDataSource {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        cellDataSource.count
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let model = modelReturn(indexPath: indexPath)
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
-                                                            for: indexPath) as? CollectionViewCell else {
-            fatalError("Wrong cell")
-        }
-        cell.lastUpdatedConfigure(model)
-        return cell
-    }
-}
+

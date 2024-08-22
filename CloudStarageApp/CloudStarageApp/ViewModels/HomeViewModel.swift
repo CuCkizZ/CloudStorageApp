@@ -8,24 +8,19 @@
 import Network
 import Foundation
 
-protocol HomeViewModelProtocol: BaseViewModelProtocol, AnyObject {
+protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
-    func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String)
-    func presentShareView(shareLink: String)
-    func publishFile(_ path: String)
-    
-    
-    func startMonitoringNetwork()
 }
 
 final class HomeViewModel {
     
     private let coordinator: HomeCoordinator
-    var isLoading: Observable<Bool> = Observable(false)
-    var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
     private var model: [Item] = []
     private let networkMonitor = NWPathMonitor()
+    
+    var isLoading: Observable<Bool> = Observable(false)
     var isConnected: Observable<Bool> = Observable(true)
+    var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
     
     init(coordinator: HomeCoordinator) {
         self.coordinator = coordinator
@@ -33,14 +28,16 @@ final class HomeViewModel {
         startMonitoringNetwork()
     }
     
-    func mapModel() {
+    private func mapModel() {
         cellDataSource.value = model.compactMap { CellDataModel($0) }
     }
-    
-
 }
     
 extension HomeViewModel: HomeViewModelProtocol {
+    
+    func numbersOfRowInSection() -> Int {
+        model.count
+    }
     
     func startMonitoringNetwork() {
         let queue = DispatchQueue.global(qos: .background)
@@ -59,6 +56,8 @@ extension HomeViewModel: HomeViewModelProtocol {
             }
         }
     }
+    
+//    MARK: Network
     
     func fetchData() {
         if isLoading.value ?? true {
@@ -85,19 +84,23 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func createNewFolder(_ name: String) {
-        NetworkManager.shared.createNewFolder(name)
-        DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
-            guard let self = self else { return }
-            self.fetchData()
+        if name.isEmpty == true {
+            NetworkManager.shared.createNewFolder("New Folder")
+            DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                guard let self = self else { return }
+                self.fetchData()
+            }
         }
     }
     
-    func publishFile(_ path: String) {
+    func publishResource(_ path: String) {
         NetworkManager.shared.toPublicFile(path: path)
+        fetchData()
     }
     
-    func unpublishFile(_ path: String) {
+    func unpublishResource(_ path: String) {
         NetworkManager.shared.unpublishFile(path)
+        fetchData()
     }
     
     func renameFile(oldName: String, newName: String) {
@@ -105,9 +108,7 @@ extension HomeViewModel: HomeViewModelProtocol {
         fetchData()
     }
     
-    func numbersOfRowInSection() -> Int {
-        model.count
-    }
+//    MARK: Navigation
     
     func presentShareView(shareLink: String) {
         coordinator.presentShareScene(shareLink: shareLink)
@@ -124,5 +125,4 @@ extension HomeViewModel: HomeViewModelProtocol {
     func presentImage(model: CellDataModel) {
         coordinator.presentImageScene(model: model)
     }
-    
 }

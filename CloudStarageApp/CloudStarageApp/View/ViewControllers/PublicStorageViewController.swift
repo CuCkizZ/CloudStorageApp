@@ -1,36 +1,26 @@
 import UIKit
 import SnapKit
 
-private enum PresentationStyle: String, CaseIterable {
-    case table
-    case defaultGrid
-    
-    var buttonImage: UIImage {
-        switch self {
-        case .table: return #imageLiteral(resourceName: "file")
-        case .defaultGrid: return #imageLiteral(resourceName: "profileTab")
-        }
-    }
-}
-
 final class PublicStorageViewController: UIViewController {
     
-    private lazy var refresher = UIRefreshControl()
-    private lazy var activityIndicator = UIActivityIndicatorView()
     private let viewModel: PublickStorageViewModelProtocol
     private var cellDataSource: [CellDataModel] = []
+    private var navigationTitle: String
+//    UI
     
-    private let nothingLabel: UILabel = {
+    private lazy var networkStatusView = UIView()
+    private lazy var selectedStyle: PresentationStyle = .table
+    private lazy var refresher = UIRefreshControl()
+    private lazy var activityIndicator = UIActivityIndicatorView()
+    private lazy var uploadButton = CSUploadButton()
+    private lazy var changeLayoutButton = CSChangeLayoutButton()
+    
+   private lazy var nothingLabel: UILabel = {
         let label = UILabel()
         label.text = "Nothing to show"
         return label
     }()
     
-    //MARK: CollectionView
-    private lazy var uploadButton = CSUploadButton()
-    private let changeLayoutButton = CSChangeLayoutButton()
-    
-    private var selectedStyle: PresentationStyle = .table
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: view.bounds.width, height: 33)
@@ -39,16 +29,10 @@ final class PublicStorageViewController: UIViewController {
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
-    
-    var navigationTitle: String
-    private var fetchPath: String
-    
-    private let networkStatusView = UIView()
-    
-    init(viewModel: PublickStorageViewModelProtocol, navigationTitle: String, fetchpath: String) {
+
+    init(viewModel: PublickStorageViewModelProtocol, navigationTitle: String) {
         self.viewModel = viewModel
         self.navigationTitle = navigationTitle
-        self.fetchPath = fetchpath
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -58,22 +42,15 @@ final class PublicStorageViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        if fetchPath == "" {
-            fetchPath = "disk:/"
-            viewModel.fetchData(path: fetchPath)
-        }
-        //viewModel.fetchCurrentData(navigationTitle: navigationTitle, path: fetchPath)
+            viewModel.fetchData()
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        bindNetworkMonitor()
-        setupNetworkStatusView(networkStatusView)
-        
         setupLayout()
         bindView()
         bindViewModel()
+        bindNetworkMonitor()
     }
     
     func bindView() {
@@ -122,6 +99,7 @@ private extension PublicStorageViewController {
     func setupLayout() {
         setupView()
         SetupNavBar()
+        setupNetworkStatusView(networkStatusView)
         setupButtonUp()
         setupLable()
         setupLayoutButton()
@@ -169,31 +147,8 @@ private extension PublicStorageViewController {
         collectionView.addSubview(refresher)
     }
     
-    private func modelReturn(indexPath: IndexPath) -> CellDataModel {
+    func modelReturn(indexPath: IndexPath) -> CellDataModel {
         return cellDataSource[indexPath.row]
-    }
-    
-    //   MARK: Objc Methods
-    
-    @objc func pullToRefresh() {
-//        viewModel.fetchCurrentData(navigationTitle: navigationTitle, path: fetchPath)
-
-        viewModel.fetchData(path: fetchPath)
-        refresher.endRefreshing()
-        setupLable()
-    }
-    
-    @objc private func changeContentLayout() {
-        if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-            if layout.itemSize == CGSize(width: view.bounds.width, height: 33) {
-                layout.itemSize = CGSize(width: 100, height: 100)
-                navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "file")
-            } else {
-                layout.itemSize = CGSize(width: view.bounds.width, height: 33)
-                navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "profileTab")
-            }
-            collectionView.collectionViewLayout.invalidateLayout()
-        }
     }
     
     func setupButtonUp() {
@@ -213,11 +168,7 @@ private extension PublicStorageViewController {
         }
     }
     
-    @objc func tap() {
-        uploadButtonPressed()
-    }
-    
-    private func uploadButtonPressed() {
+    func uploadButtonPressed() {
         uploadButton.addAction(UIAction.createNewFolder(view: self,
                                                         viewModel: viewModel),
                                for: .touchUpInside)
@@ -237,24 +188,51 @@ private extension PublicStorageViewController {
             make.center.equalToSuperview()
         }
         collectionView.snp.makeConstraints { make in
-            make.top.right.bottom.equalTo(view.safeAreaLayoutGuide)
+            make.top.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
             make.left.equalToSuperview().inset(16)
+            make.right.equalToSuperview()
         }
-        uploadButton.snp.makeConstraints { make in
-            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+        changeLayoutButton.snp.makeConstraints { make in
+            make.top.equalTo(collectionView).inset(-32)
+            make.right.equalTo(collectionView).inset(16)
         }
         nothingLabel.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
     }
+    
+    //   MARK: Objc Methods
+    
+    @objc func pullToRefresh() {
+        viewModel.fetchData()
+        refresher.endRefreshing()
+        setupLable()
+    }
+    
+    @objc func tap() {
+        uploadButtonPressed()
+    }
+    
+    @objc private func changeContentLayout() {
+        if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
+            if layout.itemSize == CGSize(width: view.bounds.width, height: 33) {
+                layout.itemSize = CGSize(width: 100, height: 100)
+                navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "file")
+            } else {
+                layout.itemSize = CGSize(width: view.bounds.width, height: 33)
+                navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "profileTab")
+            }
+            collectionView.collectionViewLayout.invalidateLayout()
+        }
+    }
 }
+
+//  MARK: CollectionViewDataSource + Delegate
 
 extension PublicStorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let model = modelReturn(indexPath: indexPath)
         let name = model.name
-        let path = model.path
-        self.fetchPath = path
         let mimeType = model.mimeType
         let fileType = model.file
         
@@ -266,7 +244,7 @@ extension PublicStorageViewController: UICollectionViewDelegate {
         case mimeType where mimeType.contains("image"):
             viewModel.presentImage(model: model)
         case mimeType where mimeType.contains("video"):
-            viewModel.presentDetailVC(path: path)
+           print("video")
         default:
             break
         }

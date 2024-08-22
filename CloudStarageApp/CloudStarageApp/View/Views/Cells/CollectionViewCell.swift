@@ -71,9 +71,9 @@ final class CollectionViewCell: UICollectionViewCell {
             }
         }
         if model.publickKey != nil {
-            publishIcon.isHidden = false
+            animatedPublishIcon()
         } else {
-            publishIcon.isHidden = true
+            animatedPublishIconTrue()
         }
     }
 }
@@ -151,6 +151,19 @@ private extension CollectionViewCell {
             self.nameLabel.transform = fontTransform
             self.dateLabel.transform = fontTransform
             self.layoutIfNeeded()
+        }
+    }
+    
+    func animatedPublishIcon() {
+        UIView.animate(withDuration: 0.3) {
+            self.publishIcon.alpha = 1.0
+            self.publishIcon.isHidden = false
+        }
+    }
+    func animatedPublishIconTrue() {
+        UIView.animate(withDuration: 0.3) {
+            self.publishIcon.alpha = 0
+            self.publishIcon.isHidden = true
         }
     }
 }
