@@ -7,6 +7,15 @@ final class CollectionViewCell: UICollectionViewCell {
     
     static let reuseID = String(describing: CollectionViewCell.self)
     
+    private lazy var publishIcon: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(systemName: "link")
+        imageView.tintColor = AppColors.customGray
+        imageView.layer.cornerRadius = 15
+        imageView.contentMode = .center
+        return imageView
+    }()
+    
     private lazy var contentImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFit
@@ -34,7 +43,8 @@ final class CollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        setupCell()
+        
+        setupLayout()
         setupStackView()
     }
     
@@ -46,16 +56,6 @@ final class CollectionViewCell: UICollectionViewCell {
         updateContentStyle()
     }
     
-    func setupCell() {
-        contentView.backgroundColor = .white
-        contentView.layer.masksToBounds = true
-        contentView.addSubview(stackView)
-        stackView.backgroundColor = .white
-        
-        setupLabels()
-        
-    }
-    
     func configure(_ model: CellDataModel) {
         if let size = model.size {
             dateLabel.text = model.date + " \(size / 1000) кб"
@@ -65,40 +65,31 @@ final class CollectionViewCell: UICollectionViewCell {
         nameLabel.text = model.name
         DispatchQueue.main.async {
             if let previewImage = model.previewImage, let url = URL(string: previewImage) {
-                    self.contentImageView.load(url: url)
+                self.contentImageView.load(url: url)
             } else {
                 self.contentImageView.image = nil
             }
         }
-    }
-    
-    func lastUpdatedConfigure(_ model: CellDataModel) {
-        if let size = model.size {
-            dateLabel.text = model.date + " \(size / 1000) кб"
+        if model.publickKey != nil {
+            publishIcon.isHidden = false
         } else {
-            dateLabel.text = model.date
-        }
-        
-        nameLabel.text = model.name
-        DispatchQueue.main.async {
-            self.contentImageView.setImage(urlString: model.previewImage ?? "")
+            publishIcon.isHidden = true
         }
     }
-    
-    func publickConfigure(_ model: Item) {
-        nameLabel.text = model.name
-        dateLabel.text = model.created
-        //print(model.preview ?? "no link")
-        if let preview = URL(string: model.preview ?? "") {
-            DispatchQueue.main.async {
-                self.contentImageView.sd_setImage(with: preview, placeholderImage: .file)
-            }
-        }
-    }
-    
 }
 
+// MARK: PrivateLayoutSetup
+
 private extension CollectionViewCell {
+    
+    func setupLayout() {
+        contentView.backgroundColor = .white
+        contentView.layer.masksToBounds = true
+        contentView.addSubview(stackView)
+        contentView.addSubview(publishIcon)
+        stackView.backgroundColor = .white
+        setupLabels()
+    }
     
     func setupLabels() {
         nameLabel.font = .Inter.regular.size(of: 17)
@@ -119,6 +110,9 @@ private extension CollectionViewCell {
         }
         nameLabel.snp.makeConstraints { make in
             make.height.equalTo(17)
+        }
+        publishIcon.snp.makeConstraints { make in
+            make.right.centerY.equalTo(contentView).inset(30)
         }
     }
 }
@@ -143,10 +137,17 @@ extension CollectionViewCell {
         self.contentImageView.snp.remakeConstraints { make in
             make.size.equalTo(imageSize)
         }
-        
         let fontTransform: CGAffineTransform = isHorizontalStyle ? .identity : CGAffineTransform(scaleX: 0.8, y: 0.8)
-        
-        UIView.animate(withDuration: 0.3) {
+        animateLabelTransform(fontTransform: fontTransform)
+    }
+}
+
+// MARK: AnimationExtension
+
+private extension CollectionViewCell {
+    func animateLabelTransform(fontTransform: CGAffineTransform) {
+        UIView.animate(withDuration: 0.3) { [weak self] in
+            guard let self = self else { return }
             self.nameLabel.transform = fontTransform
             self.dateLabel.transform = fontTransform
             self.layoutIfNeeded()
