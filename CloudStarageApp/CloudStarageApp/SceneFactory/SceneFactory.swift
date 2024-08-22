@@ -148,9 +148,9 @@ struct SceneFactory {
         return vc
     }
     
-    static func makePublicScene(fetchpath: String, navigationTitle: String, coordinator: ProfileCoordinator) -> PublicStorageViewController {
+    static func makePublicScene(navigationTitle: String, coordinator: ProfileCoordinator) -> PublicStorageViewController {
         let vm: PublickStorageViewModelProtocol = PublicStorageViewModel(coordinator: coordinator)
-        let vc = PublicStorageViewController(viewModel: vm, navigationTitle: navigationTitle, fetchpath: fetchpath)
+        let vc = PublicStorageViewController(viewModel: vm, navigationTitle: navigationTitle)
         return vc
     }
     

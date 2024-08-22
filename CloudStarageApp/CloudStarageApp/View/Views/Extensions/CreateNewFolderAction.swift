@@ -8,7 +8,7 @@
 import UIKit
 
 extension UIAction {
-    static func createNewFolder(view: UIViewController, viewModel: BaseViewModelProtocol) -> UIAction {
+    static func createNewFolder(view: UIViewController, viewModel: BaseCollectionViewModelProtocol) -> UIAction {
         return UIAction { action in
             let actionSheet = UIAlertController(title: "What to do", message: nil, preferredStyle: .actionSheet)
             let newFolder = UIAlertAction(title: "New Folder", style: .default) { _ in

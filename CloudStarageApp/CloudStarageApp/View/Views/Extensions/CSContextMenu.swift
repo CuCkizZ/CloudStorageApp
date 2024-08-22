@@ -18,7 +18,7 @@ extension UIContextMenuConfiguration {
 //    TODO: PublicUrl accses 
     
     static func contextMenuConfiguration(for modelType: ModelType,
-                                         viewModel: BaseViewModelProtocol,
+                                         viewModel: BaseCollectionViewModelProtocol,
                                          name: String,
                                          path: String,
                                          file: String = "dir",
@@ -34,19 +34,19 @@ extension UIContextMenuConfiguration {
                 }
                 
                 let shareLinkAction = UIAction(title: "Share a link", image: UIImage(systemName: "link.badge.plus")) { _ in
-                    viewModel.publishFile(path)
+                    viewModel.publishResource(path)
                     if let publicUrl = publicUrl {
                         viewModel.presentAvc(item: publicUrl)
                     }
                 }
                 
                 let shareFileAction = UIAction(title: "Share a file", image: UIImage(systemName: "arrow.up.doc")) { _ in
-                    viewModel.publishFile(path)
+                    viewModel.publishResource(path)
                     viewModel.presentAvc(item: file)
                 }
                 
                 let unpublishAction = UIAction(title: "Unpublish", image: UIImage(systemName: "link")) { _ in
-                    viewModel.unpublishFile(path)
+                    viewModel.unpublishResource(path)
                 }
                 
                 let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
@@ -76,19 +76,19 @@ extension UIContextMenuConfiguration {
                 }
                 
                 let shareLinkAction = UIAction(title: "Share a link", image: UIImage(systemName: "link.badge.plus")) { _ in
-                    viewModel.publishFile(path)
+                    viewModel.publishResource(path)
                     if let publicUrl = publicUrl {
                         viewModel.presentAvc(item: publicUrl)
                     }
                 }
                 
                 let shareFileAction = UIAction(title: "Share a file", image: UIImage(systemName: "arrow.up.doc")) { _ in
-                    viewModel.publishFile(path)
+                    viewModel.publishResource(path)
                     viewModel.presentAvc(item: file)
                 }
                 
                 let unpublishAction = UIAction(title: "Unpublish", image: UIImage(systemName: "link")) { _ in
-                    viewModel.unpublishFile(path)
+                    viewModel.unpublishResource(path)
                 }
                 
                 let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
@@ -125,7 +125,7 @@ extension UIContextMenuConfiguration {
                 }
                 
                 let unpublishAction = UIAction(title: "Unpublish", image: UIImage(systemName: "link")) { _ in
-                    viewModel.unpublishFile(path)
+                    viewModel.unpublishResource(path)
                 }
                 
                 let shareLinkAction = UIAction(title: "Share a link", image: UIImage(systemName: "link.badge.plus")) { _ in
@@ -134,7 +134,7 @@ extension UIContextMenuConfiguration {
                     }
                 }
                 let shareFileAction = UIAction(title: "Share a file", image: UIImage(systemName: "arrow.up.doc")) { _ in
-                    viewModel.publishFile(path)
+                    viewModel.publishResource(path)
                     viewModel.presentAvc(item: file)
                 }
                 let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in
