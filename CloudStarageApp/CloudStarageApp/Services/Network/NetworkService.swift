@@ -19,7 +19,7 @@ private enum Constants {
 
 final class NetworkService: NetworkServiceProtocol {
     private var newtoken = ""
-    static var token = "" 
+    static var token = "y0_AgAAAAB3PvZkAADLWwAAAAELlSb3AADQZy6bNutAiZm4EhJkt3zSpFwhuQ" 
     var headers: HTTPHeaders = [:]
     
     init() {

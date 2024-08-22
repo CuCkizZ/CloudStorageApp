@@ -196,6 +196,9 @@ private extension PublicStorageViewController {
             make.top.equalTo(collectionView).inset(-32)
             make.right.equalTo(collectionView).inset(16)
         }
+        uploadButton.snp.makeConstraints { make in
+            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+        }
         nothingLabel.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
