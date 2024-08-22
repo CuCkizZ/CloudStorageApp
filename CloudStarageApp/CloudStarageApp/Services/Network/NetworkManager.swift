@@ -120,7 +120,6 @@ class NetworkManager {
         }
     }
     
-    
     func createNewFolder(_ name: String) {
         client.createNewFolder(name: name)
     }

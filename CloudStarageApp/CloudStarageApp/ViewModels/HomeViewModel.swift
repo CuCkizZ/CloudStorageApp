@@ -13,11 +13,12 @@ protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
 }
 
 final class HomeViewModel {
-    
+    var onErrorReceived: ((String) -> Void)?
     private let coordinator: HomeCoordinator
     private var model: [Item] = []
     private let networkMonitor = NWPathMonitor()
     
+    var isError: Observable<Bool> = Observable(nil)
     var isLoading: Observable<Bool> = Observable(false)
     var isConnected: Observable<Bool> = Observable(true)
     var cellDataSource: Observable<[CellDataModel]> = Observable(nil)

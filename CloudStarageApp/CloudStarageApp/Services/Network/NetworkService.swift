@@ -147,6 +147,7 @@ final class NetworkService: NetworkServiceProtocol {
                 print("Error: no response")
                 return
             }
+            //completion(statusCode)
             print("status code: \(statusCode)")
             if let error = response.error {
                 print("Error: \(error)")
@@ -223,5 +224,6 @@ final class NetworkService: NetworkServiceProtocol {
     }
 }
 
-
+extension NetworkService {
+}
 
