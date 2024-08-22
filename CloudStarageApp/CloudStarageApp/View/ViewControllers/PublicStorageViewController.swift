@@ -255,50 +255,21 @@ extension PublicStorageViewController: UICollectionViewDelegate {
         let name = model.name
         let path = model.path
         self.fetchPath = path
-        let mimeType = model.mimeType ?? "dir"
-        let filetype = model.file
+        let mimeType = model.mimeType
+        let fileType = model.file
         
         switch mimeType {
-        case mimeType where mimeType.contains("officedocument"):
-            viewModel.presentDocument(name: name, type: .web, fileType: filetype)
+        case mimeType where mimeType.contains("word") || mimeType.contains("officedocument"):
+            viewModel.presentDocument(name: name, type: .web, fileType: fileType)
         case mimeType where mimeType.contains("pdf"):
-            viewModel.presentDocument(name: name, type: .pdf, fileType: filetype)
+            viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
         case mimeType where mimeType.contains("image"):
-            let urlString = model.sizes
-            if let originalUrlString = urlString.first(where: { $0.name == "ORIGINAL" })?.url {
-                if let url = URL(string: originalUrlString) {
-                    //viewModel.presentImage(url: url)
-                }
-            }
+            viewModel.presentImage(model: model)
         case mimeType where mimeType.contains("video"):
             viewModel.presentDetailVC(path: path)
-        case "dir":
-            viewModel.paggination(title: name, path: path)
         default:
             break
         }
-        
-        
-        
-        
-//        if fileType.contains("officedocument") {
-//            viewModel.presentDocument(name: name, type: .web, fileType: fileType)
-//        } else if fileType.contains("image") {
-//            let urlString = model.sizes
-//            if let originalUrlString = urlString?.first(where: { $0.name == "ORIGINAL" })?.url {
-//                if let url = URL(string: originalUrlString) {
-//                    viewModel.presentImage(url: url)
-//                }
-//            }  else if fileType.contains("video") {
-//                print("video")
-//                //                } else if dir == "dir" {
-//                //                    viewModel.paggination(title: name, path: path)
-//                //                    self.fetchPath = ""
-//            } else {
-//                viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
-//            }
-//        }
-//        print(fileType)
     }
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
@@ -309,7 +280,6 @@ extension PublicStorageViewController: UICollectionViewDelegate {
         let file = model.file
         let publicUrl = model.publicUrl
         let type = model.type
-        print(file)
         return UIContextMenuConfiguration.contextMenuConfiguration(for: .publish,
                                                                    viewModel: viewModel,
                                                                    name: name,

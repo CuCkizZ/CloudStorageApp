@@ -261,20 +261,19 @@ extension HomeViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let model = modelReturn(indexPath: indexPath)
-        let fileType = model.file
         let name = model.name
+        let fileType = model.file
+        let mimeType = model.mimeType
         
-        if fileType.contains("officedocument") {
+        switch mimeType {
+        case mimeType where mimeType.contains("word") || mimeType.contains("officedocument"):
             viewModel.presentDocument(name: name, type: .web, fileType: fileType)
-        } else if fileType.contains("image") {
-            let urlString = cellDataSource[indexPath.row].sizes
-            if let originalUrlString = urlString.first(where: { $0.name == "ORIGINAL" })?.url {
-                if let url = URL(string: originalUrlString) {
-                    viewModel.presentImage(model: model)
-                }
-            }
-        } else {
+        case mimeType where mimeType.contains("pdf"):
             viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
+        case mimeType where mimeType.contains("image"):
+            viewModel.presentImage(model: model)
+        default:
+            break
         }
     }
     

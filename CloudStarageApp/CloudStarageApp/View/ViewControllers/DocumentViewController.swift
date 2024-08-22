@@ -39,7 +39,7 @@ final class DocumentViewController: UIViewController {
     
     func configure(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
         title = name
-        self.typeOfView = type
+        typeOfView = type
         guard let url = URL(string: fileType) else { return }
         switch type {
         case .pdf:

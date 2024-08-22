@@ -12,7 +12,7 @@ struct CellDataModel {
     let path: String
     let sizes: [Size]
     let size: Int?
-    let mimeType: String?
+    let mimeType: String
     
     init(_ item: Item) {
         self.publickKey = item.publicKey
@@ -25,7 +25,7 @@ struct CellDataModel {
         self.path = item.path
         self.sizes = item.sizes ?? []
         self.size = item.size
-        self.mimeType = item.mimeType
+        self.mimeType = item.mimeType ?? ""
         
         func dateFormatter(dateString: String) -> String {
             let dateFormatter = DateFormatter()

@@ -15,11 +15,13 @@ enum ModelType {
 
 extension UIContextMenuConfiguration {
     
+//    TODO: PublicUrl accses 
+    
     static func contextMenuConfiguration(for modelType: ModelType,
                                          viewModel: BaseViewModelProtocol,
                                          name: String,
                                          path: String,
-                                         file: String,
+                                         file: String = "dir",
                                          publicUrl: String?,
                                          type: String = "file",
                                          viewController: UIViewController) -> UIContextMenuConfiguration? {
@@ -33,11 +35,13 @@ extension UIContextMenuConfiguration {
                 
                 let shareLinkAction = UIAction(title: "Share a link", image: UIImage(systemName: "link.badge.plus")) { _ in
                     viewModel.publishFile(path)
-                    guard let publicUrl = publicUrl else { return }
-                    viewModel.presentAvc(item: publicUrl)
+                    if let publicUrl = publicUrl {
+                        viewModel.presentAvc(item: publicUrl)
+                    }
                 }
                 
                 let shareFileAction = UIAction(title: "Share a file", image: UIImage(systemName: "arrow.up.doc")) { _ in
+                    viewModel.publishFile(path)
                     viewModel.presentAvc(item: file)
                 }
                 
@@ -79,6 +83,7 @@ extension UIContextMenuConfiguration {
                 }
                 
                 let shareFileAction = UIAction(title: "Share a file", image: UIImage(systemName: "arrow.up.doc")) { _ in
+                    viewModel.publishFile(path)
                     viewModel.presentAvc(item: file)
                 }
                 
@@ -124,10 +129,12 @@ extension UIContextMenuConfiguration {
                 }
                 
                 let shareLinkAction = UIAction(title: "Share a link", image: UIImage(systemName: "link.badge.plus")) { _ in
-                    guard let publicUrl = publicUrl else { return }
-                    viewModel.presentAvc(item: publicUrl)
+                    if let publicUrl = publicUrl {
+                        viewModel.presentAvc(item: publicUrl)
+                    }
                 }
                 let shareFileAction = UIAction(title: "Share a file", image: UIImage(systemName: "arrow.up.doc")) { _ in
+                    viewModel.publishFile(path)
                     viewModel.presentAvc(item: file)
                 }
                 let renameAction = UIAction(title: "Rename", image: UIImage(systemName: "pencil.circle")) { _ in

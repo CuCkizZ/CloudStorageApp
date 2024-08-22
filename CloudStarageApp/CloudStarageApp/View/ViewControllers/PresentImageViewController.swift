@@ -9,17 +9,10 @@ import UIKit
 import SnapKit
 import SDWebImage
 
-enum TypeOfConfigure {
-    case lastItem
-    case storageItem
-    case publicItem
-}
 
 final class PresentImageViewController: UIViewController {
     
     private let viewModel: PresentImageViewModelProtocol
-    var model: CellDataModel?
-    
     private lazy var activityIndicator = UIActivityIndicatorView()
     
     private lazy var nameLabel = UILabel()
@@ -120,12 +113,9 @@ final class PresentImageViewController: UIViewController {
         
         nameLabel.text = model.name
         dateLabel.text = model.date + String(describing: model.size)
-//        guard let url = URL(string: model.name) else { return }
+        self.activityIndicator.startAnimating()
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            
-            self.activityIndicator.stopAnimating()
-            //self.activityIndicator.isHidden = true
             
             let urlString = model.sizes
             if let originalUrlString = urlString.first(where: { $0.name == "ORIGINAL" })?.url {
@@ -133,8 +123,9 @@ final class PresentImageViewController: UIViewController {
                     self.imageView.sd_setImage(with: url)
                 }
             }
+            self.activityIndicator.stopAnimating()
+            self.activityIndicator.isHidden = true
         }
-        //self.activityIndicator.hidesWhenStopped = true
     }
 }
 
@@ -143,7 +134,6 @@ private extension PresentImageViewController {
     func setupLayout() {
         view.backgroundColor = .white
         infoView.backgroundColor = .gray
-//        contentView.backgroundColor = .blue
         setupViews()
         setupButtons()
         setupConstraints()
@@ -183,7 +173,7 @@ private extension PresentImageViewController {
         })
     }
     
-    private func hideInfoView() {
+    func hideInfoView() {
            UIView.animate(withDuration: 0.4, animations: {
                self.infoView.transform = .identity
            })
