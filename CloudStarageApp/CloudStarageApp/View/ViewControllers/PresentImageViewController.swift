@@ -18,8 +18,6 @@ enum TypeOfConfigure {
 final class PresentImageViewController: UIViewController {
     
     private let viewModel: PresentImageViewModelProtocol
-    var model: CellDataModel?
-    
     private lazy var activityIndicator = UIActivityIndicatorView()
     
     private lazy var nameLabel = UILabel()
