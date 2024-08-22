@@ -15,7 +15,7 @@ protocol ShareActivityViewModelProtocol {
 final class ShareActivityViewModel {
 //    
     
-    private var model: [PublicItem] = []
+    private var model: [Item] = []
 //    private let coordinator: ProfileCoordinator
 //    
 //    init(coordinator: ProfileCoordinator) {

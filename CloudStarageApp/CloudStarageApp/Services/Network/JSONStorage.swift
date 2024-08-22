@@ -75,17 +75,6 @@ struct Exif: Codable {
 }
 
 // MARK: - Size
-struct Size: Codable {
-    let url: String?
-    let name: String?
-}
-
-// This file was generated from JSON Schema using quicktype, do not modify it directly.
-// To parse the JSON, add this file to your project and do:
-//
-//   let welcome = try? JSONDecoder().decode(Welcome.self, from: jsonData)
-
-import Foundation
 
 // MARK: - Welcome
 struct LastWelcome: Codable {
@@ -96,14 +85,14 @@ struct LastWelcome: Codable {
 // MARK: - Item
 struct LastItem: Codable {
     let antivirusStatus: String
-    let size: Int
+    let size: Int?
     let name: String
     let exif: LastExif
     let created: String
     let resourceId: String
     let modified: String
     let mimeType: String
-    let sizes: [LastSize]?
+    let sizes: [Size]?
     let file: String
     let mediaType: String
     let preview: String?
@@ -125,7 +114,7 @@ struct LastExif: Codable {
 }
 
 // MARK: - Size
-struct LastSize: Codable {
+struct Size: Codable {
     let url: String?
     let name: String?
 }

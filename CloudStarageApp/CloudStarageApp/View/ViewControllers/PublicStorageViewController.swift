@@ -18,7 +18,7 @@ final class PublicStorageViewController: UIViewController {
     private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
     private let viewModel: PublickStorageViewModelProtocol
-    private var cellDataSource: [PublicItem] = []
+    private var cellDataSource: [CellDataModel] = []
     
     private let nothingLabel: UILabel = {
         let label = UILabel()
@@ -169,7 +169,7 @@ private extension PublicStorageViewController {
         collectionView.addSubview(refresher)
     }
     
-    private func modelReturn(indexPath: IndexPath) -> PublicItem {
+    private func modelReturn(indexPath: IndexPath) -> CellDataModel {
         return cellDataSource[indexPath.row]
     }
     
@@ -256,19 +256,18 @@ extension PublicStorageViewController: UICollectionViewDelegate {
         let path = model.path
         self.fetchPath = path
         let mimeType = model.mimeType ?? "dir"
+        let filetype = model.file
         
         switch mimeType {
         case mimeType where mimeType.contains("officedocument"):
-            guard let filetype = model.file else { return }
             viewModel.presentDocument(name: name, type: .web, fileType: filetype)
         case mimeType where mimeType.contains("pdf"):
-            guard let filetype = model.file else { return }
             viewModel.presentDocument(name: name, type: .pdf, fileType: filetype)
         case mimeType where mimeType.contains("image"):
             let urlString = model.sizes
-            if let originalUrlString = urlString?.first(where: { $0.name == "ORIGINAL" })?.url {
+            if let originalUrlString = urlString.first(where: { $0.name == "ORIGINAL" })?.url {
                 if let url = URL(string: originalUrlString) {
-                    viewModel.presentImage(url: url)
+                    //viewModel.presentImage(url: url)
                 }
             }
         case mimeType where mimeType.contains("video"):
@@ -310,11 +309,12 @@ extension PublicStorageViewController: UICollectionViewDelegate {
         let file = model.file
         let publicUrl = model.publicUrl
         let type = model.type
-        return UIContextMenuConfiguration.contextMenuConfiguration(for: .publish, 
+        print(file)
+        return UIContextMenuConfiguration.contextMenuConfiguration(for: .publish,
                                                                    viewModel: viewModel,
                                                                    name: name,
                                                                    path: path,
-                                                                   file: file ?? "",
+                                                                   file: file,
                                                                    publicUrl: publicUrl,
                                                                    type: type,
                                                                    viewController: self)
@@ -332,7 +332,7 @@ extension PublicStorageViewController: UICollectionViewDataSource {
                                                             for: indexPath) as? CollectionViewCell else {
             fatalError("Wrong cell")
         }
-        cell.publickConfigure(model)
+        cell.configure(model)
         return cell
     }
 }

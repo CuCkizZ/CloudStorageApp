@@ -28,12 +28,12 @@ class NetworkManager {
         client.getToket()
     }
     
-    func fetchLastData(completion: @escaping (Result<[LastItem], Error>) -> Void) {
+    func fetchLastData(completion: @escaping (Result<[Item], Error>) -> Void) {
         client.fetchLastData { result in
             switch result {
             case .success(let data):
                 do {
-                    let result = try self.decoder.decode(LastWelcome.self, from: data)
+                    let result = try self.decoder.decode(Embedded.self, from: data)
                     completion(.success(result.items))
                 } catch {
                     completion(.failure(error))
@@ -64,12 +64,12 @@ class NetworkManager {
         }
     }
     
-    func fetchPublicData(path: String, completion: @escaping (Result<[PublicItem], Error>) -> Void) {
-        client.fetchPublicData(path: path) { result in
+    func fetchPublicData(path: String, completion: @escaping (Result<[Item], Error>) -> Void) {
+        client.fetchPublicData() { result in
             switch result {
             case .success(let data):
                 do {
-                    let result = try self.decoder.decode(PublicWelcome.self, from: data)
+                    let result = try self.decoder.decode(Embedded.self, from: data)
                     completion(.success(result.items))
                 } catch {
                     completion(.failure(error))
@@ -136,7 +136,7 @@ class NetworkManager {
     
     func deleteReqest(name: String) {
         let urlString = "https://cloud-api.yandex.net/v1/disk/resources?path=disk:/\(name)"
-        client.deleteFolder(urlString: urlString, name: name)
+        client.deleteFile(urlString: urlString, name: name)
     }
     
     func renameFile(oldName: String, newName: String) {

@@ -20,7 +20,8 @@ protocol BaseViewModelProtocol {
     func deleteFile(_ name: String)
     func publishFile(_ path: String)
     func renameFile(oldName: String, newName: String)
+    
+    func presentImage(model: CellDataModel)
     func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String)
-    func presentImage(url: URL)
     func presentAvc(item: String)
 }

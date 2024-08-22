@@ -16,7 +16,7 @@ private enum PresentationStyle: String, CaseIterable {
 final class HomeViewController: UIViewController {
     
     private let viewModel: HomeViewModelProtocol
-    private lazy var cellDataSource: [LastUploadedCellDataModel] = []
+    private lazy var cellDataSource: [CellDataModel] = []
     
     //   UI
     
@@ -244,7 +244,7 @@ private extension HomeViewController {
         }
     }
     
-    func modelReturn(indexPath: IndexPath) -> LastUploadedCellDataModel {
+    func modelReturn(indexPath: IndexPath) -> CellDataModel {
         return cellDataSource[indexPath.row]
     }
     
@@ -268,11 +268,9 @@ extension HomeViewController: UICollectionViewDelegate {
             viewModel.presentDocument(name: name, type: .web, fileType: fileType)
         } else if fileType.contains("image") {
             let urlString = cellDataSource[indexPath.row].sizes
-            if let originalUrlString = urlString?.first(where: { $0.name == "ORIGINAL" })?.url {
+            if let originalUrlString = urlString.first(where: { $0.name == "ORIGINAL" })?.url {
                 if let url = URL(string: originalUrlString) {
-                    //let vc = PresentImageViewController(viewModel)
-                    viewModel.presentImage(url: url)
-                    
+                    viewModel.presentImage(model: model)
                 }
             }
         } else {

@@ -11,7 +11,7 @@ private enum Constants {
 
 struct SceneFactory {
     
-//    MARK: OnboardingCoordinator
+    //    MARK: OnboardingCoordinator
     
     static func makeOnbording(coordinaror: OnboardingCoordinator) -> OnboardingViewController {
         var pages = [OnboardingPageViewController]()
@@ -34,7 +34,7 @@ struct SceneFactory {
         return view
     }
     
-//    MARK: AppCoordinator
+    //    MARK: AppCoordinator
     
     static func makeOnboardingFlow(coordinator: AppCoordinator,
                                    navigationController: UINavigationController,
@@ -58,11 +58,11 @@ struct SceneFactory {
     }
     
     static func makePublicFlow(coordinator: AppCoordinator,
-                              navigationController: UINavigationController,
-                              finisDelegate: CoorditatorFinishDelegate) -> PublicCoordinator {
+                               navigationController: UINavigationController,
+                               finisDelegate: CoorditatorFinishDelegate) -> PublicCoordinator {
         let publicCoordinator = PublicCoordinator(type: .profile,
-                                                navigationController: navigationController,
-                                                finishDelegate: finisDelegate)
+                                                  navigationController: navigationController,
+                                                  finishDelegate: finisDelegate)
         coordinator.addChildCoordinator(publicCoordinator)
         return publicCoordinator
     }
@@ -97,7 +97,7 @@ struct SceneFactory {
         return tabBarController
     }
     
-//    MARK: LoginCoordinator
+    //    MARK: LoginCoordinator
     
     static func makeLoginScene(coordinator: LoginCoordinator) -> LoginViewController {
         let viewModel: LoginViewOutput = LoginViewModel(coordinator: coordinator)
@@ -105,7 +105,7 @@ struct SceneFactory {
         return loginVC
     }
     
-//    MARK: HomeCoordinator
+    //    MARK: HomeCoordinator
     
     static func makeHomeScene(coordinator: HomeCoordinator) -> HomeViewController {
         let vm: HomeViewModelProtocol = HomeViewModel(coordinator: coordinator)
@@ -125,10 +125,10 @@ struct SceneFactory {
         return vc
     }
     
-    static func makeImageScene(url: URL, coordinator: Coordinator) -> PresentImageViewController {
+    static func makeImageScene(model: CellDataModel, coordinator: Coordinator) -> PresentImageViewController {
         let vm = PresentImageViewModel(coordinator: coordinator)
         let vc = PresentImageViewController(viewModel: vm)
-        vc.configure(url)
+        vc.configure(model: model)
         return vc
     }
     
@@ -140,7 +140,7 @@ struct SceneFactory {
         return vc
     }
     
-//    MARK: ProfileCoordinator
+    //    MARK: ProfileCoordinator
     
     static func makeProfileScene(coordinator: ProfileCoordinator) -> ProfileViewController {
         let vm: ProfileViewModelProtocol = ProfileViewModel(coordinator: coordinator)
@@ -160,7 +160,7 @@ struct SceneFactory {
         return vc
     }
     
-//    MARK: ShareViewController
+    //    MARK: ShareViewController
     
     static func makeShareSceneApp(shareLink: String, coordinator: Coordinator) -> ShareActivityViewController {
         let vm = ShareActivityViewModel()
@@ -172,5 +172,5 @@ struct SceneFactory {
         let avc = UIActivityViewController(activityItems: [item], applicationActivities: nil)
         return avc
     }
+    
 }
-

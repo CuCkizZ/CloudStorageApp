@@ -9,10 +9,11 @@ import Network
 import Foundation
 
 protocol HomeViewModelProtocol: BaseViewModelProtocol, AnyObject {
-    var cellDataSource: Observable<[LastUploadedCellDataModel]> { get set }
+    var cellDataSource: Observable<[CellDataModel]> { get set }
     func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String)
     func presentShareView(shareLink: String)
     func publishFile(_ path: String)
+    
     
     func startMonitoringNetwork()
 }
@@ -21,8 +22,8 @@ final class HomeViewModel {
     
     private let coordinator: HomeCoordinator
     var isLoading: Observable<Bool> = Observable(false)
-    var cellDataSource: Observable<[LastUploadedCellDataModel]> = Observable(nil)
-    private var model: [LastItem] = []
+    var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
+    private var model: [Item] = []
     private let networkMonitor = NWPathMonitor()
     var isConnected: Observable<Bool> = Observable(true)
     
@@ -33,7 +34,7 @@ final class HomeViewModel {
     }
     
     func mapModel() {
-        cellDataSource.value = model.compactMap { LastUploadedCellDataModel($0) }
+        cellDataSource.value = model.compactMap { CellDataModel($0) }
     }
     
 
@@ -120,8 +121,8 @@ extension HomeViewModel: HomeViewModelProtocol {
         coordinator.presentDocument(name: name, type: type, fileType: fileType)
     }
     
-    func presentImage(url: URL) {
-        coordinator.presentImageScene(url: url)
+    func presentImage(model: CellDataModel) {
+        coordinator.presentImageScene(model: model)
     }
     
 }

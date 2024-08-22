@@ -123,9 +123,10 @@ final class NetworkService: NetworkServiceProtocol {
         }
     }
     
-    func fetchPublicData(path: String, completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlStirng = "https://cloud-api.yandex.net/v1/disk/resources/public"
+    func fetchPublicData(completion: @escaping (Result<Data, Error>) -> Void) {
+        let urlStirng = "https://cloud-api.yandex.net/v1/disk/resources/public?type=file"
         guard let url = URL(string: urlStirng) else { return }
+        
         AF.request(url, method: .get, headers: headers).response { response in
             if let error = response.error {
                 completion(.failure(error))
@@ -140,7 +141,6 @@ final class NetworkService: NetworkServiceProtocol {
     func createNewFolder(name: String) {
         let urlString = "https://cloud-api.yandex.net/v1/disk/resources?path=disk:/\(name)"
         guard let url = URL(string: urlString) else { return }
-        
         
         AF.request(url, method: .put, headers: headers).validate().response { response in
             guard let statusCode = response.response?.statusCode else {
@@ -158,7 +158,7 @@ final class NetworkService: NetworkServiceProtocol {
         }
     }
     
-    func deleteFolder(urlString: String, name: String) {
+    func deleteFile(urlString: String, name: String) {
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .delete, headers: headers).response { response in
@@ -170,7 +170,6 @@ final class NetworkService: NetworkServiceProtocol {
     func toPublicFile(path: String) {
         let urlSting = "https://cloud-api.yandex.net/v1/disk/resources/publish?path=\(path)"
         guard let url = URL(string: urlSting) else { return }
-        
         
         AF.request(url, method: .put, headers: headers).validate().response { response in
             guard let statusCode = response.response?.statusCode else {

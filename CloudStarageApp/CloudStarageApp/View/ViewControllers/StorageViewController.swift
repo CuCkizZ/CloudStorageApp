@@ -230,7 +230,7 @@ extension StorageViewController: UICollectionViewDelegate {
             let urlString = cellDataSource[indexPath.row].sizes
             if let originalUrlString = urlString.first(where: { $0.name == "ORIGINAL" })?.url {
                 if let url = URL(string: originalUrlString) {
-                    viewModel.presentImage(url: url)
+                    //viewModel.presentImage(url: url)
                 }
             }
         case fileType where fileType.contains("video"):

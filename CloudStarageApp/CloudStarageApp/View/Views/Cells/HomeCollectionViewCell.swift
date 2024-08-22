@@ -72,7 +72,7 @@ final class CollectionViewCell: UICollectionViewCell {
         }
     }
     
-    func lastUpdatedConfigure(_ model: LastUploadedCellDataModel) {
+    func lastUpdatedConfigure(_ model: CellDataModel) {
         if let size = model.size {
             dateLabel.text = model.date + " \(size / 1000) кб"
         } else {
@@ -85,7 +85,7 @@ final class CollectionViewCell: UICollectionViewCell {
         }
     }
     
-    func publickConfigure(_ model: PublicItem) {
+    func publickConfigure(_ model: Item) {
         nameLabel.text = model.name
         dateLabel.text = model.created
         //print(model.preview ?? "no link")

@@ -51,8 +51,8 @@ extension StorageViewModel: StorageViewModelProtocol {
         coordinator.presentAtivityVc(item: item)
     }
     
-    func presentImage(url: URL) {
-        coordinator.presentImageScene(url: url)
+    func presentImage(model: CellDataModel) {
+        //coordinator.presentImageScene(url: url)
     }
     
     

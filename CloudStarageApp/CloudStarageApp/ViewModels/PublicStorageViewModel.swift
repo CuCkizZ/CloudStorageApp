@@ -11,7 +11,7 @@ import Network
 protocol PublickStorageViewModelProtocol: BaseViewModelProtocol, AnyObject {
     
     var isLoading: Observable<Bool> { get set }
-    var cellDataSource: Observable<[PublicItem]> { get set }
+    var cellDataSource: Observable<[CellDataModel]> { get set }
 
     func presentDetailVC(path: String)
     func unpublicResource(path: String)
@@ -26,9 +26,9 @@ final class PublicStorageViewModel {
     
     var isLoading: Observable<Bool> = Observable(false)
     var isConnected: Observable<Bool> = Observable(nil)
-    var cellDataSource: Observable<[PublicItem]> = Observable(nil)
+    var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
     private let networkMonitor = NWPathMonitor()
-    var model: [PublicItem] = []
+    var model: [Item] = []
     
     
     init(coordinator: ProfileCoordinator) {
@@ -37,7 +37,7 @@ final class PublicStorageViewModel {
     }
     
     func mapModel() {
-        cellDataSource.value = model
+        cellDataSource.value = model.compactMap { CellDataModel($0) }
     }
 }
 
@@ -46,8 +46,8 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
         
     }
     
-    func presentImage(url: URL) {
-        coordinator.presentImageScene(url: url)
+    func presentImage(model: CellDataModel) {
+        coordinator.presentImageScene(model: model)
     }
     
     func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String) {

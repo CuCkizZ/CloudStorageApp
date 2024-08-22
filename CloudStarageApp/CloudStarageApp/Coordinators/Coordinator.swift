@@ -113,11 +113,15 @@ extension Coordinator {
         navigationController.present(avc, animated: true)
     }
     
-    func presentImageScene(url: URL)  {
+    func presentImageScene(model: CellDataModel)  {
         guard let navigationController = navigationController else { return }
-        let vc = factory.makeImageScene(url: url, coordinator: self)
+        let vc = factory.makeImageScene(model: model, coordinator: self)
         navigationController.pushViewController(vc, animated: true)
     }
     
+    func popTo() {
+        guard let navigationController = navigationController else { return }
+        navigationController.popViewController(animated: true)
+    }
     
 }
