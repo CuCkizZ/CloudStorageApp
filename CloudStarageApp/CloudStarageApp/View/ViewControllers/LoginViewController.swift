@@ -65,21 +65,6 @@ final class LoginViewController: UIViewController {
             }
         }
     }
-    
-    @objc func loginButtonPressed() {
-        let authorizationStrategy: YandexLoginSDK.AuthorizationStrategy = .default
-        
-        do {
-            try YandexLoginSDK.shared.authorize(
-                with: self,
-                customValues: self.customValues.isEmpty ? nil : self.customValues,
-                authorizationStrategy: authorizationStrategy
-            )
-        } catch {
-            errorOccured(error)
-        }
-//            print(YandexLoginSDK)
-    }
 }
 
 // MARK: Private Setup Methods
@@ -143,6 +128,7 @@ private extension LoginViewController {
     }
     
     @objc func buttonPressed() {
+       // print(loginResult)
         onSighInTapped()
     }
     
@@ -155,15 +141,6 @@ private extension LoginViewController {
         loadingView.isHidden = true
     }
 
-    @objc func logout() {
-  //      self.present(ViewController(), animated: true)
-//        do {
-//            try YandexLoginSDK.shared.logout()
-//            loginResult = nil
-//        } catch {
-//            errorOccured(error)
-//        }
-    }
     
     func setupConstraints() {
         blackButton.snp.makeConstraints { make in
@@ -195,12 +172,50 @@ private extension LoginViewController {
 extension LoginViewController: YandexLoginSDKObserver {
     
     func didFinishLogin(with result: Result<LoginResult, Error>) {
-        switch result { 
+        switch result {
         case .success(let loginResult):
             self.loginResult = loginResult
+            NetworkService.token = loginResult.token
+            print(NetworkService.token)
+            print(loginResult.jwt)
         case .failure(let error):
             self.errorOccured(error)
         }
+    }
+    
+    @objc func loginButtonPressed() {
+        let authorizationStrategy: YandexLoginSDK.AuthorizationStrategy = .default
+        
+        do {
+            try YandexLoginSDK.shared.authorize(
+                with: self,
+                customValues: self.customValues.isEmpty ? nil : self.customValues,
+                authorizationStrategy: authorizationStrategy
+            )
+        } catch {
+            errorOccured(error)
+        }
+        //onSighInTapped()
+        //            print(YandexLoginSDK)
+    }
+    
+    @objc func logout() {
+        do {
+            try YandexLoginSDK.shared.logout()
+            loginResult = nil
+            presentLogouted()
+        } catch {
+            errorOccured(error)
+        }
+    }
+    
+    func presentLogouted() {
+        let alert = UIAlertController(title: "Logout", message: "You have been logged out.", preferredStyle: .alert)
+        
+        let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+        }
+        alert.addAction(okAction)
+        present(alert, animated: true)
     }
 }
 
@@ -209,8 +224,7 @@ extension LoginViewController: YandexLoginSDKObserver {
 extension LoginViewController: LoginViewInput {
     
     func onSighInTapped() {
-//        presentLogin()
-        viewModel.login(login: "", password: "")
+            viewModel.login(login: "", password: "")
     }
     
     func onSignUpTapped() {

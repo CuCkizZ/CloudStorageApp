@@ -19,13 +19,13 @@ private enum Constants {
 
 final class NetworkService: NetworkServiceProtocol {
     private var newtoken = ""
-    private let token = "" 
+    static var token = "" 
     var headers: HTTPHeaders = [:]
     
     init() {
         self.headers = [
             "Accept" : "application/json",
-            "Authorization" : "OAuth y0_AgAAAAB3PvZkAADLWwAAAAELlSb3AADQZy6bNutAiZm4EhJkt3zSpFwhuQ"
+            "Authorization" : "OAuth \(NetworkService.token)"
         ]
     }
     

@@ -16,8 +16,8 @@ final class NetworkMonitor {
     private let monitor: NWPathMonitor
     
     private(set) var isConnected = false
-    private(set) var isExpensive = false
-    private(set) var currentConnectionType: NWInterface.InterfaceType?
+    private var isExpensive = false
+    private var currentConnectionType: NWInterface.InterfaceType?
     
     private init() {
         monitor = NWPathMonitor()
