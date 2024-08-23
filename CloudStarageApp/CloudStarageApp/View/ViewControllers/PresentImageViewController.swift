@@ -22,7 +22,7 @@ final class PresentImageViewController: UIViewController {
     private lazy var nameIcon = UIImageView(image: UIImage(systemName: "doc.richtext"))
     private lazy var dateIcon = UIImageView(image: UIImage(systemName: "calendar.badge.plus"))
     private lazy var sizeIcon = UIImageView(image: UIImage(systemName: "externaldrive"))
-    private lazy var infoView = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height / 2))
+    private lazy var infoView = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
     
     private lazy var iconStacView: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [nameIcon, dateIcon, sizeIcon])
@@ -55,7 +55,7 @@ final class PresentImageViewController: UIViewController {
     private lazy var deleteButton = UIButton()
     
     
-    private lazy var view2 = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
+    //private lazy var view2 = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.isUserInteractionEnabled = true
@@ -82,7 +82,6 @@ final class PresentImageViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemPink
         setupLayout()
         addGesture()
     }
@@ -90,9 +89,45 @@ final class PresentImageViewController: UIViewController {
     private func addGesture() {
         let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture))
         let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTapGesture))
+        let swipeUpGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeUpGesture))
+        let swipeDownToHideInfoGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeDownToHideInfoGesture))
+        swipeUpGesture.direction = .up
+        swipeDownToHideInfoGesture.direction = .down
         doubleTapGesture.numberOfTapsRequired = 2
         imageView.addGestureRecognizer(pinchGesture)
         imageView.addGestureRecognizer(doubleTapGesture)
+        imageView.addGestureRecognizer(swipeUpGesture)
+        imageView.addGestureRecognizer(swipeDownToHideInfoGesture)
+    }
+    
+    @objc func handleSwipeUpGesture(_ gestureRecognizer: UISwipeGestureRecognizer) {
+        switch gestureRecognizer.state {
+        case .began:
+            showInfoView()
+        case .changed:
+            showInfoView()
+        case .ended:
+            showInfoView()
+        case .failed, .cancelled, .possible:
+            resetViewSize()
+        @unknown default:
+            break
+        }
+    }
+    
+    @objc func handleSwipeDownToHideInfoGesture(_ gestureRecognizer: UISwipeGestureRecognizer) {
+        switch gestureRecognizer.state {
+        case .began, .possible:
+            hideInfoView()
+        case .changed:
+            hideInfoView()
+        case .ended:
+            hideInfoView()
+        case .cancelled, .failed, .recognized:
+            resetViewSize()
+        @unknown default:
+            break
+        }
     }
     
     @objc func handleDoubleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
@@ -174,6 +209,7 @@ private extension PresentImageViewController {
     
     func setupLayout() {
         view.backgroundColor = .white
+        infoView.backgroundColor = .lightGray
         setupInfoView()
         setupViews()
         setupButtons()
@@ -194,7 +230,8 @@ private extension PresentImageViewController {
     func setupButtons() {
         shareButton.setImage(UIImage(systemName: "square.and.arrow.up.circle"), for: .normal)
         infoButton.setImage(UIImage(systemName: "info.circle"), for: .normal)
-        infoButton.addTarget(self, action: #selector(infoButtonTapped), for: .touchUpInside)
+        infoButton.addTarget(self, action: #selector(showAndHideInfoView), for: .touchUpInside)
+        infoButton.tag = 0
         deleteButton.setImage(UIImage(systemName: "trash.circle"), for: .normal)
     }
     
@@ -210,16 +247,36 @@ private extension PresentImageViewController {
         mainStackView.backgroundColor = .white
     }
     
-    @objc func infoButtonTapped() {
-        UIView.animate(withDuration: 0.4, animations: {
-           self.infoView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height * 0.25)
-        })
+    @objc func showAndHideInfoView() {
+        if infoButton.tag == 0 {
+            showInfoView()
+        } else {
+            hideInfoView()
+        }
+    }
+    
+    func showInfoView() {
+        infoButton.tag = 1
+        UIView.animate(withDuration: 0.4) {
+            self.infoView.snp.updateConstraints { make in
+                make.bottom.equalToSuperview().inset(100)
+                make.height.equalTo(200)
+                make.width.equalToSuperview()
+            }
+            self.view.layoutIfNeeded()
+        }
     }
     
     func hideInfoView() {
-           UIView.animate(withDuration: 0.4, animations: {
-               self.infoView.transform = .identity
-           })
+        infoButton.tag = 0
+           UIView.animate(withDuration: 0.4) {
+               self.infoView.snp.updateConstraints { make in
+                   make.bottom.equalToSuperview().inset(-120)
+                   make.height.equalTo(200)
+                   make.width.equalToSuperview()
+               }
+               self.view.layoutIfNeeded()
+           }
        }
     
     func setupConstraints() {
@@ -227,8 +284,8 @@ private extension PresentImageViewController {
             make.center.equalToSuperview()
         }
         imageView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-            make.edges.equalToSuperview()
+            make.left.right.top.equalToSuperview()
+            make.bottom.equalTo(infoView.snp.top)
         }
         shareButton.snp.makeConstraints { make in
             make.left.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
