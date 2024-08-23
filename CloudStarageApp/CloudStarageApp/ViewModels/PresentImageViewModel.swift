@@ -27,5 +27,4 @@ extension PresentImageViewModel: PresentImageViewModelProtocol {
     func popToRoot() {
         coordinator.popTo()
     }
-    
 }

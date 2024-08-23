@@ -121,7 +121,7 @@ extension Coordinator {
     
     func popTo() {
         guard let navigationController = navigationController else { return }
-        navigationController.popViewController(animated: true)
+            navigationController.popToRootViewController(animated: false)
     }
     
 }

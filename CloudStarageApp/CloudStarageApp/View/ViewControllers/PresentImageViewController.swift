@@ -91,24 +91,28 @@ final class PresentImageViewController: UIViewController {
         let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture))
         let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTapGesture))
         let swipeUpGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeUpGesture))
-        let swipeDownToHideInfoGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeDownToHideInfoGesture))
+        let swipeDownToHideInfoGestureImage = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeDownToHideInfoGesture))
+        let swipeDownToHideInfoGestureInfo = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeDownToHideInfoGesture))
+        let tapToHideInfoGesture = UITapGestureRecognizer(target: self, action: #selector(handleSwipeDownToHideInfoGesture))
         let swipeDownToRoot = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeDownToRoot))
         swipeUpGesture.direction = .up
-        swipeDownToHideInfoGesture.direction = .down
+        swipeDownToHideInfoGestureImage.direction = .down
+        swipeDownToHideInfoGestureInfo.direction = .down
         swipeDownToRoot.direction = .down
         doubleTapGesture.numberOfTapsRequired = 2
         imageView.addGestureRecognizer(pinchGesture)
+        imageView.addGestureRecognizer(tapToHideInfoGesture)
         imageView.addGestureRecognizer(doubleTapGesture)
         imageView.addGestureRecognizer(swipeUpGesture)
-        imageView.addGestureRecognizer(swipeDownToHideInfoGesture)
-       // imageView.addGestureRecognizer(swipeDownToRoot)
+        infoView.addGestureRecognizer(swipeDownToHideInfoGestureInfo)
+        imageView.addGestureRecognizer(swipeDownToRoot)
     }
     
     @objc func handleSwipeDownToRoot(_ gestureRecognizer: UISwipeGestureRecognizer) {
         if isHidden == true {
             switch gestureRecognizer.state {
             case .ended:
-                viewModel.popToRoot()
+                tapToRoot()
             default:
                 break
             }
@@ -192,6 +196,17 @@ final class PresentImageViewController: UIViewController {
             guard let self = self else { return }
             self.imageView.transform = CGAffineTransform.identity
             self.imageView.frame.size = self.initialSize
+        }
+    }
+    
+    private func tapToRoot() {
+        if let navigationController = navigationController {
+            let transition = CATransition()
+            transition.duration = 0.5
+            transition.type = .push
+            transition.subtype = .fromBottom
+            navigationController.view.layer.add(transition, forKey: kCATransition)
+            viewModel.popToRoot()
         }
     }
     
