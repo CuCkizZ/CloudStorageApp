@@ -24,7 +24,7 @@ struct CellDataModel {
         self.file = item.file ?? ""
         self.path = item.path
         self.sizes = item.sizes ?? []
-        self.size = (item.size ?? 0) / (1024 * 1024)
+        self.size = item.size
         self.mimeType = item.mimeType ?? ""
         
         func dateFormatter(dateString: String) -> String {
