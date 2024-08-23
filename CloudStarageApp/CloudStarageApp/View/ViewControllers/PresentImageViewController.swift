@@ -27,6 +27,7 @@ final class PresentImageViewController: UIViewController {
     private lazy var nameIcon = UIImageView(image: UIImage(systemName: "doc.richtext"))
     private lazy var dateIcon = UIImageView(image: UIImage(systemName: "calendar.badge.plus"))
     private lazy var sizeIcon = UIImageView(image: UIImage(systemName: "externaldrive"))
+    private lazy var shareView = ShareView()
     private lazy var infoView = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
     
     private lazy var iconStacView: UIStackView = {
@@ -121,10 +122,12 @@ private extension PresentImageViewController {
         view.addSubview(imageView)
         infoView.addSubview(mainStackView)
         initialSize = view.frame.size
+        
         view.addSubview(infoButton)
         view.addSubview(shareButton)
         view.addSubview(deleteButton)
         view.addSubview(infoView)
+        view.addSubview(shareView)
     }
     
     func setupInfoView() {
@@ -137,6 +140,7 @@ private extension PresentImageViewController {
     func setupButtons() {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 20)
         shareButton.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: imageConfig), for: .normal)
+        shareButton.addTarget(self, action: #selector(showAndHideShareView), for: .touchUpInside)
        
         infoButton.setImage(UIImage(systemName: "info", withConfiguration: imageConfig), for: .normal)
         infoButton.addTarget(self, action: #selector(showAndHideInfoView), for: .touchUpInside)
@@ -146,7 +150,6 @@ private extension PresentImageViewController {
     }
     
     func shareButtonTapped(file: String) {
-        let shareLink = file
         
     }
     
@@ -159,6 +162,14 @@ private extension PresentImageViewController {
             showInfoView()
         } else {
             hideInfoView()
+        }
+    }
+    
+    @objc func showAndHideShareView() {
+        if isHidden == true {
+            showShareView()
+        } else {
+            hideShareView()
         }
     }
     
@@ -186,6 +197,29 @@ private extension PresentImageViewController {
            }
        }
     
+    func showShareView() {
+        isHidden = false
+        UIView.animate(withDuration: 0.4) {
+            self.shareView.snp.updateConstraints { make in
+                make.bottom.equalToSuperview()
+                make.width.equalToSuperview()
+            }
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    func hideShareView() {
+        isHidden = true
+           UIView.animate(withDuration: 0.4) {
+               self.shareView.snp.updateConstraints { make in
+                   make.bottom.equalToSuperview().inset(-230)
+                   make.width.equalToSuperview()
+               }
+               self.view.layoutIfNeeded()
+           }
+       }
+    
+    
     func setupConstraints() {
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
@@ -193,6 +227,15 @@ private extension PresentImageViewController {
         imageView.snp.makeConstraints { make in
             make.left.right.top.equalToSuperview()
             make.bottom.equalTo(infoView.snp.top)
+        }
+        shareView.snp.makeConstraints { make in
+            make.bottom.equalToSuperview().inset(-230)
+            make.width.equalToSuperview()
+        }
+        infoView.snp.makeConstraints { make in
+            make.bottom.equalToSuperview().inset(-200)
+            make.height.equalTo(200)
+            make.width.equalToSuperview()
         }
         shareButton.snp.makeConstraints { make in
             make.left.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
@@ -203,11 +246,6 @@ private extension PresentImageViewController {
         infoButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
-        }
-        infoView.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().inset(-200)
-            make.height.equalTo(200)
-            make.width.equalToSuperview()
         }
         mainStackView.snp.makeConstraints { make in
             make.center.equalToSuperview()
