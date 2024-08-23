@@ -40,15 +40,25 @@ final class PresentImageViewController: UIViewController {
         return stack
     }()
     
+    private lazy var mainStackView: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [iconStacView, infoStackView])
+        stack.axis = .horizontal
+        stack.alignment = .center
+        stack.spacing = 10
+        return stack
+    }()
+    
+    
     
     private lazy var infoButton = UIButton()
     private lazy var shareButton = UIButton()
     private lazy var deleteButton = UIButton()
     
     
-    private lazy var contentView = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
+    private lazy var view2 = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
+        imageView.isUserInteractionEnabled = true
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         return imageView
@@ -66,8 +76,13 @@ final class PresentImageViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    override func viewWillAppear(_ animated: Bool) {
+        
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemPink
         setupLayout()
         addGesture()
     }
@@ -76,19 +91,26 @@ final class PresentImageViewController: UIViewController {
         let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture))
         let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTapGesture))
         doubleTapGesture.numberOfTapsRequired = 2
-        contentView.addGestureRecognizer(pinchGesture)
-        contentView.addGestureRecognizer(doubleTapGesture)
+        imageView.addGestureRecognizer(pinchGesture)
+        imageView.addGestureRecognizer(doubleTapGesture)
     }
     
     @objc func handleDoubleTapGesture(_ gestureRecognizer: UITapGestureRecognizer) {
         if gestureRecognizer.state == .ended {
-            let isZoomed = contentView.transform.a > 1.0 
+            let locationInView = gestureRecognizer.location(in: imageView)
+            let isZoomed = imageView.transform.a > 1.0
             UIView.animate(withDuration: 0.3) { [weak self] in
                 guard let self = self else { return }
                 if isZoomed {
                     self.resetViewSize()
                 } else {
-                    self.contentView.transform = self.contentView.transform.scaledBy(x: 3, y: 3)
+                    let newSize = self.imageView.transform
+                        .translatedBy(x: locationInView.x - self.imageView.bounds.midX, y: locationInView.y - self.imageView.bounds.midY)
+                        .scaledBy(x: 3, y: 3)
+                        .translatedBy(x: -(locationInView.x - self.imageView.bounds.midX),
+                                      y: -(locationInView.y - self.imageView.bounds.midY))
+                    self.imageView.transform = newSize
+
                 }
             }
         }
@@ -97,11 +119,11 @@ final class PresentImageViewController: UIViewController {
     @objc func handlePinchGesture(_ gestureRecognizer: UIPinchGestureRecognizer) {
         switch gestureRecognizer.state {
         case .changed, .ended:
-            let newSize = CGSize(width: contentView.frame.width * gestureRecognizer.scale,
-                                 height: contentView.frame.height * gestureRecognizer.scale)
+            let newSize = CGSize(width: imageView.frame.width * gestureRecognizer.scale,
+                                 height: imageView.frame.height * gestureRecognizer.scale)
             
             if newSize.width >= minimumSize && newSize.height >= minimumSize {
-                contentView.transform = contentView.transform.scaledBy(x: gestureRecognizer.scale, y: gestureRecognizer.scale)
+                imageView.transform = imageView.transform.scaledBy(x: gestureRecognizer.scale, y: gestureRecognizer.scale)
                 gestureRecognizer.scale = 1
             } else {
                 resetViewSize()
@@ -116,8 +138,8 @@ final class PresentImageViewController: UIViewController {
     private func resetViewSize() {
         UIView.animate(withDuration: 0.3) { [weak self] in
             guard let self = self else { return }
-            self.contentView.transform = CGAffineTransform.identity
-            self.contentView.frame.size = self.initialSize
+            self.imageView.transform = CGAffineTransform.identity
+            self.imageView.frame.size = self.initialSize
         }
     }
     
@@ -129,15 +151,21 @@ final class PresentImageViewController: UIViewController {
         self.activityIndicator.startAnimating()
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-            
-            let urlString = model.sizes
-            if let originalUrlString = urlString.first(where: { $0.name == "ORIGINAL" })?.url {
-                if let url = URL(string: originalUrlString) {
-                    self.imageView.sd_setImage(with: url)
+//            if let originalUrlString = model.sizes.first(where: { $0.name == "XS" })?.url,
+              if let url = URL(string: model.file) {
+                
+                self.imageView.sd_setImage(with: url) { [weak self] image, _, _, _ in
+                    guard let self = self, let image = image else { return }
+//                    self.imageView.snp.updateConstraints { make in
+//                        make.width.equalTo(image.size.width)
+//                        make.height.equalTo(image.size.height)
+//                    }
+                 
+                  self.activityIndicator.stopAnimating()
+                  self.activityIndicator.isHidden = true
+                    
                 }
             }
-            self.activityIndicator.stopAnimating()
-            self.activityIndicator.isHidden = true
         }
     }
 }
@@ -146,7 +174,7 @@ private extension PresentImageViewController {
     
     func setupLayout() {
         view.backgroundColor = .white
-        infoView.backgroundColor = .gray
+        setupInfoView()
         setupViews()
         setupButtons()
         setupConstraints()
@@ -154,16 +182,13 @@ private extension PresentImageViewController {
     
     func setupViews() {
         view.addSubview(activityIndicator)
-        view.addSubview(contentView)
+        view.addSubview(imageView)
+        infoView.addSubview(mainStackView)
+        initialSize = view.frame.size
         view.addSubview(infoButton)
         view.addSubview(shareButton)
         view.addSubview(deleteButton)
         view.addSubview(infoView)
-        contentView.addSubview(imageView)
-        infoView.addSubview(infoStackView)
-        infoView.addSubview(iconStacView)
-        initialSize = contentView.frame.size
-        contentView.center = view.center
     }
     
     func setupButtons() {
@@ -182,12 +207,12 @@ private extension PresentImageViewController {
     }
     
     func setupInfoView() {
-        infoView.backgroundColor = AppColors.customGray.withAlphaComponent(0.5)
+        mainStackView.backgroundColor = .white
     }
     
     @objc func infoButtonTapped() {
         UIView.animate(withDuration: 0.4, animations: {
-            self.infoView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height * 0.33)
+           self.infoView.transform = CGAffineTransform(translationX: 0, y: -self.view.frame.height * 0.25)
         })
     }
     
@@ -216,15 +241,12 @@ private extension PresentImageViewController {
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
         }
         infoView.snp.makeConstraints { make in
-            make.left.right.equalToSuperview()
-            make.bottom.equalToSuperview()
+            make.bottom.equalToSuperview().inset(-120)
+            make.height.equalTo(200)
+            make.width.equalToSuperview()
         }
-        iconStacView.snp.makeConstraints { make in
-            make.left.top.bottom.equalToSuperview()
-        }
-        infoStackView.snp.makeConstraints { make in
-            make.right.top.bottom.equalToSuperview()
-            make.left.equalTo(iconStacView.snp.right)
+        mainStackView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
         }
     }
 }
