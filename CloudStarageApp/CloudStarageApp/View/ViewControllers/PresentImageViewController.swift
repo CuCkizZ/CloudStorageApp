@@ -20,6 +20,10 @@ final class PresentImageViewController: UIViewController {
     private lazy var dateLabel = UILabel()
     private lazy var sizeLabel = UILabel()
     
+    private lazy var infoButton = UIButton()
+    private lazy var shareButton = UIButton()
+    private lazy var deleteButton = UIButton()
+
     private lazy var nameIcon = UIImageView(image: UIImage(systemName: "doc.richtext"))
     private lazy var dateIcon = UIImageView(image: UIImage(systemName: "calendar.badge.plus"))
     private lazy var sizeIcon = UIImageView(image: UIImage(systemName: "externaldrive"))
@@ -48,15 +52,7 @@ final class PresentImageViewController: UIViewController {
         stack.spacing = 10
         return stack
     }()
-    
-    
-    
-    private lazy var infoButton = UIButton()
-    private lazy var shareButton = UIButton()
-    private lazy var deleteButton = UIButton()
-    
-    
-    //private lazy var view2 = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
+
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.isUserInteractionEnabled = true
@@ -66,7 +62,7 @@ final class PresentImageViewController: UIViewController {
     }()
     
     private lazy var initialSize = CGSize()
-    private let minimumSize: CGFloat = 200.0
+    private let minimumSize: CGFloat = 300.0
 
     init(viewModel: PresentImageViewModelProtocol) {
         self.viewModel = viewModel
@@ -77,17 +73,153 @@ final class PresentImageViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
-    override func viewWillAppear(_ animated: Bool) {
-        
-    }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
         addGesture()
     }
 
-    private func addGesture() {
+    
+    func configure(model: CellDataModel) {
+        nameLabel.text = model.name
+        dateLabel.text = model.date
+        if let bytes = model.size {
+            sizeLabel.text = viewModel.sizeFormatter(bytes: bytes)
+        }
+        
+        self.activityIndicator.startAnimating()
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+//            if let originalUrlString = model.sizes.first(where: { $0.name == "XS" })?.url,
+            if let url = URL(string: model.file) {
+                self.imageView.sd_setImage(with: url) { [weak self] _,_,_,_ in
+                    guard let self = self else { return }
+                    self.activityIndicator.stopAnimating()
+                    self.activityIndicator.isHidden = true
+                }
+            }
+        }
+        deleteButtonTapped(name: model.name)
+        shareButtonTapped(file: model.file)
+    }
+}
+
+private extension PresentImageViewController {
+    
+    func setupLayout() {
+        tabBarController?.tabBar.isHidden = true
+        view.backgroundColor = .black
+        activityIndicator.color = .white
+        setupInfoView()
+        setupViews()
+        setupButtons()
+        setupConstraints()
+    }
+    
+    func setupViews() {
+        view.addSubview(activityIndicator)
+        view.addSubview(imageView)
+        infoView.addSubview(mainStackView)
+        initialSize = view.frame.size
+        view.addSubview(infoButton)
+        view.addSubview(shareButton)
+        view.addSubview(deleteButton)
+        view.addSubview(infoView)
+    }
+    
+    func setupInfoView() {
+        
+        infoView.backgroundColor = .white
+        
+        mainStackView.backgroundColor = .clear
+    }
+    
+    func setupButtons() {
+        let imageConfig = UIImage.SymbolConfiguration(pointSize: 20)
+        shareButton.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: imageConfig), for: .normal)
+       
+        infoButton.setImage(UIImage(systemName: "info", withConfiguration: imageConfig), for: .normal)
+        infoButton.addTarget(self, action: #selector(showAndHideInfoView), for: .touchUpInside)
+        
+        deleteButton.setImage(UIImage(systemName: "trash", withConfiguration: imageConfig), for: .normal)
+        
+    }
+    
+    func shareButtonTapped(file: String) {
+        let shareLink = file
+        
+    }
+    
+    func deleteButtonTapped(name: String) {
+        deleteButton.addAction(UIAction.deleteFile(view: self, viewModel: viewModel, name: name), for: .touchUpInside)
+    }
+    
+    @objc func showAndHideInfoView() {
+        if isHidden == true {
+            showInfoView()
+        } else {
+            hideInfoView()
+        }
+    }
+    
+    func showInfoView() {
+        isHidden = false
+        UIView.animate(withDuration: 0.4) {
+            self.infoView.snp.updateConstraints { make in
+                make.bottom.equalToSuperview().inset(100)
+                make.height.equalTo(200)
+                make.width.equalToSuperview()
+            }
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    func hideInfoView() {
+        isHidden = true
+           UIView.animate(withDuration: 0.4) {
+               self.infoView.snp.updateConstraints { make in
+                   make.bottom.equalToSuperview().inset(-200)
+                   make.height.equalTo(200)
+                   make.width.equalToSuperview()
+               }
+               self.view.layoutIfNeeded()
+           }
+       }
+    
+    func setupConstraints() {
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        imageView.snp.makeConstraints { make in
+            make.left.right.top.equalToSuperview()
+            make.bottom.equalTo(infoView.snp.top)
+        }
+        shareButton.snp.makeConstraints { make in
+            make.left.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+        }
+        deleteButton.snp.makeConstraints { make in
+            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+        }
+        infoButton.snp.makeConstraints { make in
+            make.centerX.equalToSuperview()
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+        }
+        infoView.snp.makeConstraints { make in
+            make.bottom.equalToSuperview().inset(-200)
+            make.height.equalTo(200)
+            make.width.equalToSuperview()
+        }
+        mainStackView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+    }
+}
+
+//    MARK: GestureRecognizerExtension
+
+private extension PresentImageViewController {
+    
+    func addGesture() {
         let pinchGesture = UIPinchGestureRecognizer(target: self, action: #selector(handlePinchGesture))
         let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTapGesture))
         let swipeUpGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeUpGesture))
@@ -191,7 +323,7 @@ final class PresentImageViewController: UIViewController {
         }
     }
     
-    private func resetViewSize() {
+    func resetViewSize() {
         UIView.animate(withDuration: 0.3) { [weak self] in
             guard let self = self else { return }
             self.imageView.transform = CGAffineTransform.identity
@@ -199,7 +331,8 @@ final class PresentImageViewController: UIViewController {
         }
     }
     
-    private func tapToRoot() {
+    func tapToRoot() {
+        tabBarController?.tabBar.isHidden = false
         if let navigationController = navigationController {
             let transition = CATransition()
             transition.duration = 0.5
@@ -207,137 +340,6 @@ final class PresentImageViewController: UIViewController {
             transition.subtype = .fromBottom
             navigationController.view.layer.add(transition, forKey: kCATransition)
             viewModel.popToRoot()
-        }
-    }
-    
-    
-    func configure(model: CellDataModel) {
-        guard let bytes = model.size else { return }
-        
-        let megabytes = Double(bytes) / (1024 * 1024)
-        let roundedMegabytes = String(format: "%.1f", megabytes)
-        sizeLabel.text = "Размер \(roundedMegabytes) МБ"
-        
-        nameLabel.text = model.name
-        dateLabel.text = model.date
-        //sizeLabel.text = String(describing: model.size)
-        self.activityIndicator.startAnimating()
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-//            if let originalUrlString = model.sizes.first(where: { $0.name == "XS" })?.url,
-            if let url = URL(string: model.file) {
-                
-                self.imageView.sd_setImage(with: url) { [weak self] _,_,_,_ in
-                    guard let self = self else { return }
-                    self.activityIndicator.stopAnimating()
-                    self.activityIndicator.isHidden = true
-                    
-                }
-            }
-        }
-    }
-}
-
-private extension PresentImageViewController {
-    
-    func setupLayout() {
-        view.backgroundColor = .white
-        setupInfoView()
-        setupViews()
-        setupButtons()
-        setupConstraints()
-    }
-    
-    func setupViews() {
-        view.addSubview(activityIndicator)
-        view.addSubview(imageView)
-        infoView.addSubview(mainStackView)
-        initialSize = view.frame.size
-        view.addSubview(infoButton)
-        view.addSubview(shareButton)
-        view.addSubview(deleteButton)
-        view.addSubview(infoView)
-    }
-    
-    func setupButtons() {
-        shareButton.setImage(UIImage(systemName: "square.and.arrow.up.circle"), for: .normal)
-        infoButton.setImage(UIImage(systemName: "info.circle"), for: .normal)
-        infoButton.addTarget(self, action: #selector(showAndHideInfoView), for: .touchUpInside)
-        deleteButton.setImage(UIImage(systemName: "trash.circle"), for: .normal)
-    }
-    
-    @objc func shareButtonTapped() {
-        
-    }
-    
-    @objc func deleteButtonTapped() {
-        
-    }
-    
-    func setupInfoView() {
-        
-        infoView.backgroundColor = AppColors.customGray.withAlphaComponent(0.5)
-        
-        mainStackView.backgroundColor = .clear
-    }
-    
-    @objc func showAndHideInfoView() {
-        if isHidden == true {
-            showInfoView()
-        } else {
-            hideInfoView()
-        }
-    }
-    
-    func showInfoView() {
-        isHidden = false
-        UIView.animate(withDuration: 0.4) {
-            self.infoView.snp.updateConstraints { make in
-                make.bottom.equalToSuperview().inset(100)
-                make.height.equalTo(200)
-                make.width.equalToSuperview()
-            }
-            self.view.layoutIfNeeded()
-        }
-    }
-    
-    func hideInfoView() {
-        isHidden = true
-           UIView.animate(withDuration: 0.4) {
-               self.infoView.snp.updateConstraints { make in
-                   make.bottom.equalToSuperview().inset(-120)
-                   make.height.equalTo(200)
-                   make.width.equalToSuperview()
-               }
-               self.view.layoutIfNeeded()
-           }
-       }
-    
-    func setupConstraints() {
-        activityIndicator.snp.makeConstraints { make in
-            make.center.equalToSuperview()
-        }
-        imageView.snp.makeConstraints { make in
-            make.left.right.top.equalToSuperview()
-            make.bottom.equalTo(infoView.snp.top)
-        }
-        shareButton.snp.makeConstraints { make in
-            make.left.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
-        }
-        deleteButton.snp.makeConstraints { make in
-            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
-        }
-        infoButton.snp.makeConstraints { make in
-            make.centerX.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
-        }
-        infoView.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().inset(-120)
-            make.height.equalTo(200)
-            make.width.equalToSuperview()
-        }
-        mainStackView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
         }
     }
 }
