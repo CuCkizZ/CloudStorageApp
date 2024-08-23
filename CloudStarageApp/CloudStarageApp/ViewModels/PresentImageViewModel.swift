@@ -8,7 +8,9 @@
 import Foundation
 
 protocol PresentImageViewModelProtocol {
+    func sizeFormatter(bytes: Int) -> String
     func popToRoot()
+    func deleteFile(name: String)
 }
 
 final class PresentImageViewModel {
@@ -26,5 +28,22 @@ extension PresentImageViewModel: PresentImageViewModelProtocol {
     
     func popToRoot() {
         coordinator.popTo()
+    }
+    
+    func sizeFormatter(bytes: Int) -> String {
+        let kilobytes = Double(bytes) / 1024
+        let megabytes = kilobytes / 1024
+        
+        if megabytes >= 1 {
+            let roundedMegabytes = String(format: "%.2f", megabytes)
+            return "Размер \(roundedMegabytes) МБ"
+        } else {
+            let roundedKilobytes = String(format: "%.2f", kilobytes)
+            return "Размер \(roundedKilobytes) КБ"
+        }
+    }
+    
+    func deleteFile(name: String) {
+        NetworkManager.shared.deleteReqest(name: name)
     }
 }
