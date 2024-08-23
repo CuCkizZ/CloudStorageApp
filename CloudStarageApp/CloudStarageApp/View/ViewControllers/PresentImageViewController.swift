@@ -36,7 +36,7 @@ final class PresentImageViewController: UIViewController {
     private lazy var infoStackView: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [nameLabel, dateLabel, sizeLabel])
         stack.axis = .vertical
-        stack.alignment = .center
+        stack.alignment = .leading
         stack.spacing = 16
         return stack
     }()
@@ -197,9 +197,15 @@ final class PresentImageViewController: UIViewController {
     
     
     func configure(model: CellDataModel) {
+        guard let bytes = model.size else { return }
+        
+        let megabytes = Double(bytes) / (1024 * 1024)
+        let roundedMegabytes = String(format: "%.1f", megabytes)
+        sizeLabel.text = "Размер \(roundedMegabytes) МБ"
+        
         nameLabel.text = model.name
         dateLabel.text = model.date
-        sizeLabel.text = String(describing: model.size)
+        //sizeLabel.text = String(describing: model.size)
         self.activityIndicator.startAnimating()
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -221,7 +227,6 @@ private extension PresentImageViewController {
     
     func setupLayout() {
         view.backgroundColor = .white
-        infoView.backgroundColor = .lightGray
         setupInfoView()
         setupViews()
         setupButtons()
@@ -255,7 +260,10 @@ private extension PresentImageViewController {
     }
     
     func setupInfoView() {
-        mainStackView.backgroundColor = .white
+        
+        infoView.backgroundColor = AppColors.customGray.withAlphaComponent(0.5)
+        
+        mainStackView.backgroundColor = .clear
     }
     
     @objc func showAndHideInfoView() {

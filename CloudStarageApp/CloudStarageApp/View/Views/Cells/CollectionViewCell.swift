@@ -58,9 +58,11 @@ final class CollectionViewCell: UICollectionViewCell {
     
     func configure(_ model: CellDataModel) {
         if let size = model.size {
-            dateLabel.text = model.date + " \(size / 1000) кб"
-        } else {
-            dateLabel.text = model.date
+            if size > 0 {
+                dateLabel.text = model.date + " \(size)мб"
+            } else {
+                dateLabel.text = model.date
+            }
         }
         nameLabel.text = model.name
         DispatchQueue.main.async {
