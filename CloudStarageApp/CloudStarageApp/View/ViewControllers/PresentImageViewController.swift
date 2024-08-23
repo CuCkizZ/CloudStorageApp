@@ -14,6 +14,7 @@ final class PresentImageViewController: UIViewController {
     
     private let viewModel: PresentImageViewModelProtocol
     private lazy var activityIndicator = UIActivityIndicatorView()
+    private var isHidden = true
     
     private lazy var nameLabel = UILabel()
     private lazy var dateLabel = UILabel()
@@ -91,13 +92,29 @@ final class PresentImageViewController: UIViewController {
         let doubleTapGesture = UITapGestureRecognizer(target: self, action: #selector(handleDoubleTapGesture))
         let swipeUpGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeUpGesture))
         let swipeDownToHideInfoGesture = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeDownToHideInfoGesture))
+        let swipeDownToRoot = UISwipeGestureRecognizer(target: self, action: #selector(handleSwipeDownToRoot))
         swipeUpGesture.direction = .up
         swipeDownToHideInfoGesture.direction = .down
+        swipeDownToRoot.direction = .down
         doubleTapGesture.numberOfTapsRequired = 2
         imageView.addGestureRecognizer(pinchGesture)
         imageView.addGestureRecognizer(doubleTapGesture)
         imageView.addGestureRecognizer(swipeUpGesture)
         imageView.addGestureRecognizer(swipeDownToHideInfoGesture)
+       // imageView.addGestureRecognizer(swipeDownToRoot)
+    }
+    
+    @objc func handleSwipeDownToRoot(_ gestureRecognizer: UISwipeGestureRecognizer) {
+        if isHidden == true {
+            switch gestureRecognizer.state {
+            case .ended:
+                viewModel.popToRoot()
+            default:
+                break
+            }
+        } else {
+            return
+        }
     }
     
     @objc func handleSwipeUpGesture(_ gestureRecognizer: UISwipeGestureRecognizer) {
@@ -187,17 +204,12 @@ final class PresentImageViewController: UIViewController {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
 //            if let originalUrlString = model.sizes.first(where: { $0.name == "XS" })?.url,
-              if let url = URL(string: model.file) {
+            if let url = URL(string: model.file) {
                 
-                self.imageView.sd_setImage(with: url) { [weak self] image, _, _, _ in
-                    guard let self = self, let image = image else { return }
-//                    self.imageView.snp.updateConstraints { make in
-//                        make.width.equalTo(image.size.width)
-//                        make.height.equalTo(image.size.height)
-//                    }
-                 
-                  self.activityIndicator.stopAnimating()
-                  self.activityIndicator.isHidden = true
+                self.imageView.sd_setImage(with: url) { [weak self] _,_,_,_ in
+                    guard let self = self else { return }
+                    self.activityIndicator.stopAnimating()
+                    self.activityIndicator.isHidden = true
                     
                 }
             }
@@ -231,7 +243,6 @@ private extension PresentImageViewController {
         shareButton.setImage(UIImage(systemName: "square.and.arrow.up.circle"), for: .normal)
         infoButton.setImage(UIImage(systemName: "info.circle"), for: .normal)
         infoButton.addTarget(self, action: #selector(showAndHideInfoView), for: .touchUpInside)
-        infoButton.tag = 0
         deleteButton.setImage(UIImage(systemName: "trash.circle"), for: .normal)
     }
     
@@ -248,7 +259,7 @@ private extension PresentImageViewController {
     }
     
     @objc func showAndHideInfoView() {
-        if infoButton.tag == 0 {
+        if isHidden == true {
             showInfoView()
         } else {
             hideInfoView()
@@ -256,7 +267,7 @@ private extension PresentImageViewController {
     }
     
     func showInfoView() {
-        infoButton.tag = 1
+        isHidden = false
         UIView.animate(withDuration: 0.4) {
             self.infoView.snp.updateConstraints { make in
                 make.bottom.equalToSuperview().inset(100)
@@ -268,7 +279,7 @@ private extension PresentImageViewController {
     }
     
     func hideInfoView() {
-        infoButton.tag = 0
+        isHidden = true
            UIView.animate(withDuration: 0.4) {
                self.infoView.snp.updateConstraints { make in
                    make.bottom.equalToSuperview().inset(-120)

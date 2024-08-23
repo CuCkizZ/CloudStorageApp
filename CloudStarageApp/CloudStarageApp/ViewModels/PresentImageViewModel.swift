@@ -8,7 +8,7 @@
 import Foundation
 
 protocol PresentImageViewModelProtocol {
-    func popTo()
+    func popToRoot()
 }
 
 final class PresentImageViewModel {
@@ -24,7 +24,7 @@ final class PresentImageViewModel {
 
 extension PresentImageViewModel: PresentImageViewModelProtocol {
     
-    func popTo() {
+    func popToRoot() {
         coordinator.popTo()
     }
     
