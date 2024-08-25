@@ -11,6 +11,8 @@ protocol PresentImageViewModelProtocol {
     func sizeFormatter(bytes: Int) -> String
     func popToRoot()
     func deleteFile(name: String)
+    func shareLink(link: String)
+    func shareFile(file: String)
 }
 
 final class PresentImageViewModel {
@@ -20,8 +22,6 @@ final class PresentImageViewModel {
     init(coordinator: Coordinator) {
         self.coordinator = coordinator
     }
-    
-    
 }
 
 extension PresentImageViewModel: PresentImageViewModelProtocol {
@@ -45,5 +45,13 @@ extension PresentImageViewModel: PresentImageViewModelProtocol {
     
     func deleteFile(name: String) {
         NetworkManager.shared.deleteReqest(name: name)
+    }
+    
+    func shareLink(link: String) {
+        coordinator.presentAtivityVc(item: link)
+    }
+    
+    func shareFile(file: String) {
+        coordinator.presentAtivityVc(item: file)
     }
 }

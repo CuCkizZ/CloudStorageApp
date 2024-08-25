@@ -3,15 +3,19 @@ import SnapKit
 
 final class ShareView: UIView {
     
-    private lazy var stackView = UIStackView(arrangedSubviews: [linkView, fileView])
+    private let viewModel: PresentImageViewModelProtocol
     
+    private lazy var stackView = UIStackView(arrangedSubviews: [linkView, fileView])
     private lazy var linkView = UIView()
     private lazy var fileView = UIView()
-    
     private lazy var shareLinkButton = UIButton()
     private lazy var shareFileButton = UIButton()
     
-    override init(frame: CGRect) {
+    var link: String?
+    var file: String?
+    
+    init(viewModel: PresentImageViewModelProtocol, frame: CGRect) {
+        self.viewModel = viewModel
         super.init(frame: .zero)
         setupLayout()
     }
@@ -20,10 +24,10 @@ final class ShareView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(link: String, file: String, viewModel: PresentImageViewModelProtocol) {
-        
+    func configure(link: String, file: String) {
+        self.link = link
+        self.file = file
     }
-    
 }
 
 private extension ShareView {
@@ -73,6 +77,21 @@ private extension ShareView {
         
         shareLinkButton.configuration = linkConfig
         shareFileButton.configuration = fileConfig
+        
+        shareLinkButton.addTarget(self, action: #selector(shareLink), for: .touchUpInside)
+        shareFileButton.addTarget(self, action: #selector(shareFile), for: .touchUpInside)
+    }
+    
+//    TODO: close after tap
+    
+    @objc func shareLink() {
+        guard let link = link else { return }
+        viewModel.shareLink(link: link)
+    }
+    
+    @objc func shareFile() {
+        guard let file = file else { return }
+        viewModel.shareFile(file: file)
     }
     
     func setupShareViews() {

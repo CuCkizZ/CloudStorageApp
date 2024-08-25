@@ -27,8 +27,10 @@ final class PresentImageViewController: UIViewController {
     private lazy var nameIcon = UIImageView(image: UIImage(systemName: "doc.richtext"))
     private lazy var dateIcon = UIImageView(image: UIImage(systemName: "calendar.badge.plus"))
     private lazy var sizeIcon = UIImageView(image: UIImage(systemName: "externaldrive"))
-    private lazy var shareView = ShareView()
-    private lazy var infoView = UIView(frame: CGRect(x: 0, y: 0, width: view.bounds.width, height: view.bounds.height))
+    private lazy var shareView = ShareView(viewModel: viewModel, frame: .zero)
+    private lazy var infoView = UIView(frame: CGRect(x: 0, y: 0, 
+                                                     width: view.bounds.width, 
+                                                     height: view.bounds.height))
     
     private lazy var iconStacView: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [nameIcon, dateIcon, sizeIcon])
@@ -101,7 +103,7 @@ final class PresentImageViewController: UIViewController {
             }
         }
         deleteButtonTapped(name: model.name)
-        shareButtonTapped(file: model.file)
+        shareButtonTapped(link: model.publicUrl ?? "no url", file: model.file)
     }
 }
 
@@ -149,8 +151,8 @@ private extension PresentImageViewController {
         
     }
     
-    func shareButtonTapped(file: String) {
-        
+    func shareButtonTapped(link: String, file: String) {
+        shareView.configure(link: link, file: file)
     }
     
     func deleteButtonTapped(name: String) {
