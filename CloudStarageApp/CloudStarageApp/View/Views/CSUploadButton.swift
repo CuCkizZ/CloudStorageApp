@@ -22,7 +22,6 @@ class CSUploadButton: UIButton {
     }
     
     private func setupButton() {
-        //let view = UIView()
         setImage(UIImage(systemName: "folder.badge.plus"), for: .normal)
         backgroundColor = .systemGray6.withAlphaComponent(0.9)
         clipsToBounds = true
@@ -41,5 +40,4 @@ class CSUploadButton: UIButton {
         guard let action = self.action else { return }
         action()
     }
-    
 }

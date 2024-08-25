@@ -59,7 +59,7 @@ private extension ShareView {
         var fileConfig = UIButton.Configuration.filled()
         let font = UIConfigurationTextAttributesTransformer { incoming in
             var outgoing = incoming
-            outgoing.font = UIFont.Inter.regular.size(of: 16)
+            outgoing.font = UIFont.Inter.light.size(of: 16)
             return outgoing
         }
         
