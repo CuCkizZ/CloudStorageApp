@@ -34,6 +34,7 @@ private extension ShareView {
     
     func setupLayout() {
         setupView()
+        addGesture()
         setupConstraints()
     }
     
@@ -47,6 +48,11 @@ private extension ShareView {
         setupStackView()
     }
     
+    func addGesture() {
+        let swipeDown = UISwipeGestureRecognizer(target: self, action: #selector(swipeToHide))
+        swipeDown.direction = .down
+        self.addGestureRecognizer(swipeDown)
+    }
     
     func setupButtons() {
         var linkConfig = UIButton.Configuration.filled()
@@ -84,14 +90,22 @@ private extension ShareView {
     
 //    TODO: close after tap
     
+    @objc func swipeToHide(_ gestureRecgnizer: UISwipeGestureRecognizer) {
+        if gestureRecgnizer.state == .ended {
+            viewModel.hideShareView()
+        }
+    }
+    
     @objc func shareLink() {
         guard let link = link else { return }
         viewModel.shareLink(link: link)
+        viewModel.hideShareView()
     }
     
     @objc func shareFile() {
         guard let file = file else { return }
         viewModel.shareFile(file: file)
+        viewModel.hideShareView()
     }
     
     func setupShareViews() {

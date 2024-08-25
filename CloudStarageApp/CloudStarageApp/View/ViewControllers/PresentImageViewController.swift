@@ -9,10 +9,14 @@ import UIKit
 import SnapKit
 import SDWebImage
 
+protocol PresentImageViewControllerProtocol {
+    func hideShareView()
+}
+
 
 final class PresentImageViewController: UIViewController {
     
-    private let viewModel: PresentImageViewModelProtocol
+    private var viewModel: PresentImageViewModelProtocol
     private lazy var activityIndicator = UIActivityIndicatorView()
     private var isHidden = true
     
@@ -78,6 +82,11 @@ final class PresentImageViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        viewModel.onButtonShareTapped = { [weak self] in
+            guard let self = self else { return }
+            self.hideShareView()
+        }
         setupLayout()
         addGesture()
     }
@@ -209,17 +218,6 @@ private extension PresentImageViewController {
             self.view.layoutIfNeeded()
         }
     }
-    
-    func hideShareView() {
-        isHidden = true
-           UIView.animate(withDuration: 0.4) {
-               self.shareView.snp.updateConstraints { make in
-                   make.bottom.equalToSuperview().inset(-230)
-                   make.width.equalToSuperview()
-               }
-               self.view.layoutIfNeeded()
-           }
-       }
     
     
     func setupConstraints() {
@@ -380,6 +378,21 @@ private extension PresentImageViewController {
             transition.subtype = .fromBottom
             navigationController.view.layer.add(transition, forKey: kCATransition)
             viewModel.popToRoot()
+        }
+    }
+}
+
+
+extension PresentImageViewController: PresentImageViewControllerProtocol {
+    
+    func hideShareView() {
+        isHidden = true
+        UIView.animate(withDuration: 0.4) {
+            self.shareView.snp.updateConstraints { make in
+                make.bottom.equalToSuperview().inset(-230)
+                make.width.equalToSuperview()
+            }
+            self.view.layoutIfNeeded()
         }
     }
 }

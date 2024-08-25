@@ -13,9 +13,14 @@ protocol PresentImageViewModelProtocol {
     func deleteFile(name: String)
     func shareLink(link: String)
     func shareFile(file: String)
+    
+    var onButtonShareTapped: (() -> Void)? { get set }
+    func hideShareView()
 }
 
 final class PresentImageViewModel {
+    
+    var onButtonShareTapped: (() -> Void)?
     
     private let coordinator: Coordinator
     
@@ -25,6 +30,10 @@ final class PresentImageViewModel {
 }
 
 extension PresentImageViewModel: PresentImageViewModelProtocol {
+
+    func hideShareView() {
+        onButtonShareTapped?()
+    }
     
     func popToRoot() {
         coordinator.popTo()
