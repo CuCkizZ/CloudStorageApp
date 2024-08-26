@@ -136,7 +136,6 @@ private extension LoginViewController {
     
     @objc func buttonPressed() {
         viewModel.login()
-        print(loginResult?.token)
     }
     
     func loadAnimating() {

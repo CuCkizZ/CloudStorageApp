@@ -8,21 +8,35 @@
 import Security
 import Foundation
 
-final class KeychainManager {
-    static func save(_ value: String, forKey key: String) {
-        guard let data = value.data(using: .utf8) else { return }
+enum KeychainError: Error {
+    case duplicated
+    case unoknow(OSStatus)
+}
 
+protocol KeychainProtocol {
+    func save(_ value: String, forKey key: String) throws
+    func delete(forKey key: String) throws
+    func retrieve(forKey key: String) throws -> String?
+}
+
+final class KeychainManager: KeychainProtocol {
+    func save(_ value: String, forKey key: String) throws {
+        guard let data = value.data(using: .utf8) else { return }
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
             kSecValueData as String: data
         ]
-
-        SecItemDelete(query as CFDictionary)
         let status = SecItemAdd(query as CFDictionary, nil)
+        guard status != errSecDuplicateItem else {
+            throw KeychainError.duplicated
+        }
+        guard status == errSecSuccess else {
+            throw KeychainError.unoknow(status)
+        }
     }
 
-    static func retrieve(forKey key: String) -> String? {
+    func retrieve(forKey key: String) throws -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
@@ -34,20 +48,22 @@ final class KeychainManager {
         let status = SecItemCopyMatching(query as CFDictionary, &result)
 
         guard status == errSecSuccess, let data = result as? Data else {
-            return nil
+            throw KeychainError.unoknow(status)
         }
-
+        
         return String(data: data, encoding: .utf8)
     }
 
-    static func delete(forKey key: String) {
+    func delete(forKey key: String) throws {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key
         ]
 
         let status = SecItemDelete(query as CFDictionary)
-        print(status)
+        guard status == errSecSuccess else {
+            throw KeychainError.unoknow(status)
+        }
     }
 }
 

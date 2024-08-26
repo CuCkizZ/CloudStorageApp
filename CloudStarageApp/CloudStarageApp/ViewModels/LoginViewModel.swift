@@ -7,8 +7,6 @@ protocol LoginViewOutput: AnyObject {
     
     func login()
     func logout()
-    func openHomeVC()
-    func close()
     func setToken()
 }
 
@@ -34,26 +32,27 @@ final class LoginViewModel {
         coordinator.finish()
     }
     
+    private func cleareKeychain() {
+        KeychainManager.delete(forKey: "token")
+    }
+    
 }
 
 extension LoginViewModel: LoginViewOutput {
-    func openHomeVC() {
-        
-    }
     
     func logout() {
         do {
             try YandexLoginSDK.shared.logout()
             loginResult = nil
-            KeychainManager.delete(forKey: "token")
+            cleareKeychain()
         } catch {
             print("Logout error: \(error)")
         }
     }
     
     func setToken() {
-        client.token = KeychainManager.retrieve(forKey: "token") ?? ""
-        print(client.token)
+        guard let token = KeychainManager.retrieve(forKey: "token") else { return }
+        client.token = token
     }
     
     func login() {
@@ -68,15 +67,5 @@ extension LoginViewModel: LoginViewOutput {
                 self.goToMainScreen()
             }
         }
-    }
-    
-//    TODO: корректировать вм
-    
-    func registration() {
-        
-    }
-    
-    func close() {
-        
     }
 }
