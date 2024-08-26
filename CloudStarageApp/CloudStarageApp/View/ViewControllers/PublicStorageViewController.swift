@@ -120,6 +120,7 @@ private extension PublicStorageViewController {
     func SetupNavBar() {
         guard let navigationController = navigationController else { return }
         navigationItem.rightBarButtonItem = navigationController.setRightButton()
+        navigationItem.leftBarButtonItem = navigationController.setLeftButton()
         navigationController.navigationBar.prefersLargeTitles = true
         title = navigationTitle
     }

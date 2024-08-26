@@ -38,7 +38,4 @@ struct CellDataModel {
             return ""
         }
     }
-    
-    
-    
 }

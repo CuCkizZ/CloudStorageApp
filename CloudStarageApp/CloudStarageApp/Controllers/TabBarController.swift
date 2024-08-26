@@ -41,7 +41,12 @@ final class TabBarController: UITabBarController {
 }
 
 extension UINavigationController {
+    
     func setRightButton() -> UIBarButtonItem {
+        return UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .plain, target: self, action: nil)
+    }
+    
+    func setLeftButton() -> UIBarButtonItem {
         return UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logout))
     }
     

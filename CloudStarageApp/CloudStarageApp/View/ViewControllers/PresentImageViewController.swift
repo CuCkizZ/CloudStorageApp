@@ -83,14 +83,9 @@ final class PresentImageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        viewModel.onButtonShareTapped = { [weak self] in
-            guard let self = self else { return }
-            self.hideShareView()
-        }
         setupLayout()
         addGesture()
     }
-
     
     func configure(model: CellDataModel) {
         nameLabel.text = model.name
@@ -124,6 +119,7 @@ private extension PresentImageViewController {
         activityIndicator.color = .white
         setupInfoView()
         setupViews()
+        hideShareViewByViewModel()
         setupButtons()
         setupConstraints()
     }
@@ -142,15 +138,14 @@ private extension PresentImageViewController {
     }
     
     func setupInfoView() {
-        
         infoView.backgroundColor = .white
-        
         mainStackView.backgroundColor = .clear
     }
     
     func setupButtons() {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 20)
-        shareButton.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: imageConfig), for: .normal)
+        shareButton.setImage(UIImage(systemName: "square.and.arrow.up", withConfiguration: imageConfig), 
+                             for: .normal)
         shareButton.addTarget(self, action: #selector(showAndHideShareView), for: .touchUpInside)
        
         infoButton.setImage(UIImage(systemName: "info", withConfiguration: imageConfig), for: .normal)
@@ -165,7 +160,8 @@ private extension PresentImageViewController {
     }
     
     func deleteButtonTapped(name: String) {
-        deleteButton.addAction(UIAction.deleteFile(view: self, viewModel: viewModel, name: name), for: .touchUpInside)
+        deleteButton.addAction(UIAction.deleteFile(view: self, viewModel: viewModel, name: name), 
+                               for: .touchUpInside)
     }
     
     @objc func showAndHideInfoView() {
@@ -179,8 +175,6 @@ private extension PresentImageViewController {
     @objc func showAndHideShareView() {
         if isHidden == true {
             showShareView()
-        } else {
-            hideShareView()
         }
     }
     
@@ -219,6 +213,12 @@ private extension PresentImageViewController {
         }
     }
     
+    func hideShareViewByViewModel() {
+        viewModel.onButtonShareTapped = { [weak self] in
+            guard let self = self else { return }
+            self.hideShareView()
+        }
+    }
     
     func setupConstraints() {
         activityIndicator.snp.makeConstraints { make in

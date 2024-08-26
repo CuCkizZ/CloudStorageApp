@@ -124,8 +124,7 @@ private extension ProfileViewController {
     
     func SetupNavBar() {
         guard let navigationController = navigationController else { return }
-        //navigationItem.rightBarButtonItem = navigationController.setRightButton()
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(rightBarButtonAction))
+        navigationItem.leftBarButtonItem = navigationController.setLeftButton()
         navigationController.navigationBar.prefersLargeTitles = true
         title = "Profile"
     }

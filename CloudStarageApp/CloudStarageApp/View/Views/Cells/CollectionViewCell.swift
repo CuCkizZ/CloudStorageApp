@@ -7,6 +7,7 @@ final class CollectionViewCell: UICollectionViewCell {
     
     static let reuseID = String(describing: CollectionViewCell.self)
     
+    private let activityIndicator = UIActivityIndicatorView()
     private lazy var publishIcon: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: "link")
@@ -18,6 +19,9 @@ final class CollectionViewCell: UICollectionViewCell {
     
     private lazy var contentImageView: UIImageView = {
         let imageView = UIImageView()
+        activityIndicator.startAnimating()
+        activityIndicator.isHidden = false
+        activityIndicator.color = .red
         imageView.contentMode = .scaleAspectFit
         imageView.clipsToBounds = true
         imageView.backgroundColor = .gray
@@ -45,7 +49,6 @@ final class CollectionViewCell: UICollectionViewCell {
         super.init(frame: frame)
         
         setupLayout()
-        setupStackView()
     }
     
     required init?(coder: NSCoder) {
@@ -57,27 +60,36 @@ final class CollectionViewCell: UICollectionViewCell {
     }
     
     func configure(_ model: CellDataModel) {
-        if let size = model.size {
-            if size > 0 {
-                dateLabel.text = model.date + " \(size)мб"
-            } else {
-                dateLabel.text = model.date
-            }
-        }
         nameLabel.text = model.name
+        
+        if let size = model.size {
+            dateLabel.text = model.date + sizeFormatter(bytes:size)
+        } else {
+            dateLabel.text = model.date
+        }
+        
         DispatchQueue.main.async {
             if let previewImage = model.previewImage, let url = URL(string: previewImage) {
                 self.contentImageView.load(url: url)
+                self.activityIndicator.stopAnimating()
+                self.activityIndicator.isHidden = true
             } else {
                 self.contentImageView.image = nil
             }
         }
         if model.publickKey != nil {
-            animatedPublishIcon()
+            animatedShareIcon()
         } else {
             animatedPublishIconTrue()
         }
     }
+    
+    func animatedShareIcon() {
+        UIView.transition(with: publishIcon, duration: 0.3, options: .transitionCrossDissolve, animations: {
+            self.publishIcon.isHidden = false
+        })
+    }
+    
 }
 
 // MARK: PrivateLayoutSetup
@@ -87,10 +99,12 @@ private extension CollectionViewCell {
     func setupLayout() {
         contentView.backgroundColor = .white
         contentView.layer.masksToBounds = true
+        contentImageView.addSubview(activityIndicator)
         contentView.addSubview(stackView)
         contentView.addSubview(publishIcon)
         stackView.backgroundColor = .white
         setupLabels()
+        setupStackView()
     }
     
     func setupLabels() {
@@ -104,6 +118,9 @@ private extension CollectionViewCell {
     }
     
     func setupStackView() {
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
         stackView.snp.makeConstraints { make in
             make.left.top.equalTo(contentView)
         }
@@ -117,9 +134,24 @@ private extension CollectionViewCell {
             make.right.centerY.equalTo(contentView).inset(30)
         }
     }
+    
+    func sizeFormatter(bytes: Int) -> String {
+        let kilobytes = Double(bytes) / 1024
+        let megabytes = kilobytes / 1024
+        
+        if megabytes >= 1 {
+            let roundedMegabytes = String(format: "%.2f", megabytes)
+            return "Размер \(roundedMegabytes) МБ"
+        } else {
+            let roundedKilobytes = String(format: "%.2f", kilobytes)
+            return "Размер \(roundedKilobytes) КБ"
+        }
+    }
+    
 }
     
 extension CollectionViewCell {
+    
     func updateContentStyle() {
         let isHorizontalStyle = bounds.width > 2 * bounds.height
         let oldAxis = stackView.axis
@@ -147,6 +179,7 @@ extension CollectionViewCell {
 // MARK: AnimationExtension
 
 private extension CollectionViewCell {
+    
     func animateLabelTransform(fontTransform: CGAffineTransform) {
         UIView.animate(withDuration: 0.3) { [weak self] in
             guard let self = self else { return }
