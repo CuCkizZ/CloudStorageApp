@@ -45,13 +45,15 @@ extension LoginViewModel: LoginViewOutput {
         do {
             try YandexLoginSDK.shared.logout()
             loginResult = nil
+            KeychainManager.delete(forKey: "token")
         } catch {
             print("Logout error: \(error)")
         }
     }
     
     func setToken() {
-       client.token = loginResult?.token ?? ""
+        client.token = KeychainManager.retrieve(forKey: "token") ?? ""
+        print(client.token)
     }
     
     func login() {

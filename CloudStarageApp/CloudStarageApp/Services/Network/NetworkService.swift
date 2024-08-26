@@ -22,10 +22,15 @@ final class NetworkService: NetworkServiceProtocol {
     
     
     init() {
+        setToken()
         self.headers = [
             "Accept" : "application/json",
             "Authorization" : "OAuth \(token)"
         ]
+    }
+    
+    func setToken() {
+        self.token = KeychainManager.retrieve(forKey: "token") ?? ""
     }
     
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void) {

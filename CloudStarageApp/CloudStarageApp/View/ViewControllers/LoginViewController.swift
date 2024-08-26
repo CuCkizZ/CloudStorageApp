@@ -135,8 +135,8 @@ private extension LoginViewController {
 
     
     @objc func buttonPressed() {
-       // print(loginResult)
-        onSighInTapped()
+        viewModel.login()
+        print(loginResult?.token)
     }
     
     func loadAnimating() {
@@ -189,8 +189,8 @@ extension LoginViewController: YandexLoginSDKObserver {
     func didFinishLogin(with result: Result<LoginResult, Error>) {
         switch result {
         case .success(let loginResult):
-            viewModel.loginResult = loginResult
-            print(loginResult)
+            KeychainManager.save(loginResult.token, forKey: "token")
+            viewModel.setToken()
         case .failure(let error):
             print("Login error: \(error)")
         }
@@ -199,7 +199,6 @@ extension LoginViewController: YandexLoginSDKObserver {
     @objc func loginButtonPressed() {
         
         let authorizationStrategy: YandexLoginSDK.AuthorizationStrategy = .default
-        
         do {
             try YandexLoginSDK.shared.authorize(
                 with: self,
@@ -231,7 +230,7 @@ extension LoginViewController: YandexLoginSDKObserver {
 extension LoginViewController: LoginViewInput {
     
     func onSighInTapped() {
-            viewModel.login()
+           // viewModel.login()
     }
     
     func onSignUpTapped() {
