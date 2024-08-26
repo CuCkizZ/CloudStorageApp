@@ -138,6 +138,22 @@ final class NetworkService: NetworkServiceProtocol {
         }
     }
     
+    func searchFiles(keyword: String, completion: @escaping (Result<Data, Error>) -> Void) {
+        let urlParams = ["path": keyword]
+        let urlString = "https://cloud-api.yandex.net/v1/disk/resources"
+        guard let url = URL(string: urlString) else { return }
+        
+        AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
+            if let error = response.error {
+                completion(.failure(error))
+                print("Url error")
+                return
+            }
+            guard let data = response.data else { return }
+            completion(.success(data))
+        }
+    }
+    
     func createNewFolder(name: String) {
         let urlString = "https://cloud-api.yandex.net/v1/disk/resources?path=disk:/\(name)"
         guard let url = URL(string: urlString) else { return }

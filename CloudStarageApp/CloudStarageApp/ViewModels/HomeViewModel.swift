@@ -10,6 +10,8 @@ import Foundation
 
 protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
+    var searchText: String { get set }
+    func searchFiles()
 }
 
 final class HomeViewModel {
@@ -22,6 +24,8 @@ final class HomeViewModel {
     var isLoading: Observable<Bool> = Observable(false)
     var isConnected: Observable<Bool> = Observable(true)
     var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
+    
+    var searchText: String = ""
     
     init(coordinator: HomeCoordinator) {
         self.coordinator = coordinator
@@ -66,6 +70,26 @@ extension HomeViewModel: HomeViewModelProtocol {
         }
         isLoading.value = true
         NetworkManager.shared.fetchLastData { [weak self] result in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let file):
+                    self.model = file
+                    self.mapModel()
+                    self.isLoading.value = false
+                case .failure(let error):
+                    print("model failrue: \(error)")
+                }
+            }
+        }
+    }
+    
+    func searchFiles() {
+        if isLoading.value ?? true {
+            return
+        }
+        isLoading.value = true
+        NetworkManager.shared.searchFile(keyword: searchText) { [weak self] result in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 switch result {

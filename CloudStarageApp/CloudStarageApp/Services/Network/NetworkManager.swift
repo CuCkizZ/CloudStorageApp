@@ -120,6 +120,24 @@ class NetworkManager {
         }
     }
     
+    func searchFile(keyword: String, completion: @escaping (Result<[Item], Error>) -> Void) {
+        client.searchFiles(keyword: keyword) { result in
+            switch result {
+            case .success(let data):
+                do {
+                    let result = try self.decoder.decode(Welcome.self, from: data)
+                    completion(.success(result.embedded.items))
+                } catch {
+                    completion(.failure(error))
+                    print("Ошибка при парсе: \(error.localizedDescription)")
+                }
+            case .failure(let error):
+                completion(.failure(error))
+                print("Нечего парсить")
+            }
+        }
+    }
+    
     func createNewFolder(_ name: String) {
         client.createNewFolder(name: name)
     }

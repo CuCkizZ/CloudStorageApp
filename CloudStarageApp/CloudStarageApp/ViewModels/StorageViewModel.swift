@@ -11,6 +11,9 @@ import Network
 protocol StorageViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
     
+    var searchText: String { get set }
+    func searchFiles()
+    
     func fetchCurrentData(navigationTitle: String, path: String)
     func paggination(title: String, path: String)
     func presentShareScene(shareLink: String)
@@ -22,6 +25,7 @@ final class StorageViewModel {
     private var model: [Item] = []
     private let networkMonitor = NWPathMonitor()
     private var path: String?
+    var searchText: String = ""
     
     var isLoading: Observable<Bool> = Observable(false)
     var isConnected: Observable<Bool> = Observable(nil)
@@ -109,6 +113,29 @@ extension StorageViewModel: StorageViewModelProtocol {
                     self.mapModel()
                     self.isLoading.value = false
                     print("\(path)")
+                case .failure(let error):
+                    print("model failrue: \(error)")
+                }
+            }
+        }
+    }
+        
+       
+    func searchFiles() {
+        if isLoading.value ?? true {
+            return
+        }
+        isLoading.value = true
+        //coordinator.paggination()
+        NetworkManager.shared.searchFile(keyword: searchText) { [weak self] result in
+            guard let self = self else { return }
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let file):
+                    self.model = file
+                    self.mapModel()
+                    self.isLoading.value = false
+                    print("\(self.searchText)")
                 case .failure(let error):
                     print("model failrue: \(error)")
                 }

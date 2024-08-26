@@ -9,6 +9,7 @@ final class HomeViewController: UIViewController {
     //   UI
     
     private lazy var selectedStyle: PresentationStyle = .table
+    var searchController = UISearchController(searchResultsController: nil)
     
     private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
@@ -116,11 +117,15 @@ private extension HomeViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(showOfflineDeviceUI(notification:)), name: NSNotification.Name.connectivityStatus, object: nil)
         activityIndicator.hidesWhenStopped = true
         setupCollectionView()
+        setupSearchController()
     }
     
     func setupNavBar() {
         guard let navigationController = navigationController else { return }
+        navigationItem.leftBarButtonItem = navigationController.setLeftButton()
         navigationItem.rightBarButtonItem = navigationController.setRightButton()
+        navigationItem.searchController = searchController
+        navigationItem.rightBarButtonItem?.action = #selector((setupSearchController))
         navigationController.navigationBar.prefersLargeTitles = true
         title = "Latests"
     }
@@ -232,6 +237,21 @@ private extension HomeViewController {
 
 extension HomeViewController: UICollectionViewDataSource {
     
+//    TODO: PubksheIconSharedAnimation
+    
+//    func shareButtonTapped(for indexPath: IndexPath) {
+//        let model = modelReturn(indexPath: indexPath)
+//        if model.publicUrl?.isEmpty == false {
+//            updateCell(at: indexPath)
+//        }
+//    }
+//    
+//    func updateCell(at indexPath: IndexPath) {
+//        guard let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCell else { return }
+//        let model = modelReturn(indexPath: indexPath)
+//        cell.configure(model)
+//    }
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         cellDataSource.count
     }
@@ -284,3 +304,24 @@ extension HomeViewController: UICollectionViewDelegate {
     }
 }
 
+
+extension HomeViewController: UISearchBarDelegate, UISearchResultsUpdating {
+    
+    @objc func setupSearchController() {
+        searchController.searchBar.placeholder = "Введите запрос"
+        searchController.searchBar.delegate = self
+        searchController.searchResultsUpdater = self
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        viewModel.searchText = searchText
+        if searchText != "" {
+            viewModel.searchFiles()
+        }
+    }
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        self.definesPresentationContext = true
+        self.navigationItem.searchController = searchController
+    }
+}

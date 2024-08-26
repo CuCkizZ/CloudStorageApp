@@ -5,7 +5,8 @@ final class StorageViewController: UIViewController {
     // MARK: Model
     private var viewModel: StorageViewModelProtocol
     private var cellDataSource: [CellDataModel] = []
-    
+    var searchController = UISearchController(searchResultsController: nil)
+
     private var navigationTitle: String
     private var fetchPath: String
 //    UI
@@ -114,8 +115,11 @@ private extension StorageViewController {
     func setupNavBar() {
         guard let navigationController = navigationController else { return }
         navigationItem.rightBarButtonItem = navigationController.setRightButton()
+        navigationItem.leftBarButtonItem = navigationController.setLeftButton()
+        navigationItem.searchController = searchController
         navigationController.navigationBar.prefersLargeTitles = true
         navigationItem.title = navigationTitle
+        setupSearchController()
     }
     
     func setupLayoutButton() {
@@ -275,3 +279,23 @@ extension StorageViewController: StorageViewControllerProtocol {
     }
 }
 
+extension StorageViewController: UISearchBarDelegate, UISearchResultsUpdating  {
+    
+    @objc func setupSearchController() {
+        searchController.searchBar.placeholder = "Введите запрос"
+        searchController.searchBar.delegate = self
+        searchController.searchResultsUpdater = self
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        viewModel.searchText = searchText
+        if searchText != "" {
+            viewModel.searchFiles()
+        }
+    }
+    
+    func updateSearchResults(for searchController: UISearchController) {
+        self.definesPresentationContext = true
+        self.navigationItem.searchController = searchController
+    }
+}
