@@ -39,6 +39,7 @@ final class StorageViewController: UIViewController {
 
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        setupNavBarAfterPaggination()
         viewModel.fetchCurrentData(navigationTitle: navigationTitle, path: fetchPath)
     }
     
@@ -95,7 +96,6 @@ private extension StorageViewController {
     
     func setupLayout() {
         setupView()
-        setupNavBar()
         setupNetworkStatusView(networkStatusView)
         setupButtonTap()
         uploadButtonPressed()
@@ -120,6 +120,24 @@ private extension StorageViewController {
         navigationController.navigationBar.prefersLargeTitles = true
         navigationItem.title = navigationTitle
         setupSearchController()
+    }
+    
+    func setupNavBar2() {
+        guard let navigationController = navigationController else { return }
+        navigationItem.rightBarButtonItem = navigationController.setRightButton()
+        navigationItem.searchController = searchController
+        navigationController.navigationBar.prefersLargeTitles = true
+        navigationItem.title = navigationTitle
+        setupSearchController()
+    }
+    
+    func setupNavBarAfterPaggination() {
+        guard let navigationController = navigationController else { return }
+        if fetchPath == "disk:/" {
+            setupNavBar()
+        } else {
+            setupNavBar2()
+        }
     }
     
     func setupLayoutButton() {
