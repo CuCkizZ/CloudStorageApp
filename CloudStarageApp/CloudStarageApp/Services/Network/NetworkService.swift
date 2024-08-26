@@ -10,55 +10,22 @@ import YandexLoginSDK
 import Alamofire
 
 private enum Constants {
-//    static let token = "OAuth y0_AgAAAAB3PvZkAADLWwAAAAELlSb3AADQZy6bNutAiZm4EhJkt3zSpFwhuQ"
     static let header = "Authorization"
     static let idClient = "fb1d2080334243be9be6f947fcde3fa9"
 }
 
 
-
 final class NetworkService: NetworkServiceProtocol {
-    private var newtoken = ""
-    static var token = "y0_AgAAAAB3PvZkAADLWwAAAAELlSb3AADQZy6bNutAiZm4EhJkt3zSpFwhuQ" 
+    
+    var token = ""
     var headers: HTTPHeaders = [:]
+    
     
     init() {
         self.headers = [
             "Accept" : "application/json",
-            "Authorization" : "OAuth \(NetworkService.token)"
+            "Authorization" : "OAuth \(token)"
         ]
-    }
-    
-    
-    
-//cucki327   y0_AgAAAAA_XDUnAAOVdwAAAAENaADxAABTMXcP7xNOjKzXv96i4_Qc-NPOvQ
-
-
-    
-//        y0_AgAAAAB3PvZkAAwfCAAAAAEKyWfKAACyM_xVEBFElqpZe9E8ZcBEdWIOfw
-    
-    func getToket() {
-        
-        let oauthToken = "<OAuth-токен>"
-       // let jwtSecret = LoginResult.jwt
-        
-        let headers: HTTPHeaders = [
-            "Authorization": "OAuth \(oauthToken)"
-        ]
-        
-        let parameters: Parameters = [
-            "format": "json",
-           // "jwt_secret": jwtSecret
-        ]
-        
-        AF.request("https://login.yandex.ru/info", parameters: parameters, headers: headers).response { response in
-            switch response.result {
-            case .success(let value):
-                print("Response: \(String(describing: value))")
-            case .failure(let error):
-                print("Error: \(error)")
-            }
-        }
     }
     
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void) {

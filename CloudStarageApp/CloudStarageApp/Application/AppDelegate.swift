@@ -9,7 +9,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         do {
-            let clientID = "fb1d2080334243be9be6f947fcde3fa9"
+            let clientID = "e10974fe4b64489bac4eb6ab97efae3f"
             try YandexLoginSDK.shared.activate(with: clientID)
         } catch {
             print("1 application func error")

@@ -9,7 +9,7 @@ import Foundation
 import Alamofire
 import UIKit
 
-class NetworkManager {
+final class NetworkManager {
     
     private let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
@@ -23,10 +23,6 @@ class NetworkManager {
     static let shared = NetworkManager()
     
     private init() {}
-    
-    func getToken() {
-        client.getToket()
-    }
     
     func fetchLastData(completion: @escaping (Result<[Item], Error>) -> Void) {
         client.fetchLastData { result in

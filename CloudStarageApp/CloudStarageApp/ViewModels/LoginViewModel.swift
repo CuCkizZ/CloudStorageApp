@@ -1,18 +1,28 @@
 import Foundation
+import YandexLoginSDK
 
 protocol LoginViewOutput: AnyObject {
     var isLoading: Observable<Bool> { get set }
+    var loginResult: LoginResult? { get set }
     
-    func login(login: String, password: String)
-    func registration()
+    func login()
+    func logout()
     func openHomeVC()
     func close()
-    func getToken()
+    func setToken()
 }
 
 final class LoginViewModel {
     
+    private var client: NetworkServiceProtocol = NetworkService()
+    
     var isLoading: Observable<Bool> = Observable(false)
+    var onLoginStateChanged: ((Bool) -> Void)?
+    var loginResult: LoginResult? {
+        didSet {
+            onLoginStateChanged?(loginResult != nil)
+        }
+    }
     
     private let coordinator: LoginCoordinator
     
@@ -27,16 +37,32 @@ final class LoginViewModel {
 }
 
 extension LoginViewModel: LoginViewOutput {
-    func login(login: String, password: String) {
+    func openHomeVC() {
+        
+    }
+    
+    func logout() {
+        do {
+            try YandexLoginSDK.shared.logout()
+            loginResult = nil
+        } catch {
+            print("Logout error: \(error)")
+        }
+    }
+    
+    func setToken() {
+       client.token = loginResult?.token ?? ""
+    }
+    
+    func login() {
         if isLoading.value ?? true {
             return
         }
         isLoading.value = true
         DispatchQueue.global().asyncAfter(deadline: .now() + 2) { [weak self] in
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 self.isLoading.value = false
-                //self.getToken()
                 self.goToMainScreen()
             }
         }
@@ -44,15 +70,7 @@ extension LoginViewModel: LoginViewOutput {
     
 //    TODO: корректировать вм
     
-    func getToken() {
-        NetworkManager.shared.getToken()
-    }
-    
     func registration() {
-        
-    }
-    
-    func openHomeVC() {
         
     }
     

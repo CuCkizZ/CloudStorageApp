@@ -2,13 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
-	<key>LSApplicationQueriesSchemes</key>
-	<array>
-		<string>primaryyandexloginsdk</string>
-		<string>secondaryyandexloginsdk</string>
-	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -18,14 +11,30 @@
 			<string>YandexLoginSDK</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>yxfb1d2080334243be9be6f947fcde3fa9</string>
+				<string>yxe10974fe4b64489bac4eb6ab97efae3f</string>
 			</array>
 		</dict>
+	</array>
+	<key>INIntentsSupported</key>
+	<array>
+		<string>Intent</string>
+	</array>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>primaryyandexloginsdk</string>
+		<string>secondaryyandexloginsdk</string>
 	</array>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>New Exception Domain</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSIncludesSubdomains</key>
+				<true/>
+			</dict>
 			<key>applinks:yxfb1d2080334243be9be6f947fcde3fa9.oauth.yandex.ru</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
@@ -33,6 +42,10 @@
 				<key>NSIncludesSubdomains</key>
 				<true/>
 			</dict>
+			<key>cloud_api:disk.read</key>
+			<true/>
+			<key>cloud_api:disk.write</key>
+			<true/>
 		</dict>
 	</dict>
 	<key>UIAppFonts</key>

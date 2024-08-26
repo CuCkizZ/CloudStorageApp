@@ -1,6 +1,7 @@
 import UIKit
 import SnapKit
 import YandexLoginSDK
+import Alamofire
 
 protocol LoginViewInput: AnyObject {
     func onSighInTapped()
@@ -12,10 +13,10 @@ final class LoginViewController: UIViewController {
     private let viewModel: LoginViewOutput
     
     private var customValues: [String: String] = [:]
-    private let authorizationSource: YandexLoginSDK.AuthorizationStrategy = .default
+    
     private var loginResult: LoginResult? {
         didSet {
-            //logoutButton.isEnabled = (loginResult != nil)
+            logoutButton.isEnabled = (loginResult != nil)
         }
     }
     
@@ -24,8 +25,12 @@ final class LoginViewController: UIViewController {
     
     let activityIndicator = UIActivityIndicatorView(style: .large)
     private let loadingView = UIView()
-    private let blackButton = YandexButton()
+    
+    
     private let loginButton = CSBlueButton()
+    
+    private let yandexButton = YandexButton()
+    private let infoButton = CSBlueButton()
     private let logoutButton = CSBlueButton()
     
     
@@ -45,8 +50,7 @@ final class LoginViewController: UIViewController {
         super.viewDidLoad()
         
         logoutButton.setTitle("logout")
-        blackButton.addTarget(self, action: #selector(loginButtonPressed), for: .touchUpInside)
-
+        yandexButton.addTarget(self, action: #selector(loginButtonPressed), for: .touchUpInside)
         YandexLoginSDK.shared.add(observer: self)
         setupView()
     }
@@ -75,14 +79,16 @@ private extension LoginViewController {
         view.backgroundColor = .white
         view.addSubview(loadingView)
         view.addSubview(activityIndicator)
+        
+        view.addSubview(infoButton)
         view.addSubview(loginButton)
         view.addSubview(logoutButton)
-        view.addSubview(blackButton)
+        view.addSubview(yandexButton)
+        
         setupButton()
         setupConstraints()
         bindViewModel()
         SetupNavBar()
-        //setupObservers()
     }
     
     func SetupNavBar() {
@@ -97,11 +103,11 @@ private extension LoginViewController {
         }
         logoutButton.action = { [weak self] in
             guard let self = self else { return }
-            self.logout()
+            self.logoutButtonPressed()
         }
     }
     
-    func presentLogin() {
+    @objc func presentLogin() {
         let alertController: UIAlertController
         
         if let loginResult = loginResult {
@@ -126,6 +132,7 @@ private extension LoginViewController {
         
         present(alertController, animated: true)
     }
+
     
     @objc func buttonPressed() {
        // print(loginResult)
@@ -143,11 +150,19 @@ private extension LoginViewController {
 
     
     func setupConstraints() {
-        blackButton.snp.makeConstraints { make in
+        yandexButton.snp.makeConstraints { make in
             make.bottom.equalTo(loginButton.snp.top).inset(-16)
             make.horizontalEdges.equalToSuperview().inset(20)
             make.height.equalTo(50)
         }
+        infoButton.setTitle("Info", for: .normal)
+        infoButton.addTarget(self, action: #selector(presentLogin), for: .touchUpInside)
+        infoButton.snp.makeConstraints { make in
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(260)
+            make.horizontalEdges.equalToSuperview().inset(20)
+            make.height.equalTo(50)
+        }
+        
         loginButton.snp.makeConstraints { make in
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(50)
             make.horizontalEdges.equalToSuperview().inset(20)
@@ -174,16 +189,15 @@ extension LoginViewController: YandexLoginSDKObserver {
     func didFinishLogin(with result: Result<LoginResult, Error>) {
         switch result {
         case .success(let loginResult):
-            self.loginResult = loginResult
-            NetworkService.token = loginResult.token
-            print(NetworkService.token)
-            print(loginResult.jwt)
+            viewModel.loginResult = loginResult
+            print(loginResult)
         case .failure(let error):
-            self.errorOccured(error)
+            print("Login error: \(error)")
         }
     }
     
     @objc func loginButtonPressed() {
+        
         let authorizationStrategy: YandexLoginSDK.AuthorizationStrategy = .default
         
         do {
@@ -195,18 +209,11 @@ extension LoginViewController: YandexLoginSDKObserver {
         } catch {
             errorOccured(error)
         }
-        //onSighInTapped()
-        //            print(YandexLoginSDK)
     }
     
-    @objc func logout() {
-        do {
-            try YandexLoginSDK.shared.logout()
-            loginResult = nil
-            presentLogouted()
-        } catch {
-            errorOccured(error)
-        }
+    
+    @objc func logoutButtonPressed() {
+        viewModel.logout()
     }
     
     func presentLogouted() {
@@ -224,33 +231,10 @@ extension LoginViewController: YandexLoginSDKObserver {
 extension LoginViewController: LoginViewInput {
     
     func onSighInTapped() {
-            viewModel.login(login: "", password: "")
+            viewModel.login()
     }
     
     func onSignUpTapped() {
         
-    }
-}
-
-extension LoginViewController {
-    
-    func errorOccured(_ error: Error) {
-        let alertController: UIAlertController
-        if let yandexLoginSDKError = error as? YandexLoginSDKError {
-            alertController = UIAlertController(
-                title: "A LoginSDK Error Occured",
-                message: yandexLoginSDKError.message,
-                preferredStyle: .alert
-            )
-        } else {
-            alertController = UIAlertController(
-                title: "An Error Occured",
-                message: error.localizedDescription,
-                preferredStyle: .alert
-            )
-        }
-        let okAction = UIAlertAction(title: "OK", style: .cancel)
-        alertController.addAction(okAction)
-        present(alertController, animated: true)
     }
 }
