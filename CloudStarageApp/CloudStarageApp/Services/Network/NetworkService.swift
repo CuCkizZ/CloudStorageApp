@@ -10,13 +10,23 @@ import YandexLoginSDK
 import Alamofire
 
 private enum Constants {
-    static let header = "Authorization"
-    static let idClient = "fb1d2080334243be9be6f947fcde3fa9"
+    static let path = "path"
+    static let defaultParams = [Constants.path: "disk:/"]
+    
+    static let resoursesUrl =  "https://cloud-api.yandex.net/v1/disk/resources"
+    static let lastUploadedUrl = "https://cloud-api.yandex.net/v1/disk/resources/last-uploaded"
+    static let diskInfoUrl = "https://cloud-api.yandex.net/v1/disk"
+    static let publicFilesUrl = "https://cloud-api.yandex.net/v1/disk/resources/public?type=file"
+    
+    static let createUrl = "https://cloud-api.yandex.net/v1/disk/resources?path=disk:/"
+    static let publishUrl = "https://cloud-api.yandex.net/v1/disk/resources/publish?path="
+    static let unpublishUrl = "https://cloud-api.yandex.net/v1/disk/resources/unpublish?path="
 }
 
 
 final class NetworkService: NetworkServiceProtocol {
     
+    private var keychain: KeychainProtocol = KeychainManager()
     var token = ""
     var headers: HTTPHeaders = [:]
     
@@ -30,12 +40,12 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func setToken() {
-        self.token = KeychainManager.retrieve(forKey: "token") ?? ""
+        self.token = try! keychain.retrieve(forKey: "token") ?? ""
     }
     
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void) {
-        let urlParams = ["path": "disk:/"]
-        let urlString = "https://cloud-api.yandex.net/v1/disk/resources"
+        let urlParams = Constants.defaultParams
+        let urlString = Constants.resoursesUrl
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
@@ -48,9 +58,11 @@ final class NetworkService: NetworkServiceProtocol {
         }
     }
     
+//    TODO: Guards and keychain setup
+    
     func fetchCurrentData(path: String, completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlParams = ["path": path]
-        let urlString = "https://cloud-api.yandex.net/v1/disk/resources"
+        let urlParams = [Constants.path: path]
+        let urlString = Constants.resoursesUrl
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
@@ -65,8 +77,8 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchLastData(completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlParams = ["path": "disk:/"]
-        let urlString = "https://cloud-api.yandex.net/v1/disk/resources/last-uploaded"
+        let urlParams = Constants.defaultParams
+        let urlString = Constants.lastUploadedUrl
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
@@ -81,7 +93,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchAccountData(completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlString = "https://cloud-api.yandex.net/v1/disk"
+        let urlString = Constants.diskInfoUrl
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, headers: headers).response { response in
@@ -96,7 +108,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchPublicData(completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlStirng = "https://cloud-api.yandex.net/v1/disk/resources/public?type=file"
+        let urlStirng = Constants.publicFilesUrl
         guard let url = URL(string: urlStirng) else { return }
         
         AF.request(url, method: .get, headers: headers).response { response in
@@ -112,7 +124,7 @@ final class NetworkService: NetworkServiceProtocol {
     
     func searchFiles(keyword: String, completion: @escaping (Result<Data, Error>) -> Void) {
         let urlParams = ["path": keyword]
-        let urlString = "https://cloud-api.yandex.net/v1/disk/resources"
+        let urlString = Constants.resoursesUrl
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
@@ -127,7 +139,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func createNewFolder(name: String) {
-        let urlString = "https://cloud-api.yandex.net/v1/disk/resources?path=disk:/\(name)"
+        let urlString = Constants.createUrl + name
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .put, headers: headers).validate().response { response in
@@ -157,7 +169,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func toPublicFile(path: String) {
-        let urlSting = "https://cloud-api.yandex.net/v1/disk/resources/publish?path=\(path)"
+        let urlSting = Constants.publishUrl + path
         guard let url = URL(string: urlSting) else { return }
         
         AF.request(url, method: .put, headers: headers).validate().response { response in
@@ -173,7 +185,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func unpublishFile(path: String) {
-        let urlString = "https://cloud-api.yandex.net/v1/disk/resources/unpublish?path=\(path)"
+        let urlString = Constants.unpublishUrl + path
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .put, headers: headers).validate().response { response in

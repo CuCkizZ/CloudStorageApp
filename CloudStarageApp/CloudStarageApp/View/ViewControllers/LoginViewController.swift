@@ -11,6 +11,7 @@ protocol LoginViewInput: AnyObject {
 final class LoginViewController: UIViewController {
     
     private let viewModel: LoginViewOutput
+    private var keychain: KeychainProtocol?
     
     private var customValues: [String: String] = [:]
     
@@ -186,9 +187,12 @@ private extension LoginViewController {
 extension LoginViewController: YandexLoginSDKObserver {
     
     func didFinishLogin(with result: Result<LoginResult, Error>) {
+        keychain = KeychainManager()
         switch result {
         case .success(let loginResult):
-            KeychainManager.save(loginResult.token, forKey: "token")
+            do {
+               try? keychain?.save(loginResult.token, forKey: "token")
+            }
             viewModel.setToken()
         case .failure(let error):
             print("Login error: \(error)")

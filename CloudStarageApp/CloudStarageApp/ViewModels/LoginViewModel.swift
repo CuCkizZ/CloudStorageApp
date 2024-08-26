@@ -13,6 +13,7 @@ protocol LoginViewOutput: AnyObject {
 final class LoginViewModel {
     
     private var client: NetworkServiceProtocol = NetworkService()
+    private var keychain: KeychainManager?
     
     var isLoading: Observable<Bool> = Observable(false)
     var onLoginStateChanged: ((Bool) -> Void)?
@@ -33,7 +34,7 @@ final class LoginViewModel {
     }
     
     private func cleareKeychain() {
-        KeychainManager.delete(forKey: "token")
+        try? keychain?.delete(forKey: "token")
     }
     
 }
@@ -51,7 +52,7 @@ extension LoginViewModel: LoginViewOutput {
     }
     
     func setToken() {
-        guard let token = KeychainManager.retrieve(forKey: "token") else { return }
+        guard let token = try? keychain?.retrieve(forKey: "token") else { return }
         client.token = token
     }
     
