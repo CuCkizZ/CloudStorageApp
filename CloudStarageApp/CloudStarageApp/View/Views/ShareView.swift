@@ -98,14 +98,14 @@ private extension ShareView {
     
     @objc func shareLink() {
         guard let link = link else { return }
-        viewModel.shareLink(link: link)
         viewModel.hideShareView()
+        viewModel.shareLink(link: link)
     }
     
     @objc func shareFile() {
         guard let file = file else { return }
-        viewModel.shareFile(file: file)
         viewModel.hideShareView()
+        viewModel.shareFile(file: file)
     }
     
     func setupShareViews() {

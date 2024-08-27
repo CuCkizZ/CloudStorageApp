@@ -17,16 +17,17 @@ protocol PresentImageViewControllerProtocol {
 final class PresentImageViewController: UIViewController {
     
     private var viewModel: PresentImageViewModelProtocol
-    private lazy var activityIndicator = UIActivityIndicatorView()
-    private var isHidden = true
     
+    private var isHidden = true
+    private lazy var initialSize = CGSize()
+    private let minimumSize: CGFloat = 300.0
+    
+    private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var infoButton = UIButton()
     private lazy var shareButton = UIButton()
     private lazy var deleteButton = UIButton()
-
     private lazy var shareView = ShareView(viewModel: viewModel, frame: .zero)
     private lazy var infoView = InfoView(viewModel: viewModel, frame: .zero)
-
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
         imageView.isUserInteractionEnabled = true
@@ -35,8 +36,6 @@ final class PresentImageViewController: UIViewController {
         return imageView
     }()
     
-    private lazy var initialSize = CGSize()
-    private let minimumSize: CGFloat = 300.0
 
     init(viewModel: PresentImageViewModelProtocol) {
         self.viewModel = viewModel
@@ -141,9 +140,15 @@ private extension PresentImageViewController {
             guard let self = self else { return }
             infoView.snp.updateConstraints { make in
                 make.bottom.equalToSuperview()
-                make.height.equalTo(300)
+                make.height.equalTo(200)
                 make.width.equalToSuperview()
             }
+            imageView.snp.remakeConstraints { make in
+                make.left.right.equalToSuperview()
+                make.top.equalToSuperview().inset(-200)
+                make.bottom.equalTo(self.infoView.snp.top).inset(-16)
+            }
+            navigationController?.navigationBar.alpha = 0
             shareButton.alpha = 0
             infoButton.alpha = 0
             deleteButton.alpha = 0
@@ -156,10 +161,16 @@ private extension PresentImageViewController {
         UIView.animate(withDuration: 0.4) { [weak self] in
             guard let self = self else { return }
             infoView.snp.updateConstraints { make in
-                make.bottom.equalToSuperview().inset(-200)
+                make.bottom.equalToSuperview().inset(-300)
                 make.height.equalTo(200)
                 make.width.equalToSuperview()
             }
+            imageView.snp.remakeConstraints { make in
+                make.left.right.equalToSuperview()
+                make.top.equalToSuperview()
+                make.bottom.equalToSuperview()
+            }
+            navigationController?.navigationBar.alpha = 1
             shareButton.alpha = 1
             infoButton.alpha = 1
             deleteButton.alpha = 1
@@ -191,8 +202,9 @@ private extension PresentImageViewController {
             make.center.equalToSuperview()
         }
         imageView.snp.makeConstraints { make in
-            make.left.right.top.equalToSuperview()
-            make.bottom.equalTo(infoView.snp.top)
+            make.left.right.equalToSuperview()
+            make.top.equalToSuperview()
+            make.bottom.equalToSuperview()
         }
         shareView.snp.makeConstraints { make in
             make.bottom.equalToSuperview().inset(-230)

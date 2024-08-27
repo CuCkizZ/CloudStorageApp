@@ -76,7 +76,7 @@ private extension InfoView {
         addSubview(mainStackView)
         backgroundColor = .white
         mainStackView.backgroundColor = .clear
-        layer.cornerRadius = 12
+        layer.cornerRadius = 20
     }
     
     func setupLabels() {
@@ -85,6 +85,7 @@ private extension InfoView {
         nameLabel.font = .Inter.light.size(of: 16)
         dateLabel.font = .Inter.light.size(of: 16)
         sizeLabel.font = .Inter.light.size(of: 16)
+        nameLabel.lineBreakMode = .byCharWrapping
     }
     
     func setupConstaints() {
