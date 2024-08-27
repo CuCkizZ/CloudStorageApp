@@ -27,6 +27,7 @@ private enum Constants {
 final class NetworkService: NetworkServiceProtocol {
     
     private var keychain: KeychainProtocol = KeychainManager()
+    var loginResult: LoginResult?
     var token = ""
     var headers: HTTPHeaders = [:]
     
@@ -38,10 +39,11 @@ final class NetworkService: NetworkServiceProtocol {
         ]
     }
     
-    func setToken(token: String) {
+    func setToken() {
         do {
-            self.token = try keychain.get(forKey: "token") ?? ""
-                print("token : \(token) was setted")
+            let tokon = try keychain.get(forKey: "token") ?? ""
+            self.token = tokon
+                print("token:\(tokon) was setted")
         } catch {
             print("cant set token")
         }

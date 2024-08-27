@@ -25,7 +25,6 @@ final class HomeViewController: UIViewController {
         return collection
     }()
     
-    
     init(viewModel: HomeViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)

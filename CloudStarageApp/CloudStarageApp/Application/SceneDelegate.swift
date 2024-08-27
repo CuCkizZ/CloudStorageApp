@@ -18,6 +18,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = navBar
         window?.makeKeyAndVisible()
         
+        let networl: NetworkServiceProtocol = NetworkService()
+        networl.setToken()
         let appCoordinator = AppCoordinator(type: .app, navigationController: navBar, window: window)
         self.coordinator = appCoordinator
         appCoordinator.start()

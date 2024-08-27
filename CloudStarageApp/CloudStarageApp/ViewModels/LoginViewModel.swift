@@ -7,7 +7,7 @@ protocol LoginViewOutput: AnyObject {
     
     func login()
     func logout()
-    func setToken(token: String)
+    func setToken()
     func saveToken(token: String)
 }
 
@@ -56,16 +56,19 @@ extension LoginViewModel: LoginViewOutput {
     }
     
     func saveToken(token: String) {
-        do {
-            try keychain.save(token, forKey: "token")
-        } catch {
-            print(error.localizedDescription, "Ошибка при сохранении")
-        }
-        setToken(token: token)
+        let token = loginResult?.token ?? "no token"
+        client.token = token
+        print(token)
+//        do {
+//            try keychain.save(token, forKey: "token")
+//        } catch {
+//            print(error.localizedDescription, "Ошибка при сохранении")
+//        }
+//        setToken()
     }
     
-    func setToken(token: String) {
-        client.setToken(token: token)
+    func setToken() {
+        
     }
     
     func login() {
@@ -77,6 +80,7 @@ extension LoginViewModel: LoginViewOutput {
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 self.isLoading.value = false
+                client.setToken()
                 self.goToMainScreen()
             }
         }

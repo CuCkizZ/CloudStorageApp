@@ -18,6 +18,7 @@ protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
 final class HomeViewModel {
     var onErrorReceived: ((String) -> Void)?
     private weak var coordinator: HomeCoordinator?
+    let networkManager: NetworkServiceProtocol = NetworkService()
     private var model: [Item] = []
     private let networkMonitor = NWPathMonitor()
     
@@ -66,6 +67,7 @@ extension HomeViewModel: HomeViewModelProtocol {
 //    MARK: Network
     
     func fetchData() {
+        networkManager.setToken()
         if isLoading.value ?? true {
             return
         }

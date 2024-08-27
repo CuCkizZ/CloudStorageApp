@@ -182,21 +182,11 @@ private extension LoginViewController {
 
 // MARK: Yandex
 
-extension LoginViewController: YandexLoginSDKObserver {
-    
-    func didFinishLogin(with result: Result<LoginResult, Error>) {
-        switch result {
-        case .success(let loginResult):
-            viewModel.saveToken(token: loginResult.token)
-        case .failure(let error):
-            print("Login error: \(error)")
-        }
-    }
+extension LoginViewController {
     
     @objc func loginButtonPressed() {
-        
         let authorizationStrategy: YandexLoginSDK.AuthorizationStrategy = .default
-        do { 
+        do {
             try YandexLoginSDK.shared.authorize(
                 with: self,
                 customValues: self.customValues.isEmpty ? nil : self.customValues,
@@ -206,7 +196,7 @@ extension LoginViewController: YandexLoginSDKObserver {
             errorOccured(error)
         }
     }
-    
+
     
     @objc func logoutButtonPressed() {
         viewModel.logout()
@@ -223,6 +213,19 @@ extension LoginViewController: YandexLoginSDKObserver {
 }
 
 // MARK: - Protocol Methods
+
+extension LoginViewController: YandexLoginSDKObserver {
+    
+    func didFinishLogin(with result: Result<LoginResult, Error>) {
+        switch result {
+        case .success(let loginResult):
+            self.loginResult = loginResult
+        case .failure(let error):
+            print("Login error: \(error)")
+        }
+        viewModel.saveToken(token: loginResult?.token ?? "no token VC")
+    }
+}
 
 extension LoginViewController: LoginViewInput {
     
