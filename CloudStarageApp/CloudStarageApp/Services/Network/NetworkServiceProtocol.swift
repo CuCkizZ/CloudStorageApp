@@ -8,7 +8,7 @@
 import Foundation
 
 protocol NetworkServiceProtocol {
-    var token: String { get set }
+    func setToken(token: String)
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void)
     func fetchAccountData(completion: @escaping (Result<Data, Error>) -> Void)
     func createNewFolder(name: String)

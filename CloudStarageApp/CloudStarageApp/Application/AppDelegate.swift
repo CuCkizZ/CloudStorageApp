@@ -3,13 +3,15 @@ import UIKit
 import CoreData
 import YandexLoginSDK
 
+private let clientID = "e10974fe4b64489bac4eb6ab97efae3f"
+
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         do {
-            let clientID = "e10974fe4b64489bac4eb6ab97efae3f"
+            let clientID = clientID
             try YandexLoginSDK.shared.activate(with: clientID)
         } catch {
             print("1 application func error")

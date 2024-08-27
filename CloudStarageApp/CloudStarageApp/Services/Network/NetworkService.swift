@@ -32,15 +32,22 @@ final class NetworkService: NetworkServiceProtocol {
     
     
     init() {
-        setToken()
+        setToken(token: token)
         self.headers = [
             "Accept" : "application/json",
             "Authorization" : "OAuth \(token)"
         ]
     }
     
-    func setToken() {
-        self.token = try! keychain.retrieve(forKey: "token") ?? ""
+    func setToken(token: String) {
+        do {
+            if let token = try keychain.retrieve(forKey: "token") {
+                self.token = token
+                print("token set")
+            }
+        } catch {
+            print("cant set token")
+        }
     }
     
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void) {
@@ -57,8 +64,6 @@ final class NetworkService: NetworkServiceProtocol {
             completion(.success(data))
         }
     }
-    
-//    TODO: Guards and keychain setup
     
     func fetchCurrentData(path: String, completion: @escaping (Result<Data, Error>) -> Void) {
         let urlParams = [Constants.path: path]
@@ -222,8 +227,5 @@ final class NetworkService: NetworkServiceProtocol {
             }
         }
     }
-}
-
-extension NetworkService {
 }
 
