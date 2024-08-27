@@ -20,45 +20,12 @@ final class PresentImageViewController: UIViewController {
     private lazy var activityIndicator = UIActivityIndicatorView()
     private var isHidden = true
     
-    private lazy var nameLabel = UILabel()
-    private lazy var dateLabel = UILabel()
-    private lazy var sizeLabel = UILabel()
-    
     private lazy var infoButton = UIButton()
     private lazy var shareButton = UIButton()
     private lazy var deleteButton = UIButton()
 
-    private lazy var nameIcon = UIImageView(image: UIImage(systemName: "doc.richtext"))
-    private lazy var dateIcon = UIImageView(image: UIImage(systemName: "calendar.badge.plus"))
-    private lazy var sizeIcon = UIImageView(image: UIImage(systemName: "externaldrive"))
     private lazy var shareView = ShareView(viewModel: viewModel, frame: .zero)
-    private lazy var infoView = UIView(frame: CGRect(x: 0, y: 0, 
-                                                     width: view.bounds.width, 
-                                                     height: view.bounds.height))
-    
-    private lazy var iconStacView: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [nameIcon, dateIcon, sizeIcon])
-        stack.axis = .vertical
-        stack.alignment = .center
-        stack.spacing = 16
-        return stack
-    }()
-    
-    private lazy var infoStackView: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [nameLabel, dateLabel, sizeLabel])
-        stack.axis = .vertical
-        stack.alignment = .leading
-        stack.spacing = 16
-        return stack
-    }()
-    
-    private lazy var mainStackView: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [iconStacView, infoStackView])
-        stack.axis = .horizontal
-        stack.alignment = .center
-        stack.spacing = 10
-        return stack
-    }()
+    private lazy var infoView = InfoView(viewModel: viewModel, frame: .zero)
 
     private lazy var imageView: UIImageView = {
         let imageView = UIImageView()
@@ -88,12 +55,6 @@ final class PresentImageViewController: UIViewController {
     }
     
     func configure(model: CellDataModel) {
-        nameLabel.text = model.name
-        dateLabel.text = model.date
-        if let bytes = model.size {
-            sizeLabel.text = viewModel.sizeFormatter(bytes: bytes)
-        }
-        
         self.activityIndicator.startAnimating()
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -106,6 +67,7 @@ final class PresentImageViewController: UIViewController {
                 }
             }
         }
+        infoView.configure(model: model)
         deleteButtonTapped(name: model.name)
         shareButtonTapped(link: model.publicUrl ?? "no url", file: model.file)
     }
@@ -117,7 +79,6 @@ private extension PresentImageViewController {
         tabBarController?.tabBar.isHidden = true
         view.backgroundColor = .black
         activityIndicator.color = .white
-        setupInfoView()
         setupViews()
         hideShareViewByViewModel()
         setupButtons()
@@ -127,20 +88,16 @@ private extension PresentImageViewController {
     func setupViews() {
         view.addSubview(activityIndicator)
         view.addSubview(imageView)
-        infoView.addSubview(mainStackView)
         initialSize = view.frame.size
         
+        view.addSubview(infoView)
         view.addSubview(infoButton)
         view.addSubview(shareButton)
         view.addSubview(deleteButton)
-        view.addSubview(infoView)
         view.addSubview(shareView)
     }
     
-    func setupInfoView() {
-        infoView.backgroundColor = .white
-        mainStackView.backgroundColor = .clear
-    }
+    
     
     func setupButtons() {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 20)
@@ -180,31 +137,40 @@ private extension PresentImageViewController {
     
     func showInfoView() {
         isHidden = false
-        UIView.animate(withDuration: 0.4) {
-            self.infoView.snp.updateConstraints { make in
-                make.bottom.equalToSuperview().inset(100)
-                make.height.equalTo(200)
+        UIView.animate(withDuration: 0.4) { [weak self] in
+            guard let self = self else { return }
+            infoView.snp.updateConstraints { make in
+                make.bottom.equalToSuperview()
+                make.height.equalTo(300)
                 make.width.equalToSuperview()
             }
+            shareButton.alpha = 0
+            infoButton.alpha = 0
+            deleteButton.alpha = 0
             self.view.layoutIfNeeded()
         }
     }
     
     func hideInfoView() {
         isHidden = true
-           UIView.animate(withDuration: 0.4) {
-               self.infoView.snp.updateConstraints { make in
-                   make.bottom.equalToSuperview().inset(-200)
-                   make.height.equalTo(200)
-                   make.width.equalToSuperview()
-               }
-               self.view.layoutIfNeeded()
-           }
-       }
+        UIView.animate(withDuration: 0.4) { [weak self] in
+            guard let self = self else { return }
+            infoView.snp.updateConstraints { make in
+                make.bottom.equalToSuperview().inset(-200)
+                make.height.equalTo(200)
+                make.width.equalToSuperview()
+            }
+            shareButton.alpha = 1
+            infoButton.alpha = 1
+            deleteButton.alpha = 1
+            self.view.layoutIfNeeded()
+        }
+    }
     
     func showShareView() {
         isHidden = false
-        UIView.animate(withDuration: 0.4) {
+        UIView.animate(withDuration: 0.4) { [weak self] in
+            guard let self = self else { return }
             self.shareView.snp.updateConstraints { make in
                 make.bottom.equalToSuperview()
                 make.width.equalToSuperview()
@@ -246,9 +212,6 @@ private extension PresentImageViewController {
         infoButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
             make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
-        }
-        mainStackView.snp.makeConstraints { make in
-            make.center.equalToSuperview()
         }
     }
 }
