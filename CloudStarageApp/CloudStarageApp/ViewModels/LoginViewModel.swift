@@ -59,7 +59,7 @@ extension LoginViewModel: LoginViewOutput {
         do {
             try keychain.save(token, forKey: "token")
         } catch {
-            print(error.localizedDescription)
+            print(error.localizedDescription, "Ошибка при сохранении")
         }
         setToken(token: token)
     }

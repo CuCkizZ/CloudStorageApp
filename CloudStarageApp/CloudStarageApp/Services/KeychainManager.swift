@@ -15,8 +15,8 @@ enum KeychainError: Error {
 
 protocol KeychainProtocol {
     func save(_ value: String, forKey key: String) throws
+    func get(forKey key: String) throws -> String?
     func delete(forKey key: String) throws
-    func retrieve(forKey key: String) throws -> String?
 }
 
 final class KeychainManager: KeychainProtocol {
@@ -27,16 +27,16 @@ final class KeychainManager: KeychainProtocol {
             kSecAttrAccount as String: key,
             kSecValueData as String: data
         ]
-        let status = SecItemAdd(query as CFDictionary, nil)
-        guard status != errSecDuplicateItem else {
-            throw KeychainError.duplicated
-        }
-        guard status == errSecSuccess else {
-            throw KeychainError.unoknow(status)
-        }
+        _ = SecItemAdd(query as CFDictionary, nil)
+//        guard status != errSecDuplicateItem else {
+//            throw KeychainError.duplicated
+//        }
+//        guard status == errSecSuccess else {
+//            throw KeychainError.unoknow(status)
+//        }
     }
 
-    func retrieve(forKey key: String) throws -> String? {
+    func get(forKey key: String) throws -> String? {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,

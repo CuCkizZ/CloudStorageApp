@@ -24,6 +24,7 @@ final class AppCoordinator: Coordinator {
     }
     
     override func finish() {
+        logout()
         print("Im done")
     }
 }
@@ -41,43 +42,28 @@ private extension AppCoordinator {
         let tabBarController = factory.makeMainFlow(coordinator: self, finishDelegate: self)
         self.tabBarController = tabBarController
         let transition = CATransition()
-//        TODO: create transition file
         transition.duration = 0.3
         transition.type = .reveal
-        self.window?.layer.add(transition, forKey: kCATransition)
-        self.window?.rootViewController = self.tabBarController
+        window?.layer.add(transition, forKey: kCATransition)
+        window?.rootViewController = tabBarController
     }
     
     func showAuthFlow() {
         guard let navigationController = navigationController else { return }
         let loginCoordinator = factory.makeLoginFlow(coordinator: self,
-                                            navigationController: navigationController, finisDelegate: self)
+                                                     navigationController: navigationController, finisDelegate: self)
         loginCoordinator.start()
     }
     
     func showPublicScene() {
-            print("Attempting to show PublicViewController")
-            guard let navigationController = navigationController else {
-                print("Navigation controller is nil")
-                return
-            }
-            let publicCoordinator = factory.makePublicFlow(coordinator: self,
-                                             navigationController: navigationController, finisDelegate: self)
-            publicCoordinator.start()
+        print("Attempting to show PublicViewController")
+        guard let navigationController = navigationController else {
+            print("Navigation controller is nil")
+            return
         }
-    
-    func logout() {
-        guard let navigationController = navigationController else { return }
-        let homeCoordinator = HomeCoordinator(type: .home, navigationController: navigationController)
-        homeCoordinator.finish()
-        let storageCoordinator = StorageCoordinator(type: .storage, navigationController: navigationController)
-        storageCoordinator.finish()
-        let profileCoordinator = ProfileCoordinator(type: .profile, navigationController: navigationController)
-        profileCoordinator.finish()
-        
-        let loginCoordinator = LoginCoordinator(type: .login, navigationController: navigationController)
-        loginCoordinator.start()
-        self.window?.rootViewController = navigationController
+        let publicCoordinator = factory.makePublicFlow(coordinator: self,
+                                                       navigationController: navigationController, finisDelegate: self)
+        publicCoordinator.start()
     }
 }
 
@@ -87,8 +73,45 @@ extension AppCoordinator {
         showMainScene()
     }
     
+    func showAuthScene() {
+        showAuthFlow()
+    }
+    
     func showPublicFlow() {
         showPublicScene()
+    }
+    
+    func logout() {
+        for coordinator in childCoordinators {
+            coordinator.finish()
+        }
+        childCoordinators.removeAll()
+       
+        tabBarController.viewControllers?.forEach { $0.removeFromParent() }
+        tabBarController.view.removeFromSuperview()
+        tabBarController.removeFromParent()
+
+        navigationController?.viewControllers.forEach { $0.removeFromParent() }
+        navigationController?.view.removeFromSuperview()
+        navigationController = nil
+
+        // userStorage.clearUserData()
+
+        let authNavigationController = UINavigationController()
+        
+        let loginCoordinator = factory.makeLoginFlow(coordinator: self, navigationController: authNavigationController, finisDelegate: self)
+        loginCoordinator.start()
+        
+        
+        let transition = CATransition()
+        transition.duration = 0.3
+        transition.type = .fade
+        window?.layer.add(transition, forKey: kCATransition)
+        
+        window?.rootViewController = authNavigationController
+        window?.makeKeyAndVisible()
+
+        print("User logged out, and authentication screen presented.")
     }
     
 }
@@ -101,23 +124,26 @@ extension AppCoordinator: CoorditatorFinishDelegate {
         
         switch childCoordinator.type {
         case .onboarding:
-            //showMainFlow()
             showAuthFlow()
+            removeChildCoordinator(self)
             navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         case .app:
-            return
+            logout()
+            navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         case .login:
             showMainFlow()
+            removeChildCoordinator(self)
             navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         case .home:
             removeChildCoordinator(self)
+        case .storage:
+            removeChildCoordinator(self)
         case .profile:
-            logout()
-            //showPublicFlow()
+            removeChildCoordinator(self)
             navigationController?.viewControllers = [navigationController?.viewControllers.last ?? UIViewController()]
         case .publicCoordinator:
             showMainFlow()
-        case .logout: 
+        case .logout:
             showAuthFlow()
         default:
             navigationController?.popToRootViewController(animated: false)

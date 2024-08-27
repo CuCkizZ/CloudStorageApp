@@ -11,7 +11,7 @@ import Alamofire
 
 private enum Constants {
     static let path = "path"
-    static let defaultParams = [Constants.path: "disk:/"]
+    static let defaultParams = ["path": "disk:/"]
     
     static let resoursesUrl =  "https://cloud-api.yandex.net/v1/disk/resources"
     static let lastUploadedUrl = "https://cloud-api.yandex.net/v1/disk/resources/last-uploaded"
@@ -32,7 +32,6 @@ final class NetworkService: NetworkServiceProtocol {
     
     
     init() {
-        setToken(token: token)
         self.headers = [
             "Accept" : "application/json",
             "Authorization" : "OAuth \(token)"
@@ -41,10 +40,8 @@ final class NetworkService: NetworkServiceProtocol {
     
     func setToken(token: String) {
         do {
-            if let token = try keychain.retrieve(forKey: "token") {
-                self.token = token
-                print("token set")
-            }
+            self.token = try keychain.get(forKey: "token") ?? ""
+                print("token : \(token) was setted")
         } catch {
             print("cant set token")
         }

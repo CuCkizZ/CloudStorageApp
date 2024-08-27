@@ -27,7 +27,6 @@ protocol CoordinatorProtocol: AnyObject {
     
     func start()
     func finish()
-    func logouted()
 }
 
 extension CoordinatorProtocol {
@@ -55,7 +54,7 @@ class Coordinator: CoordinatorProtocol {
     
     var childCoordinators: [CoordinatorProtocol]
     var type: CoordinatorType
-    var navigationController: UINavigationController?
+    weak var navigationController: UINavigationController?
     var window: UIWindow?
     weak var finishDelegate: CoorditatorFinishDelegate?
     
@@ -82,9 +81,9 @@ class Coordinator: CoordinatorProtocol {
         print("Coordinator finished")
     }
     
-    func logouted() {
-        childCoordinators.forEach { $0.finish() }
-        childCoordinators.removeAll()
+    func logoutFrom() {
+        self.type = .app
+        finishDelegate?.coordinatorDidFinish(childCoordinator: self)
     }
     
 }
@@ -121,7 +120,11 @@ extension Coordinator {
     
     func popTo() {
         guard let navigationController = navigationController else { return }
-            navigationController.popToRootViewController(animated: false)
+        navigationController.popToRootViewController(animated: false)
+    }
+    
+    func logoutFromHVC() {
+        
     }
     
 }

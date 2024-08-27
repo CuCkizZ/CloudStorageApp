@@ -16,8 +16,7 @@ final class ProfileCoordinator: Coordinator {
         
     }
     override func finish() {
-        //goToPublic()
-        //finishDelegate?.coordinatorDidFinish(childCoordinator: self)
+        finishDelegate?.coordinatorDidFinish(childCoordinator: self)
         print("Profile done")
     }
 }
@@ -41,23 +40,6 @@ extension ProfileCoordinator {
         let publicVC = factory.makePublicScene(navigationTitle: title, coordinator: self)
         navigationController.pushViewController(publicVC, animated: true)
     }
-    
-//    func presentShareScene(shareLink: String) {
-//        guard let navigationController = navigationController else { return }
-//        let vc = factory.makeShareSceneApp(shareLink: shareLink, coordinator: self)
-//        if let sheet = vc.sheetPresentationController {
-//            sheet.detents = [.custom(resolver: { context in
-//                navigationController.view.bounds.height / 4
-//            })]
-//            navigationController.present(vc, animated: true)
-//        }
-//    }
-//    
-//    func presentAtivityVc(item: String) {
-//        guard let navigationController = navigationController else { return }
-//        let avc = factory.makeActivityVc(item: item, coordinator: self)
-//        navigationController.present(avc, animated: true)
-//    }
     
     func Logout() {
         

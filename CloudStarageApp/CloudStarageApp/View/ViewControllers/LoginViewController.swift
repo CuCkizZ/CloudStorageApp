@@ -196,7 +196,7 @@ extension LoginViewController: YandexLoginSDKObserver {
     @objc func loginButtonPressed() {
         
         let authorizationStrategy: YandexLoginSDK.AuthorizationStrategy = .default
-        do {
+        do { 
             try YandexLoginSDK.shared.authorize(
                 with: self,
                 customValues: self.customValues.isEmpty ? nil : self.customValues,

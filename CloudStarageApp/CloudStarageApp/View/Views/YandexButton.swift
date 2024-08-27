@@ -30,7 +30,7 @@ private extension YandexButton {
         self.layer.cornerRadius = 12
     }
     
-    @objc func buttonPressed() { 
+    @objc func buttonPressed() {
         guard let action = self.action else { return }
         action()
     }

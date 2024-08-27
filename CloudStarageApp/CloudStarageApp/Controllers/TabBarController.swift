@@ -34,10 +34,6 @@ final class TabBarController: UITabBarController {
         let shadowImage = UIImage(named: "tabBarShadow")
         tabBar.shadowImage = shadowImage
     }
-    
-    func finish() {
-        self.tabBar.items?.removeAll()
-    }
 }
 
 extension UINavigationController {
@@ -51,13 +47,13 @@ extension UINavigationController {
     }
     
     @objc func logout() {
-        let coordinator: CoordinatorProtocol = Coordinator(type: .logout, navigationController: self)
+        let _: CoordinatorProtocol = AppCoordinator(type: .logout, navigationController: self)
         let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
             print("Cancel")
         }))
         alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { action in
-            coordinator.logouted()
+            
         }))
         present(alert, animated: true)
     }

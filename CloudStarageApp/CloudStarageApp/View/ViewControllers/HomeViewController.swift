@@ -104,6 +104,9 @@ private extension HomeViewController {
         setupNavBar()
         setupUploadButton()
         uploadButtonPressed()
+        
+        setupLogout()
+        
         setupConstraints()
         setupLayoutButton()
     }
@@ -122,7 +125,6 @@ private extension HomeViewController {
     
     func setupNavBar() {
         guard let navigationController = navigationController else { return }
-        navigationItem.leftBarButtonItem = navigationController.setLeftButton()
         navigationItem.rightBarButtonItem = navigationController.setRightButton()
         navigationItem.searchController = searchController
         navigationItem.rightBarButtonItem?.action = #selector((setupSearchController))
@@ -324,4 +326,17 @@ extension HomeViewController: UISearchBarDelegate, UISearchResultsUpdating {
         self.definesPresentationContext = true
         self.navigationItem.searchController = searchController
     }
+}
+
+// MARK: Logout
+
+extension HomeViewController {
+    func setupLogout() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logoutTapped))
+    }
+    
+    @objc func logoutTapped() {
+        viewModel.logout()
+    }
+    
 }

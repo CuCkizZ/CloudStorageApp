@@ -18,18 +18,16 @@ class HomeCoordinator: Coordinator {
         finishDelegate?.coordinatorDidFinish(childCoordinator: self)
         print("Im done")
     }
+    
+    override func logoutFrom() {
+        guard let navigationController = navigationController else { return }
+        let coordinator: Coordinator = Coordinator(type: .app, navigationController: navigationController)
+        coordinator.logoutFromHVC()
+        finishDelegate?.coordinatorDidFinish(childCoordinator: coordinator)
+    }
 }
 
 extension HomeCoordinator {
-    
-    func logout() {
-    }
-    
-//    func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
-//        guard let navigationController = navigationController else { return }
-//        let vc = factory.makeDocumentScene(name: name, type: type, fileType: fileType, coordinator: self)
-//        navigationController.pushViewController(vc, animated: true)
-//    }
     
     func showHomeScene() {
         guard let navigationController = navigationController else { return }
@@ -37,27 +35,10 @@ extension HomeCoordinator {
         navigationController.pushViewController(vc, animated: true)
     }
     
-//    func presentShareScene(shareLink: String) {
-//        guard let navigationController = navigationController else { return }
-//        let vc = factory.makeShareSceneApp(shareLink: shareLink, coordinator: self)
-//        if let sheet = vc.sheetPresentationController {
-//            sheet.detents = [.custom(resolver: { context in
-//                navigationController.view.bounds.height / 4
-//            })]
-//            navigationController.present(vc, animated: true)
-//        }
-//    }
-//    
-//    func presentAtivityVc(item: String) {
-//        guard let navigationController = navigationController else { return }
-//        let avc = factory.makeActivityVc(item: item, coordinator: self)
-//        navigationController.present(avc, animated: true)
-//    }
-//    
-//    func presentImageScene(url: URL)  {
-//        guard let navigationController = navigationController else { return }
-//        let vc = factory.makeImageScene(url: url, coordinator: self)
-//        navigationController.pushViewController(vc, animated: true)
-//    }
+    func logout() {
+        guard let navigationController = navigationController else { return }
+        let coordinator: Coordinator = Coordinator(type: .app, navigationController: navigationController)
+        coordinator.logoutFromHVC()
+    }
     
 }

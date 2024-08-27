@@ -12,11 +12,12 @@ protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
     var searchText: String { get set }
     func searchFiles()
+    func logout()
 }
 
 final class HomeViewModel {
     var onErrorReceived: ((String) -> Void)?
-    private let coordinator: HomeCoordinator
+    private weak var coordinator: HomeCoordinator?
     private var model: [Item] = []
     private let networkMonitor = NWPathMonitor()
     
@@ -136,18 +137,24 @@ extension HomeViewModel: HomeViewModelProtocol {
 //    MARK: Navigation
     
     func presentShareView(shareLink: String) {
-        coordinator.presentShareScene(shareLink: shareLink)
+        coordinator?.presentShareScene(shareLink: shareLink)
     }
     
     func presentAvc(item: String) {
-        coordinator.presentAtivityVc(item: item)
+        coordinator?.presentAtivityVc(item: item)
     }
     
     func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
-        coordinator.presentDocument(name: name, type: type, fileType: fileType)
+        coordinator?.presentDocument(name: name, type: type, fileType: fileType)
     }
     
     func presentImage(model: CellDataModel) {
-        coordinator.presentImageScene(model: model)
+        coordinator?.presentImageScene(model: model)
     }
+    
+    func logout() {
+        coordinator?.logoutFrom()
+    }
+    
 }
+

@@ -7,7 +7,7 @@ protocol OnboardingViewModelProtocol: AnyObject {
 final class OnboardingViewModel {
     
     private let userStorage = UserStorage.shared
-    weak var coordinator: OnboardingCoordinator?
+    private let coordinator: OnboardingCoordinator
     
     init(coordinator: OnboardingCoordinator) {
         self.coordinator = coordinator
@@ -18,7 +18,7 @@ final class OnboardingViewModel {
 
 extension OnboardingViewModel: OnboardingViewModelProtocol {
     func onbordingFinish() {
-        coordinator?.finish()
+        coordinator.finish()
         userStorage.skipOnboarding = true
     }
 }
