@@ -8,12 +8,12 @@
 import Foundation
 
 protocol BaseCollectionViewModelProtocol {
-//    Observable
+    //    Observable
     var isLoading: Observable<Bool> { get set }
     var isConnected: Observable<Bool> { get set }
-//    DataSource
+    //    DataSource
     func numbersOfRowInSection() -> Int
-//   Network
+    //   Network
     func fetchData()
     func startMonitoringNetwork()
     func unpublishResource(_ path: String)
@@ -21,9 +21,11 @@ protocol BaseCollectionViewModelProtocol {
     func deleteFile(_ name: String)
     func publishResource(_ path: String)
     func renameFile(oldName: String, newName: String)
-//    Navigation
+    func loadFile(from path: String, completion: @escaping (URL?) -> Void)
+    //    Navigation
     func presentShareView(shareLink: String)
     func presentImage(model: CellDataModel)
     func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String)
     func presentAvc(item: String)
+    func presentAvcFiles(path: URL)
 }

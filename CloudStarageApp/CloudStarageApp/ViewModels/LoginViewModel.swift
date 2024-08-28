@@ -7,7 +7,7 @@ protocol LoginViewOutput: AnyObject {
     
     func login()
     func logout()
-    func setToken(token: String)
+    func setToken()
     func saveToken(token: String)
 }
 
@@ -15,7 +15,7 @@ final class LoginViewModel {
     
     private var client: NetworkServiceProtocol = NetworkService()
     private let userStorage = UserStorage.shared
-    private var keychain: KeychainProtocol
+    private let keychain = KeychainManager.shared
     private let coordinator: LoginCoordinator
     
     var isLoading: Observable<Bool> = Observable(false)
@@ -27,9 +27,8 @@ final class LoginViewModel {
     }
     
     
-    init(coordinator: LoginCoordinator, keychain: KeychainProtocol) {
+    init(coordinator: LoginCoordinator) {
         self.coordinator = coordinator
-        self.keychain = keychain
     }
     
     private func goToMainScreen() {
@@ -56,16 +55,18 @@ extension LoginViewModel: LoginViewOutput {
     }
     
     func saveToken(token: String) {
-        do {
-            try keychain.save(token, forKey: "token")
-        } catch {
-            print(error.localizedDescription, "Ошибка при сохранении")
-        }
-        setToken(token: token)
+        let token = loginResult?.token ?? "no token"
+        print(token)
+//        do {
+//            try keychain.save(token, forKey: "token")
+//        } catch {
+//            print(error.localizedDescription, "Ошибка при сохранении")
+//        }
+//        setToken()
     }
     
-    func setToken(token: String) {
-        client.setToken(token: token)
+    func setToken() {
+        
     }
     
     func login() {

@@ -24,6 +24,18 @@ final class NetworkManager {
     
     private init() {}
     
+    func shareFile(with url: URL, completion: @escaping (Result<(URLResponse, Data), Error>) -> Void) {
+        AF.request(url, method: .get).validate().response {  response in
+            if let error = response.error {
+                return
+            }
+            guard let data = response.data, let response = response.response else {
+                return
+            }
+            completion(.success((response, data)))
+        }
+    }
+    
     func fetchLastData(completion: @escaping (Result<[Item], Error>) -> Void) {
         client.fetchLastData { result in
             switch result {

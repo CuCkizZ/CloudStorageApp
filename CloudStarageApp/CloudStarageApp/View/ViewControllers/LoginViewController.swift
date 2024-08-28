@@ -11,6 +11,7 @@ protocol LoginViewInput: AnyObject {
 final class LoginViewController: UIViewController {
     
     private let viewModel: LoginViewOutput
+    private let keychain = KeychainManager.shared
     private var customValues: [String: String] = [:]
     
     private var loginResult: LoginResult? {
@@ -48,6 +49,7 @@ final class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //loginButtonPressed()
         logoutButton.setTitle("logout")
         yandexButton.addTarget(self, action: #selector(loginButtonPressed), for: .touchUpInside)
         YandexLoginSDK.shared.add(observer: self)
@@ -182,21 +184,11 @@ private extension LoginViewController {
 
 // MARK: Yandex
 
-extension LoginViewController: YandexLoginSDKObserver {
-    
-    func didFinishLogin(with result: Result<LoginResult, Error>) {
-        switch result {
-        case .success(let loginResult):
-            viewModel.saveToken(token: loginResult.token)
-        case .failure(let error):
-            print("Login error: \(error)")
-        }
-    }
+extension LoginViewController {
     
     @objc func loginButtonPressed() {
-        
         let authorizationStrategy: YandexLoginSDK.AuthorizationStrategy = .default
-        do { 
+        do {
             try YandexLoginSDK.shared.authorize(
                 with: self,
                 customValues: self.customValues.isEmpty ? nil : self.customValues,
@@ -206,7 +198,7 @@ extension LoginViewController: YandexLoginSDKObserver {
             errorOccured(error)
         }
     }
-    
+
     
     @objc func logoutButtonPressed() {
         viewModel.logout()
@@ -223,6 +215,21 @@ extension LoginViewController: YandexLoginSDKObserver {
 }
 
 // MARK: - Protocol Methods
+
+extension LoginViewController: YandexLoginSDKObserver {
+    
+    func didFinishLogin(with result: Result<LoginResult, Error>) {
+        switch result {
+        case .success(let loginResult):
+            self.loginResult = loginResult
+//            try? keychain.save(loginResult.token, forKey: "OAuth")
+//            viewModel.setToken()
+            print(loginResult.token)
+        case .failure(let error):
+            print("Login error: \(error)")
+        }
+    }
+}
 
 extension LoginViewController: LoginViewInput {
     

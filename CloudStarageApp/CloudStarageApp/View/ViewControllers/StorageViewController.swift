@@ -132,7 +132,6 @@ private extension StorageViewController {
     }
     
     func setupNavBarAfterPaggination() {
-        guard let navigationController = navigationController else { return }
         if fetchPath == "disk:/" {
             setupNavBar()
         } else {
@@ -256,17 +255,9 @@ extension StorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
         let model = modelReturn(indexPath: indexPath)
-        let name = model.name
-        let path = model.path
-        let file = model.file
-        let type = model.type
-        let publicUrl = model.publicUrl
         return UIContextMenuConfiguration.contextMenuConfiguration(for: .full,
                                                                    viewModel: viewModel,
-                                                                   name: name,
-                                                                   path: path,
-                                                                   file: file, publicUrl: publicUrl,
-                                                                   type: type,
+                                                                   model: model,
                                                                    viewController: self)
     }
 }

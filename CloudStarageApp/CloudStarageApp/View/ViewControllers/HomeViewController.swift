@@ -25,7 +25,6 @@ final class HomeViewController: UIViewController {
         return collection
     }()
     
-    
     init(viewModel: HomeViewModelProtocol) {
         self.viewModel = viewModel
         super.init(nibName: nil, bundle: nil)
@@ -37,7 +36,7 @@ final class HomeViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        
+        viewModel.setToken()
     }
     
     //    MARK: ViewDidLoad
@@ -50,12 +49,6 @@ final class HomeViewController: UIViewController {
         bindViewModel()
         bindNetworkMonitor()
     }
-}
-    
-// MARK: BindingExtension
-
-private extension HomeViewController {
-
     func bindView() {
         viewModel.cellDataSource.bind { [weak self] files in
             guard let self = self, let files = files else { return }
@@ -63,6 +56,12 @@ private extension HomeViewController {
             collectionView.reloadData()
         }
     }
+}
+    
+// MARK: BindingExtension
+
+private extension HomeViewController {
+
     
     func bindViewModel() {
         viewModel.isLoading.bind { [weak self] isLoading in
@@ -292,16 +291,9 @@ extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
         let model = modelReturn(indexPath: indexPath)
-        let name = model.name
-        let path = model.path
-        let file = model.file
-        let publicUrl = model.publicUrl
         return UIContextMenuConfiguration.contextMenuConfiguration(for: .last,
                                                                    viewModel: viewModel,
-                                                                   name: name,
-                                                                   path: path,
-                                                                   file: file,
-                                                                   publicUrl: publicUrl,
+                                                                   model: model,
                                                                    viewController: self)
     }
 }
@@ -338,5 +330,4 @@ extension HomeViewController {
     @objc func logoutTapped() {
         viewModel.logout()
     }
-    
 }

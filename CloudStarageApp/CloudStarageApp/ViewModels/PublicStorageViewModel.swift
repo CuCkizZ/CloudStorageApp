@@ -35,6 +35,11 @@ final class PublicStorageViewModel {
 }
 
 extension PublicStorageViewModel: PublickStorageViewModelProtocol {
+    
+    func loadFile(from path: String, completion: @escaping (URL?) -> Void) {
+        
+    }
+    
 //    DataSource
     func numbersOfRowInSection() -> Int {
         model.count
@@ -119,11 +124,30 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     }
     
     func presentAvc(item: String) {
-        
+        coordinator.presentAtivityVc(item: item)
     }
     
-    
-  
+    func presentAvcFiles(path: URL) {
+        NetworkManager.shared.shareFile(with: path) { result in
+            switch result {
+            case .success((let response, let data)):
+                do {
+                    let tempDirectory = FileManager.default.temporaryDirectory
+                    let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? path.pathExtension
+                    let tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension(fileExtension)
+                    try data.write(to: tempFileURL)
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self = self else { return }
+                        coordinator.presentAtivityVcFiles(item: tempFileURL)
+                    }
+                } catch {
+                    print ("viewModel error")
+                }
+            case .failure(_):
+                break
+            }
+        }
+    }
     
     func presentDetailVC(path: String) {
         

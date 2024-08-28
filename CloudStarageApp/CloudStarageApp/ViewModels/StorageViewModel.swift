@@ -42,6 +42,10 @@ final class StorageViewModel {
 }
     
 extension StorageViewModel: StorageViewModelProtocol {
+    func loadFile(from path: String, completion: @escaping (URL?) -> Void) {
+        
+    }
+    
     
     func presentShareView(shareLink: String) {
         
@@ -49,6 +53,28 @@ extension StorageViewModel: StorageViewModelProtocol {
     
     func presentAvc(item: String) {
         coordinator.presentAtivityVc(item: item)
+    }
+    
+    func presentAvcFiles(path: URL) {
+        NetworkManager.shared.shareFile(with: path) { result in
+            switch result {
+            case .success((let response, let data)):
+                do {
+                    let tempDirectory = FileManager.default.temporaryDirectory
+                    let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? path.pathExtension
+                    var tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension(fileExtension)
+                    try data.write(to: tempFileURL)
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self = self else { return }
+                        coordinator.presentAtivityVcFiles(item: tempFileURL)
+                    }
+                } catch {
+                    print ("viewModel error")
+                }
+            case .failure(_):
+                break
+            }
+        }
     }
     
     func presentImage(model: CellDataModel) {

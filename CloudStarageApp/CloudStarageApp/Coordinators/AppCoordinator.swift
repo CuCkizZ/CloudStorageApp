@@ -14,9 +14,9 @@ final class AppCoordinator: Coordinator {
     private var tabBarController = UITabBarController()
     
     override func start() {
-        if userStorage.isLoginIn {
-            showMainFlow()
-        } else if userStorage.skipOnboarding {
+//        if userStorage.isLoginIn {
+//            showMainFlow()
+         if userStorage.skipOnboarding {
             showAuthFlow()
         } else {
             showOnboardingFlow()

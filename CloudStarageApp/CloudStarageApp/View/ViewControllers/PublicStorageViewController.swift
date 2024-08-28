@@ -258,18 +258,9 @@ extension PublicStorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
         let model = modelReturn(indexPath: indexPath)
-        let name = model.name
-        let path = model.path
-        let file = model.file
-        let publicUrl = model.publicUrl
-        let type = model.type
         return UIContextMenuConfiguration.contextMenuConfiguration(for: .publish,
                                                                    viewModel: viewModel,
-                                                                   name: name,
-                                                                   path: path,
-                                                                   file: file,
-                                                                   publicUrl: publicUrl,
-                                                                   type: type,
+                                                                   model: model,
                                                                    viewController: self)
     }
 }

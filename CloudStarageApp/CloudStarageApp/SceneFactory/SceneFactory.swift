@@ -100,8 +100,7 @@ struct SceneFactory {
     //    MARK: LoginCoordinator
     
     static func makeLoginScene(coordinator: LoginCoordinator) -> LoginViewController {
-        let keychein: KeychainProtocol = KeychainManager()
-        let viewModel: LoginViewOutput = LoginViewModel(coordinator: coordinator, keychain: keychein)
+        let viewModel: LoginViewOutput = LoginViewModel(coordinator: coordinator)
         let loginVC = LoginViewController(viewModel: viewModel)
         return loginVC
     }
@@ -170,6 +169,11 @@ struct SceneFactory {
     }
     
     static func makeActivityVc(item: String, coordinator: Coordinator) -> UIActivityViewController {
+        let avc = UIActivityViewController(activityItems: [item], applicationActivities: nil)
+        return avc
+    }
+    
+    static func makeActivityVcWithFile(item: Any,  coordinator: Coordinator) -> UIActivityViewController {
         let avc = UIActivityViewController(activityItems: [item], applicationActivities: nil)
         return avc
     }
