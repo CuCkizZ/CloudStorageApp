@@ -24,6 +24,24 @@ final class NetworkManager {
     
     private init() {}
     
+    func shareFile(with url: URL, completion: @escaping (Result<(URLResponse, Data), Error>) -> Void) {
+        let task = URLSession.shared.dataTask(with: url, completionHandler: { data, response, error in
+            if let error = error {
+                print("Error: \(error)")
+                return
+            }
+            guard let data = data, let response = response else {
+                print("No data or response")
+                return
+            }
+            completion(.success((response, data)))
+            let tempDirectory = FileManager.default.temporaryDirectory
+            let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? url.pathExtension
+            var tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension(fileExtension)
+        })
+        task.resume()
+    }
+    
     func fetchLastData(completion: @escaping (Result<[Item], Error>) -> Void) {
         client.fetchLastData { result in
             switch result {

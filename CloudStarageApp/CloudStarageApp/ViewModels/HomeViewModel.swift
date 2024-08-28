@@ -13,12 +13,14 @@ protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var searchText: String { get set }
     func searchFiles()
     func logout()
+    func setToken()
+    
 }
 
 final class HomeViewModel {
     var onErrorReceived: ((String) -> Void)?
     private weak var coordinator: HomeCoordinator?
-    let networkManager: NetworkServiceProtocol = NetworkService()
+    private let networkManager: NetworkServiceProtocol = NetworkService()
     private var model: [Item] = []
     private let networkMonitor = NWPathMonitor()
     
@@ -46,6 +48,25 @@ extension HomeViewModel: HomeViewModelProtocol {
         model.count
     }
     
+    func setToken() {
+        networkManager.getOAuthToken()
+        networkManager.setOAuthToken()
+    }
+    
+    func loadFile(from path: String, completion: @escaping (URL?) -> Void) {
+        let documentsDirectory = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!
+        let path = documentsDirectory.appendingPathComponent(path)
+        
+        // Проверка существования файла
+        if FileManager.default.fileExists(atPath: "\(path)") {
+            completion(path)
+            print(path)
+        } else {
+            print("Файл не найден по пути: \(documentsDirectory)")
+            completion(nil)
+        }
+    }
+    
     func startMonitoringNetwork() {
         let queue = DispatchQueue.global(qos: .background)
         networkMonitor.start(queue: queue)
@@ -67,7 +88,6 @@ extension HomeViewModel: HomeViewModelProtocol {
 //    MARK: Network
     
     func fetchData() {
-        networkManager.setToken()
         if isLoading.value ?? true {
             return
         }
@@ -145,6 +165,29 @@ extension HomeViewModel: HomeViewModelProtocol {
     func presentAvc(item: String) {
         coordinator?.presentAtivityVc(item: item)
     }
+    
+    func presentAvcFiles(path: URL) {
+        NetworkManager.shared.shareFile(with: path) { result in
+            switch result {
+            case .success((let response, let data)):
+                do {
+                    let tempDirectory = FileManager.default.temporaryDirectory
+                    let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? path.pathExtension
+                    var tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension(fileExtension)
+                    try data.write(to: tempFileURL)
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self = self else { return }
+                        coordinator?.presentAtivityVcFiles(item: tempFileURL)
+                    }
+                } catch {
+                    print ("viewModel error")
+                }
+            case .failure(_):
+                break
+            }
+        }
+    }
+        
     
     func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
         coordinator?.presentDocument(name: name, type: type, fileType: fileType)

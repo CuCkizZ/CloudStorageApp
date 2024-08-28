@@ -112,6 +112,12 @@ extension Coordinator {
         navigationController.present(avc, animated: true)
     }
     
+    func presentAtivityVcFiles(item: Any) {
+        guard let navigationController = navigationController else { return }
+        let avc = factory.makeActivityVcWithFile(item: item, coordinator: self)
+        navigationController.present(avc, animated: true)
+    }
+    
     func presentImageScene(model: CellDataModel)  {
         guard let navigationController = navigationController else { return }
         let vc = factory.makeImageScene(model: model, coordinator: self)
