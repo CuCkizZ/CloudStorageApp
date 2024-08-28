@@ -14,11 +14,8 @@ final class LoginViewController: UIViewController {
     private let keychain = KeychainManager.shared
     private var customValues: [String: String] = [:]
     
-    private var loginResult: LoginResult? {
-        didSet {
-            logoutButton.isEnabled = (loginResult != nil)
-        }
-    }
+    private var loginResult: LoginResult?
+    
     
     private lazy var bottomButtomCT = NSLayoutConstraint()
     private lazy var bottomStackViewCT = NSLayoutConstraint()
@@ -49,7 +46,7 @@ final class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //loginButtonPressed()
+        loginButtonPressed()
         logoutButton.setTitle("logout")
         yandexButton.addTarget(self, action: #selector(loginButtonPressed), for: .touchUpInside)
         YandexLoginSDK.shared.add(observer: self)
@@ -187,6 +184,7 @@ private extension LoginViewController {
 extension LoginViewController {
     
     @objc func loginButtonPressed() {
+       
         let authorizationStrategy: YandexLoginSDK.AuthorizationStrategy = .default
         do {
             try YandexLoginSDK.shared.authorize(
@@ -222,9 +220,9 @@ extension LoginViewController: YandexLoginSDKObserver {
         switch result {
         case .success(let loginResult):
             self.loginResult = loginResult
-//            try? keychain.save(loginResult.token, forKey: "OAuth")
-//            viewModel.setToken()
-            print(loginResult.token)
+            let result = loginResult.token
+            viewModel.saveToken(token: result)
+            print("token from viewController", result)
         case .failure(let error):
             print("Login error: \(error)")
         }

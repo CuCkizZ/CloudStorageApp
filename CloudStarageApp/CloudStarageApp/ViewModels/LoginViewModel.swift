@@ -55,14 +55,9 @@ extension LoginViewModel: LoginViewOutput {
     }
     
     func saveToken(token: String) {
-        let token = loginResult?.token ?? "no token"
-        print(token)
-//        do {
-//            try keychain.save(token, forKey: "token")
-//        } catch {
-//            print(error.localizedDescription, "Ошибка при сохранении")
-//        }
-//        setToken()
+        try? keychain.save(token, forKey: "token")
+        print("token from viewmodel", token)
+        client.getOAuthToken(result: token)
     }
     
     func setToken() {

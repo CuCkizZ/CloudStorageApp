@@ -49,8 +49,8 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func setToken() {
-        networkManager.getOAuthToken()
-        networkManager.setOAuthToken()
+        //networkManager.getOAuthToken()
+        //networkManager.setOAuthToken()
     }
     
     func loadFile(from path: String, completion: @escaping (URL?) -> Void) {
@@ -184,6 +184,7 @@ extension HomeViewModel: HomeViewModelProtocol {
                     let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? path.pathExtension
                     let tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString)
                         .appendingPathExtension(fileExtension)
+                    
                     try data.write(to: tempFileURL)
                     DispatchQueue.main.async { [weak self] in
                         guard let self = self else { return }

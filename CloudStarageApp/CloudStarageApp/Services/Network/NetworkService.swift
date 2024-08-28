@@ -27,28 +27,40 @@ private enum Constants {
 final class NetworkService: NetworkServiceProtocol {
     
     private let keychain = KeychainManager.shared
-    private var token = "y0_AgAAAAB3PvZkAAxUoQAAAAEO-FBgAAB0x_TZCulFM4Zs4rm-e5ARFQ28vg"
-    private var headers: HTTPHeaders = [:]
-    
-    
-    init() {
-        headers = [
-            "Accept" : "application/json",
-            "Authorization" : "OAuth y0_AgAAAAB3PvZkAAxUoQAAAAEO-FBgAAB0x_TZCulFM4Zs4rm-e5ARFQ28vg"
+    private var loginResult: LoginResult?
+    private var token = "" {
+            didSet {
+                headers["Authorization"] = "OAuth \(token)"
+            }
+        }
+        private var headers: HTTPHeaders = [
+            "Accept" : "application/json"
         ]
+        
+        init() {
+            // Изначальная инициализация токена, например, загрузка из keychain
+            let result = keychain.get(forKey: "token")
+            if let savedToken = keychain.get(forKey: "token") {
+                self.token = savedToken
+                self.headers["Authorization"] = "OAuth \(token)"
+            }
+        }
+        
+    func getOAuthToken(result: String) {
+        if let savedToken = keychain.get(forKey: "token") {
+            self.token = savedToken
+            print(savedToken)
+            self.headers["Authorization"] = "OAuth \(token)"
+            print(headers)
+        }
     }
     
-    func getOAuthToken() {
-        //        if let token = keychain.get(forKey: "OAuth") {
-        //            self.token = token
-        //            print(token, "From networkService")
-        //        }
-    }
+    
     func setOAuthToken() {
         
     }
     
-    
+     
     
     func setToken() -> String {
         //        do {

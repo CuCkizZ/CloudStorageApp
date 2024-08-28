@@ -8,7 +8,7 @@
 import Foundation
 
 protocol NetworkServiceProtocol {
-    func getOAuthToken()
+    func getOAuthToken(result: String)
     func setOAuthToken()
     
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void)
