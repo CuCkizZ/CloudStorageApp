@@ -189,7 +189,8 @@ private extension StorageViewController {
             make.center.equalToSuperview()
         }
         collectionView.snp.makeConstraints { make in
-            make.top.bottom.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.bottom.equalTo(view.safeAreaLayoutGuide)
             make.left.equalToSuperview().inset(16)
             make.right.equalToSuperview()
         }
