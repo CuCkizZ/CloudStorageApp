@@ -31,6 +31,7 @@ final class NetworkService: NetworkServiceProtocol {
     private var token = "" {
             didSet {
                 headers["Authorization"] = "OAuth \(token)"
+                print("Haader from didset: \(token)")
             }
         }
         private var headers: HTTPHeaders = [
@@ -49,9 +50,9 @@ final class NetworkService: NetworkServiceProtocol {
     func getOAuthToken(result: String) {
         if let savedToken = keychain.get(forKey: "token") {
             self.token = savedToken
-            print(savedToken)
+            //print(savedToken)
             self.headers["Authorization"] = "OAuth \(token)"
-            print(headers)
+            //print(headers)
         }
     }
     

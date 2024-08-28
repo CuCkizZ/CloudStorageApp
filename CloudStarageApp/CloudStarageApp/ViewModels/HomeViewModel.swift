@@ -7,6 +7,7 @@
 
 import Network
 import Foundation
+import YandexLoginSDK
 
 protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
@@ -20,6 +21,12 @@ protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
 final class HomeViewModel {
     var onErrorReceived: ((String) -> Void)?
     private weak var coordinator: HomeCoordinator?
+    var loginResult: LoginResult? {
+        didSet {
+            
+        }
+    }
+    let keychain = KeychainManager.shared
     private let networkManager: NetworkServiceProtocol = NetworkService()
     private var model: [Item] = []
     private let networkMonitor = NWPathMonitor()
@@ -208,6 +215,20 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func logout() {
+      //  let token = keychain.get(forKey: "token")
+        try? keychain.delete(forKey: "token")
+        print("delted")
+        let token = keychain.get(forKey: "token")
+        if let loginResult = loginResult {
+            let result = loginResult.token
+            print("Login result = \(result)")
+        }
+//        print("dwqdkskskskskkskksksk \(loginResult?.token)")
+//        print("""
+//_________________
+//                Token aftedelet \(token)
+//__________________
+//""")
         coordinator?.logoutFrom()
     }
     
