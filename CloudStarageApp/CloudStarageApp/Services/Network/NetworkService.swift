@@ -26,27 +26,40 @@ private enum Constants {
 
 final class NetworkService: NetworkServiceProtocol {
     
-    private var keychain: KeychainProtocol = KeychainManager()
-    var loginResult: LoginResult?
-    var token = ""
-    var headers: HTTPHeaders = [:]
+    private let keychain = KeychainManager.shared
+    private var token = "y0_AgAAAAB3PvZkAAxUoQAAAAEO-FBgAAB0x_TZCulFM4Zs4rm-e5ARFQ28vg"
+    private var headers: HTTPHeaders = [:]
     
     
     init() {
-        self.headers = [
+        headers = [
             "Accept" : "application/json",
-            "Authorization" : "OAuth \(token)"
+            "Authorization" : "OAuth y0_AgAAAAB3PvZkAAxUoQAAAAEO-FBgAAB0x_TZCulFM4Zs4rm-e5ARFQ28vg"
         ]
     }
     
-    func setToken() {
-        do {
-            let tokon = try keychain.get(forKey: "token") ?? ""
-            self.token = tokon
-                print("token:\(tokon) was setted")
-        } catch {
-            print("cant set token")
-        }
+    func getOAuthToken() {
+        //        if let token = keychain.get(forKey: "OAuth") {
+        //            self.token = token
+        //            print(token, "From networkService")
+        //        }
+    }
+    func setOAuthToken() {
+        
+    }
+    
+    
+    
+    func setToken() -> String {
+        //        do {
+        //            token = try keychain.get(forKey: "token") ?? "no token"
+        //            print("token:\(token) was setted")
+        //            return token
+        //        } catch {
+        //            print("cant set token")
+        //        }
+        //        return ""
+        return ""
     }
     
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void) {
@@ -227,4 +240,4 @@ final class NetworkService: NetworkServiceProtocol {
         }
     }
 }
-
+                                              

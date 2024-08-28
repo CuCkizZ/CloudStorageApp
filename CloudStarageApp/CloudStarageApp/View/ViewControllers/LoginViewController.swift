@@ -11,6 +11,7 @@ protocol LoginViewInput: AnyObject {
 final class LoginViewController: UIViewController {
     
     private let viewModel: LoginViewOutput
+    private let keychain = KeychainManager.shared
     private var customValues: [String: String] = [:]
     
     private var loginResult: LoginResult? {
@@ -48,6 +49,7 @@ final class LoginViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        //loginButtonPressed()
         logoutButton.setTitle("logout")
         yandexButton.addTarget(self, action: #selector(loginButtonPressed), for: .touchUpInside)
         YandexLoginSDK.shared.add(observer: self)
@@ -220,10 +222,12 @@ extension LoginViewController: YandexLoginSDKObserver {
         switch result {
         case .success(let loginResult):
             self.loginResult = loginResult
+//            try? keychain.save(loginResult.token, forKey: "OAuth")
+//            viewModel.setToken()
+            print(loginResult.token)
         case .failure(let error):
             print("Login error: \(error)")
         }
-        viewModel.saveToken(token: loginResult?.token ?? "no token VC")
     }
 }
 
