@@ -27,7 +27,7 @@ final class NetworkManager {
     func shareFile(with url: URL, completion: @escaping (Result<(URLResponse, Data), Error>) -> Void) {
         AF.request(url, method: .get).validate().response {  response in
             if let error = response.error {
-                return
+                completion(.failure(error))
             }
             guard let data = response.data, let response = response.response else {
                 return

@@ -182,7 +182,7 @@ extension HomeViewModel: HomeViewModelProtocol {
                 do {
                     let tempDirectory = FileManager.default.temporaryDirectory
                     let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? path.pathExtension
-                    var tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString)
+                    let tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString)
                         .appendingPathExtension(fileExtension)
                     try data.write(to: tempFileURL)
                     DispatchQueue.main.async { [weak self] in
