@@ -55,13 +55,13 @@ extension UIAction {
         }
     }
     
-    static func shareFile() -> UIAction {
-        return UIAction { action in
-            let actionSheet = UIAlertController(title: "What you want to share?", 
-                                                message: nil,
-                                                preferredStyle: .actionSheet)
-            
-            let linkAction = UIAlertAction(title: "Share a link", style: .default)
-        }
-    }
+//    static func shareFile() -> UIAction {
+//        return UIAction { action in
+//            let actionSheet = UIAlertController(title: "What you want to share?", 
+//                                                message: nil,
+//                                                preferredStyle: .actionSheet)
+//            
+//            let linkAction = UIAlertAction(title: "Share a link", style: .default)
+//        }
+//    }
 }

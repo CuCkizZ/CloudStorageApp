@@ -25,6 +25,7 @@
 	</array>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+        <string>https</string>
 		<string>primaryyandexloginsdk</string>
 		<string>secondaryyandexloginsdk</string>
 	</array>

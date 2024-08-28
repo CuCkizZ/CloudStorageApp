@@ -143,17 +143,23 @@ extension HomeViewModel: HomeViewModelProtocol {
     
     func publishResource(_ path: String) {
         NetworkManager.shared.toPublicFile(path: path)
-        fetchData()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.fetchData()
+        }
     }
     
     func unpublishResource(_ path: String) {
         NetworkManager.shared.unpublishFile(path)
-        fetchData()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.fetchData()
+        }
     }
     
     func renameFile(oldName: String, newName: String) {
         NetworkManager.shared.renameFile(oldName: oldName, newName: newName)
-        fetchData()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.fetchData()
+        }
     }
     
 //    MARK: Navigation
@@ -163,7 +169,10 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func presentAvc(item: String) {
-        coordinator?.presentAtivityVc(item: item)
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.coordinator?.presentAtivityVc(item: item)
+        }
     }
     
     func presentAvcFiles(path: URL) {
@@ -173,11 +182,12 @@ extension HomeViewModel: HomeViewModelProtocol {
                 do {
                     let tempDirectory = FileManager.default.temporaryDirectory
                     let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? path.pathExtension
-                    var tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension(fileExtension)
+                    var tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString)
+                        .appendingPathExtension(fileExtension)
                     try data.write(to: tempFileURL)
                     DispatchQueue.main.async { [weak self] in
                         guard let self = self else { return }
-                        coordinator?.presentAtivityVcFiles(item: tempFileURL)
+                        self.coordinator?.presentAtivityVcFiles(item: tempFileURL)
                     }
                 } catch {
                     print ("viewModel error")
@@ -188,7 +198,6 @@ extension HomeViewModel: HomeViewModelProtocol {
         }
     }
         
-    
     func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
         coordinator?.presentDocument(name: name, type: type, fileType: fileType)
     }

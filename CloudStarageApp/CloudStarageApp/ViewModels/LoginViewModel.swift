@@ -15,7 +15,7 @@ final class LoginViewModel {
     
     private var client: NetworkServiceProtocol = NetworkService()
     private let userStorage = UserStorage.shared
-    private var keychain: KeychainProtocol
+    private let keychain = KeychainManager.shared
     private let coordinator: LoginCoordinator
     
     var isLoading: Observable<Bool> = Observable(false)
@@ -27,9 +27,8 @@ final class LoginViewModel {
     }
     
     
-    init(coordinator: LoginCoordinator, keychain: KeychainProtocol) {
+    init(coordinator: LoginCoordinator) {
         self.coordinator = coordinator
-        self.keychain = keychain
     }
     
     private func goToMainScreen() {
@@ -57,7 +56,6 @@ extension LoginViewModel: LoginViewOutput {
     
     func saveToken(token: String) {
         let token = loginResult?.token ?? "no token"
-        client.token = token
         print(token)
 //        do {
 //            try keychain.save(token, forKey: "token")
@@ -80,7 +78,6 @@ extension LoginViewModel: LoginViewOutput {
             DispatchQueue.main.async { [weak self] in
                 guard let self = self else { return }
                 self.isLoading.value = false
-                client.setToken()
                 self.goToMainScreen()
             }
         }
