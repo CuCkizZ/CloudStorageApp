@@ -12,6 +12,7 @@ final class LoginViewController: UIViewController {
     
     private let viewModel: LoginViewOutput
     private let keychain = KeychainManager.shared
+    private weak var yandex: YandexLoginSDK?
     private var customValues: [String: String] = [:]
     
     private var loginResult: LoginResult?
@@ -49,7 +50,7 @@ final class LoginViewController: UIViewController {
         loginButtonPressed()
         logoutButton.setTitle("logout")
         yandexButton.addTarget(self, action: #selector(loginButtonPressed), for: .touchUpInside)
-        YandexLoginSDK.shared.add(observer: self)
+        yandex?.add(observer: self)
         setupView()
     }
     

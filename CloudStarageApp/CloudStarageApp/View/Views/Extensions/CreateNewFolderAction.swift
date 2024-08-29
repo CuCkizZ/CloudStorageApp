@@ -10,7 +10,8 @@ import UIKit
 extension UIAction {
     static func createNewFolder(view: UIViewController, 
                                 viewModel: BaseCollectionViewModelProtocol) -> UIAction {
-        return UIAction { action in
+        return UIAction { [weak view] action in
+            guard let view = view else { return }
             let actionSheet = UIAlertController(title: "What to do", message: nil, preferredStyle: .actionSheet)
             let newFolder = UIAlertAction(title: "New Folder", style: .default) { _ in
                 
@@ -38,8 +39,9 @@ extension UIAction {
     static func deleteFile(view: UIViewController, 
                            viewModel: PresentImageViewModelProtocol,
                            name: String) -> UIAction {
-        return UIAction { action in
-            let actionSheet = UIAlertController(title: "Are you sure delete \(name)?", 
+        return UIAction { [weak view] action in
+            guard let view = view else { return }
+            let actionSheet = UIAlertController(title: "Are you sure delete \(name)?",
                                                 message: nil,
                                                 preferredStyle: .actionSheet)
             
