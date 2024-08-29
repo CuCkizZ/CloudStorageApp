@@ -18,9 +18,9 @@ final class HomeViewController: UIViewController {
     private lazy var networkStatusView = UIView()
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: view.bounds.width, height: 33)
-        layout.minimumLineSpacing = 5
-        layout.minimumInteritemSpacing = 5
+        layout.itemSize = CGSize(width: view.bounds.width, height: Constants.DefaultHeight)
+        layout.minimumLineSpacing = Constants.minimumLineSpacing
+        layout.minimumInteritemSpacing = Constants.minimumInteritemSpacing
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
@@ -31,7 +31,7 @@ final class HomeViewController: UIViewController {
     }
     
     required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+        fatalError(FatalError.requiredInit)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -185,17 +185,17 @@ private extension HomeViewController {
             make.center.equalToSuperview()
         }
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(20)
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(Constants.defaultPadding + 4)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.left.equalToSuperview().inset(16)
+            make.left.equalToSuperview().inset(Constants.defaultPadding)
             make.right.equalToSuperview()
         }
         changeLayoutButton.snp.makeConstraints { make in
-            make.top.equalTo(collectionView).inset(-32)
-            make.right.equalTo(collectionView).inset(16)
+            make.top.equalTo(collectionView).inset(-Constants.defaultPadding / 2)
+            make.right.equalTo(collectionView).inset(Constants.defaultPadding)
         }
         uploadButton.snp.makeConstraints { make in
-            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(Constants.defaultPadding)
         }
     }
     
@@ -213,12 +213,12 @@ private extension HomeViewController {
     
     @objc func changeContentLayout() {
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-            if layout.itemSize == CGSize(width: view.bounds.width, height: 33) {
-                layout.itemSize = CGSize(width: 100, height: 100)
+            if layout.itemSize == CGSize(width: view.bounds.width, height: Constants.DefaultHeight) {
+                layout.itemSize = Constants.itemSizeDefault
                 selectedStyle = .table
                 changeLayoutButton.setImage(selectedStyle.buttonImage, for: .normal)
             } else {
-                layout.itemSize = CGSize(width: view.bounds.width, height: 33)
+                layout.itemSize = CGSize(width: view.bounds.width, height: Constants.DefaultHeight)
                 selectedStyle = .defaultGrid
                 changeLayoutButton.setImage(selectedStyle.buttonImage, for: .normal)
             }
@@ -262,7 +262,7 @@ extension HomeViewController: UICollectionViewDataSource {
         let model = modelReturn(indexPath: indexPath)
         guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
                                                             for: indexPath) as? CollectionViewCell else {
-            fatalError("Wrong cell")
+            fatalError(FatalError.wrongCell)
         }
         cell.configure(model)
         return cell
@@ -278,11 +278,11 @@ extension HomeViewController: UICollectionViewDelegate {
         let mimeType = model.mimeType
         
         switch mimeType {
-        case mimeType where mimeType.contains("word") || mimeType.contains("officedocument"):
+        case mimeType where mimeType.contains(Constants.FileTypes.word) || mimeType.contains(Constants.FileTypes.doc):
             viewModel.presentDocument(name: name, type: .web, fileType: fileType)
-        case mimeType where mimeType.contains("pdf"):
+        case mimeType where mimeType.contains(Constants.FileTypes.pdf):
             viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
-        case mimeType where mimeType.contains("image"):
+        case mimeType where mimeType.contains(Constants.FileTypes.image):
             viewModel.presentImage(model: model)
         default:
             break
