@@ -10,9 +10,10 @@ import Foundation
 protocol PresentImageViewModelProtocol {
     func sizeFormatter(bytes: Int) -> String
     func popToRoot()
+    func publishFile(path: String)
     func deleteFile(name: String)
     func shareLink(link: String)
-    func shareFile(file: String)
+    func shareFile(path: URL)
     
     var onButtonShareTapped: (() -> Void)? { get set }
     func hideShareView()
@@ -23,10 +24,16 @@ final class PresentImageViewModel {
     var onButtonShareTapped: (() -> Void)?
     
     private let coordinator: Coordinator
+    private let networkService: NetworkServiceProtocol = NetworkService()
     
     init(coordinator: Coordinator) {
         self.coordinator = coordinator
     }
+    
+    func publishFile(path: String) {
+        NetworkManager.shared.toPublicFile(path: path)
+    }
+    
 }
 
 extension PresentImageViewModel: PresentImageViewModelProtocol {
@@ -60,7 +67,25 @@ extension PresentImageViewModel: PresentImageViewModelProtocol {
         coordinator.presentAtivityVc(item: link)
     }
     
-    func shareFile(file: String) {
-        coordinator.presentAtivityVc(item: file)
+    func shareFile(path: URL) {
+        NetworkManager.shared.shareFile(with: path) { result in
+            switch result {
+            case .success((let response, let data)):
+                do {
+                    let tempDirectory = FileManager.default.temporaryDirectory
+                    let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? path.pathExtension
+                    let tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension(fileExtension)
+                    try data.write(to: tempFileURL)
+                    DispatchQueue.main.async { [weak self] in
+                        guard let self = self else { return }
+                        coordinator.presentAtivityVcFiles(item: tempFileURL)
+                    }
+                } catch {
+                    print ("viewModel error")
+                }
+            case .failure(_):
+                break
+            }
+        }
     }
 }

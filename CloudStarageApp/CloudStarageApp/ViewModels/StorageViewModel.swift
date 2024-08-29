@@ -16,12 +16,12 @@ protocol StorageViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     
     func fetchCurrentData(navigationTitle: String, path: String)
     func paggination(title: String, path: String)
-    func presentShareScene(shareLink: String)
 }
 
 final class StorageViewModel {
     
     private let coordinator: StorageCoordinator
+    private let keychain = KeychainManager.shared
     private var model: [Item] = []
     private let networkMonitor = NWPathMonitor()
     private var path: String?
@@ -85,7 +85,7 @@ extension StorageViewModel: StorageViewModelProtocol {
         NetworkManager.shared.unpublishFile(path)
     }
     
-
+    
     func fetchData() {
         if isLoading.value ?? true {
             return
@@ -110,16 +110,16 @@ extension StorageViewModel: StorageViewModelProtocol {
         let queue = DispatchQueue.global(qos: .background)
         networkMonitor.start(queue: queue)
         networkMonitor.pathUpdateHandler = { [weak self] path in
-                guard let self = self else { return }
-                switch path.status {
-                case .unsatisfied:
-                    self.isConnected.value = false
-                case .satisfied:
-                    self.isConnected.value = true
-                case .requiresConnection:
-                    self.isConnected.value = true
-                @unknown default:
-                    break
+            guard let self = self else { return }
+            switch path.status {
+            case .unsatisfied:
+                self.isConnected.value = false
+            case .satisfied:
+                self.isConnected.value = true
+            case .requiresConnection:
+                self.isConnected.value = true
+            @unknown default:
+                break
             }
         }
     }
@@ -145,8 +145,8 @@ extension StorageViewModel: StorageViewModelProtocol {
             }
         }
     }
-        
-       
+    
+    
     func searchFiles() {
         if isLoading.value ?? true {
             return
@@ -168,13 +168,9 @@ extension StorageViewModel: StorageViewModelProtocol {
             }
         }
     }
-
+    
     func paggination(title: String, path: String) {
         coordinator.paggination(navigationTitle: title, path: path)
-    }
-    
-    func presentShareScene(shareLink: String) {
-        coordinator.presentShareScene(shareLink: shareLink)
     }
     
     func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
@@ -206,5 +202,11 @@ extension StorageViewModel: StorageViewModelProtocol {
     
     func numbersOfRowInSection() -> Int {
         return model.count
+    }
+    
+    func logout() {
+        try? keychain.delete(forKey: "token")
+        print("delted")
+        coordinator.finish()
     }
 }

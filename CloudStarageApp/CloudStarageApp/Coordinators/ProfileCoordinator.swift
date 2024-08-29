@@ -34,14 +34,10 @@ extension ProfileCoordinator {
         let publicVC = factory.makePublicScene(navigationTitle: "Published", coordinator: self)
         navigationController.pushViewController(publicVC, animated: true)
     }
-    
-    func paggination(path: String, title: String) {
-        guard let navigationController = navigationController else { return }
-        let publicVC = factory.makePublicScene(navigationTitle: title, coordinator: self)
-        navigationController.pushViewController(publicVC, animated: true)
-    }
-    
-    func Logout() {
-        
-    }
+//    Not avalible now
+//    func paggination(path: String, title: String) {
+//        guard let navigationController = navigationController else { return }
+//        let publicVC = factory.makePublicScene(navigationTitle: title, coordinator: self)
+//        navigationController.pushViewController(publicVC, animated: true)
+//    }
 }

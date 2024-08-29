@@ -9,15 +9,15 @@ import UIKit
 
 final class StorageCoordinator: Coordinator {
     
-    
     private let factory = SceneFactory.self
     
     override func start() {
         showStorageScene()
     }
+    
     override func finish() {
-        print("Im done")
         finishDelegate?.coordinatorDidFinish(childCoordinator: self)
+        print("Im done")
     }
 }
 

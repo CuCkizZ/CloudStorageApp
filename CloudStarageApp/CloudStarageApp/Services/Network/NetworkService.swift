@@ -24,7 +24,7 @@ private enum NetworkConstants {
 }
 
 
-final class NetworkService: NetworkServiceProtocol {
+final class NetworkService: NetworkServiceProtocol, YandexLoginSDKObserver {
     
     private let keychain = KeychainManager.shared
     private var loginResult: LoginResult?
@@ -39,40 +39,20 @@ final class NetworkService: NetworkServiceProtocol {
         ]
         
         init() {
+            YandexLoginSDK.shared.add(observer: self)
             // Изначальная инициализация токена, например, загрузка из keychain
-            let result = keychain.get(forKey: "token")
-            if let savedToken = keychain.get(forKey: "token") {
+            if let savedToken = loginResult?.token {
                 self.token = savedToken
                 self.headers["Authorization"] = "OAuth \(token)"
             }
         }
         
     func getOAuthToken(result: String) {
-        if let savedToken = keychain.get(forKey: "token") {
-            self.token = savedToken
-            //print(savedToken)
-            self.headers["Authorization"] = "OAuth \(token)"
-            //print(headers)
-        }
-    }
-    
-    
-    func setOAuthToken() {
-        
-    }
-    
-     
-    
-    func setToken() -> String {
-        //        do {
-        //            token = try keychain.get(forKey: "token") ?? "no token"
-        //            print("token:\(token) was setted")
-        //            return token
-        //        } catch {
-        //            print("cant set token")
-        //        }
-        //        return ""
-        return ""
+//        if let savedToken = keychain.get(forKey: "token") {
+//            self.token = savedToken
+//            //print(savedToken)
+//            self.headers["Authorization"] = "OAuth \(token)"
+//            //print(headers)
     }
     
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void) {
@@ -250,6 +230,19 @@ final class NetworkService: NetworkServiceProtocol {
                 let str = String(data: data, encoding: .utf8)
                 print("Data: \(String(describing: str))")
             }
+        }
+    }
+}
+
+extension NetworkService {
+    func didFinishLogin(with result: Result<LoginResult, any Error>) {
+        switch result {
+        case .success(let loginResult):
+            self.loginResult = loginResult
+            token = keychain.get(forKey: "token") ?? "nope"
+            print("Token from KC NS, \(token)")
+        case .failure(_):
+            print("Network service token error")
         }
     }
 }

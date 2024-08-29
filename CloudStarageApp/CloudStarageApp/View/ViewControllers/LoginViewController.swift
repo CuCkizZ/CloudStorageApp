@@ -50,7 +50,7 @@ final class LoginViewController: UIViewController {
         loginButtonPressed()
         logoutButton.setTitle("logout")
         yandexButton.addTarget(self, action: #selector(loginButtonPressed), for: .touchUpInside)
-        yandex?.add(observer: self)
+        YandexLoginSDK.shared.add(observer: self)
         setupView()
     }
     
@@ -200,6 +200,7 @@ extension LoginViewController {
 
     
     @objc func logoutButtonPressed() {
+        try? YandexLoginSDK.shared.logout()
         viewModel.logout()
     }
     
@@ -223,7 +224,7 @@ extension LoginViewController: YandexLoginSDKObserver {
             self.loginResult = loginResult
             let result = loginResult.token
             viewModel.saveToken(token: result)
-            print("token from viewController", result)
+            print("token from viewControllerKeychain", keychain.get(forKey: "token"))
         case .failure(let error):
             print("Login error: \(error)")
         }
@@ -233,6 +234,7 @@ extension LoginViewController: YandexLoginSDKObserver {
 extension LoginViewController: LoginViewInput {
     
     func onSighInTapped() {
+        try? YandexLoginSDK.shared.logout()
            // viewModel.login()
     }
     

@@ -154,19 +154,7 @@ struct SceneFactory {
         return vc
     }
     
-    static func makeShareScene(coordinator: ProfileCoordinator) -> ShareActivityViewController {
-        let vm = ShareActivityViewModel()
-        let vc = ShareActivityViewController(viewModel: vm, shareLink: "")
-        return vc
-    }
-    
     //    MARK: ShareViewController
-    
-    static func makeShareSceneApp(shareLink: String, coordinator: Coordinator) -> ShareActivityViewController {
-        let vm = ShareActivityViewModel()
-        let vc = ShareActivityViewController(viewModel: vm, shareLink: shareLink)
-        return vc
-    }
     
     static func makeActivityVc(item: String, coordinator: Coordinator) -> UIActivityViewController {
         let avc = UIActivityViewController(activityItems: [item], applicationActivities: nil)

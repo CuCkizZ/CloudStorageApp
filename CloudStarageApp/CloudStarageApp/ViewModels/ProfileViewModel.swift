@@ -15,13 +15,14 @@ protocol ProfileViewModelProtocol: AnyObject {
     var isConnected: Observable<Bool> { get set }
     func pushToPublic()
     func fetchData()
-    func logOut()
+    func logout()
     func paggination(title: String, path: String)
 }
 
 final class ProfileViewModel {
     
     private let coordinator: ProfileCoordinator
+    private let keychain = KeychainManager.shared
     private var model: Account?
     var dataSource: ProfileDataSource?
     var isLoading: Observable<Bool> = Observable(false)
@@ -78,10 +79,12 @@ extension ProfileViewModel: ProfileViewModelProtocol {
     }
     
     func paggination(title: String, path: String) {
-        coordinator.paggination(path: path, title: title)
+        //coordinator.paggination(path: path, title: title)
     }
     
-    func logOut() {
+    func logout() {
+        try? keychain.delete(forKey: "token")
+        print("delted")
         coordinator.finish()
     }
 }
