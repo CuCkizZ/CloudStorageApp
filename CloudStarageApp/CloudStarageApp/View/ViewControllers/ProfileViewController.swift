@@ -86,13 +86,13 @@ final class ProfileViewController: UIViewController {
         }))
         alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
             guard let self = self else { return }
-            self.viewModel.logOut()
+            self.viewModel.logout()
         }))
         present(alert, animated: true)
     }
     
     @objc func logout() {
-        viewModel.logOut()
+        viewModel.logout()
     }
 }
 
@@ -253,5 +253,12 @@ private extension ProfileViewController {
     }
 }
 
-extension UIViewController {
+extension ProfileViewController {
+    func setupLogout() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logoutTapped))
+    }
+    
+    @objc func logoutTapped() {
+        viewModel.logout()
+    }
 }

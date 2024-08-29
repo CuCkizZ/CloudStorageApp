@@ -191,7 +191,7 @@ private extension HomeViewController {
             make.right.equalToSuperview()
         }
         changeLayoutButton.snp.makeConstraints { make in
-            make.top.equalTo(collectionView).inset(-Constants.defaultPadding / 2)
+            make.top.equalTo(collectionView).inset(Constants.defaultPadding / -2)
             make.right.equalTo(collectionView).inset(Constants.defaultPadding)
         }
         uploadButton.snp.makeConstraints { make in

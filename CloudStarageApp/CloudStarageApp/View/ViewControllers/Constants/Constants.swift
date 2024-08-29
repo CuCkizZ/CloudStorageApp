@@ -15,7 +15,7 @@ enum FatalError {
 extension UIViewController {
     enum Constants {
         static let defaultPadding = 16
-        static let DefaultHeight: CGFloat = 33
+        static let DefaultHeight: CGFloat = 38
         static let itemSizeDefault = CGSize(width: 100, height: 100)
         static let minimumLineSpacing: CGFloat = 5
         static let minimumInteritemSpacing: CGFloat = 5
