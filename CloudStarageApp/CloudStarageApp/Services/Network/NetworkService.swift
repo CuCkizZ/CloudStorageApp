@@ -9,7 +9,7 @@ import Foundation
 import YandexLoginSDK
 import Alamofire
 
-private enum Constants {
+private enum NetworkConstants {
     static let path = "path"
     static let defaultParams = ["path": "disk:/"]
     
@@ -76,8 +76,8 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void) {
-        let urlParams = Constants.defaultParams
-        let urlString = Constants.resoursesUrl
+        let urlParams = NetworkConstants.defaultParams
+        let urlString = NetworkConstants.resoursesUrl
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
@@ -91,8 +91,8 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchCurrentData(path: String, completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlParams = [Constants.path: path]
-        let urlString = Constants.resoursesUrl
+        let urlParams = [NetworkConstants.path: path]
+        let urlString = NetworkConstants.resoursesUrl
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
@@ -107,8 +107,8 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchLastData(completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlParams = Constants.defaultParams
-        let urlString = Constants.lastUploadedUrl
+        let urlParams = NetworkConstants.defaultParams
+        let urlString = NetworkConstants.lastUploadedUrl
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
@@ -123,7 +123,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchAccountData(completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlString = Constants.diskInfoUrl
+        let urlString = NetworkConstants.diskInfoUrl
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, headers: headers).response { response in
@@ -138,7 +138,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchPublicData(completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlStirng = Constants.publicFilesUrl
+        let urlStirng = NetworkConstants.publicFilesUrl
         guard let url = URL(string: urlStirng) else { return }
         
         AF.request(url, method: .get, headers: headers).response { response in
@@ -154,7 +154,7 @@ final class NetworkService: NetworkServiceProtocol {
     
     func searchFiles(keyword: String, completion: @escaping (Result<Data, Error>) -> Void) {
         let urlParams = ["path": keyword]
-        let urlString = Constants.resoursesUrl
+        let urlString = NetworkConstants.resoursesUrl
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
@@ -169,7 +169,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func createNewFolder(name: String) {
-        let urlString = Constants.createUrl + name
+        let urlString = NetworkConstants.createUrl + name
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .put, headers: headers).validate().response { response in
@@ -199,7 +199,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func toPublicFile(path: String) {
-        let urlSting = Constants.publishUrl + path
+        let urlSting = NetworkConstants.publishUrl + path
         guard let url = URL(string: urlSting) else { return }
         
         AF.request(url, method: .put, headers: headers).validate().response { response in
@@ -215,7 +215,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func unpublishFile(path: String) {
-        let urlString = Constants.unpublishUrl + path
+        let urlString = NetworkConstants.unpublishUrl + path
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .put, headers: headers).validate().response { response in
