@@ -11,7 +11,7 @@ final class AppCoordinator: Coordinator {
     
     private let userStorage = UserStorage.shared
     private let factory = SceneFactory.self
-    private var tabBarController = UITabBarController()
+    private var tabBarController: UITabBarController?
     
     override func start() {
 //        if userStorage.isLoginIn {
@@ -24,7 +24,6 @@ final class AppCoordinator: Coordinator {
     }
     
     override func finish() {
-        logout()
         print("Im done")
     }
 }
@@ -82,23 +81,28 @@ extension AppCoordinator {
     }
     
     func logout() {
+        // Завершаем работу всех дочерних координаторов
         for coordinator in childCoordinators {
             coordinator.finish()
         }
         childCoordinators.removeAll()
-       
-        tabBarController.viewControllers?.forEach { $0.removeFromParent() }
-        tabBarController.view.removeFromSuperview()
-        tabBarController.removeFromParent()
-
+        
+        tabBarController?.viewControllers?.forEach { $0.removeFromParent() }
+        tabBarController?.view.removeFromSuperview()
+        tabBarController?.removeFromParent()
+        tabBarController = nil
+        
         navigationController?.viewControllers.forEach { $0.removeFromParent() }
         navigationController?.view.removeFromSuperview()
         navigationController = nil
-
-        // userStorage.clearUserData()
-
+        
+        
+        // Например: userStorage.clearUserData()
+        
+       
         let authNavigationController = UINavigationController()
         
+       
         let loginCoordinator = factory.makeLoginFlow(coordinator: self, navigationController: authNavigationController, finisDelegate: self)
         loginCoordinator.start()
         
@@ -107,10 +111,10 @@ extension AppCoordinator {
         transition.duration = 0.3
         transition.type = .fade
         window?.layer.add(transition, forKey: kCATransition)
-        
+      
         window?.rootViewController = authNavigationController
         window?.makeKeyAndVisible()
-
+        
         print("User logged out, and authentication screen presented.")
     }
     
