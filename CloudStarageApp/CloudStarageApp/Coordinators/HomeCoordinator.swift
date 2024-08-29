@@ -10,6 +10,7 @@ import UIKit
 class HomeCoordinator: Coordinator {
     
     private let factory = SceneFactory.self
+    weak var appCoordinator: AppCoordinator? = nil
     
     override func start() {
         showHomeScene()
@@ -36,9 +37,7 @@ extension HomeCoordinator {
     }
     
     func logout() {
-        guard let navigationController = navigationController else { return }
-        let coordinator: Coordinator = Coordinator(type: .app, navigationController: navigationController)
-        coordinator.logoutFromHVC()
+        appCoordinator?.logout()
     }
     
 }
