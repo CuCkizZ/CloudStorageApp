@@ -28,6 +28,7 @@ extension UIContextMenuConfiguration {
         let file = model.file
         let publicUrl = model.publicUrl
         let type = model.type
+        var viewModel = viewModel
         switch modelType {
         case .last:
             return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
@@ -36,10 +37,17 @@ extension UIContextMenuConfiguration {
                 }
                 let shareLinkAction = UIAction(title: "Share a link", image: UIImage(systemName: "link.badge.plus")) { _ in
                     viewModel.publishResource(path)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                        guard let publicUrl = publicUrl else { return }
-                        viewModel.presentAvc(item: publicUrl)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                        var gtp: Void? = viewModel.gettingUrl?()
+                        gtp = {
+                            guard let publicUrl = publicUrl else { return }
+                                print("no url")
+                                viewModel.presentAvc(item: publicUrl)
+                                print("\(publicUrl)")
+                            
+                        }()
                     }
+                    
                 }
                 let shareFileAction = UIAction(title: "Share a file", image: UIImage(systemName: "arrow.up.doc")) { _ in
                     viewModel.publishResource(path)

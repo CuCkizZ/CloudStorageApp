@@ -23,7 +23,7 @@ final class PublicStorageViewModel {
     var isLoading: Observable<Bool> = Observable(false)
     var isConnected: Observable<Bool> = Observable(nil)
     var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
-    
+    var gettingUrl: (()->Void)?
     
     init(coordinator: ProfileCoordinator) {
         self.coordinator = coordinator
@@ -36,6 +36,11 @@ final class PublicStorageViewModel {
 }
 
 extension PublicStorageViewModel: PublickStorageViewModelProtocol {
+    
+    func publishResource2(_ path: String, completion: @escaping (URL?) -> Void) {
+        
+    }
+    
     
     func loadFile(from path: String, completion: @escaping (URL?) -> Void) {
         
