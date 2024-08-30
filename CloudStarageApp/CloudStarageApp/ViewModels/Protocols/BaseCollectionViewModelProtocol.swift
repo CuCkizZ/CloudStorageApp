@@ -36,7 +36,7 @@ protocol BaseCollectionViewModelProtocol {
     
 //    CoreData
     func FetchedResultsController()
-    func numberOfRowInCoreDataSection(section: Int) -> Int
+    func numberOfRowInCoreDataSection() -> Int
     func returnItems(at indexPath: IndexPath) -> OfflineItems? 
     
     func publishResource2(_ path: String, completion: @escaping (URL?) -> Void)

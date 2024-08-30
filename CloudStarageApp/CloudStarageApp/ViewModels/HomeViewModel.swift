@@ -261,9 +261,10 @@ extension HomeViewModel {
         try? fetchedResultController?.performFetch()
     }
     
-    func numberOfRowInCoreDataSection(section: Int) -> Int {
-        guard let section = fetchedResultController?.sections?[section] else { return 0 }
-        return section.numberOfObjects
+    func numberOfRowInCoreDataSection() -> Int {
+        guard let objects = fetchedResultController?.fetchedObjects else { return 0 }
+           let storageNames = objects.map { $0.name }
+           return Set(storageNames).count
     }
     
     func returnItems(at indexPath: IndexPath) -> OfflineItems? {

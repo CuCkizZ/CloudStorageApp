@@ -274,7 +274,7 @@ extension PublicStorageViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch isOffline {
         case true:
-            viewModel.numberOfRowInCoreDataSection(section: section)
+            viewModel.numberOfRowInCoreDataSection()
         case false:
             viewModel.numbersOfRowInSection()
         }
