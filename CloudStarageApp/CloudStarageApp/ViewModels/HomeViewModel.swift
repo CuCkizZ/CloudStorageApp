@@ -36,6 +36,7 @@ final class HomeViewModel {
     var isConnected: Observable<Bool> = Observable(true)
     var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
     
+    var gettingUrl: (()->Void)? 
     var searchText: String = ""
     
     init(coordinator: HomeCoordinator) {
@@ -152,14 +153,13 @@ extension HomeViewModel: HomeViewModelProtocol {
         NetworkManager.shared.toPublicFile(path: path)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.fetchData()
+//            Избавился от ошикбки, но не работает с первого раза
+            self.gettingUrl?()
         }
     }
     
     func publishResource2(_ path: String, completion: @escaping (URL?) -> Void) {
-        NetworkManager.shared.toPublicFile(path: path)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            self.fetchData()
-        }
+        
     }
     
     func unpublishResource(_ path: String) {

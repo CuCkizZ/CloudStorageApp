@@ -11,6 +11,7 @@ protocol BaseCollectionViewModelProtocol {
     //    Observable
     var isLoading: Observable<Bool> { get set }
     var isConnected: Observable<Bool> { get set }
+    var gettingUrl: (()->Void)? { get set }
     //    DataSource
     func numbersOfRowInSection() -> Int
     //   Network
