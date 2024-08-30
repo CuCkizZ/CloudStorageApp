@@ -45,7 +45,10 @@ final class CoreManager {
         let context = persistentContainer.viewContext
         let sortDescription = NSSortDescriptor(key: "name", ascending: true)
         fetchRequest.sortDescriptors = [sortDescription]
-        let resultController = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context, sectionNameKeyPath: nil, cacheName: nil)
+        let resultController = NSFetchedResultsController(fetchRequest: fetchRequest, 
+                                                          managedObjectContext: context,
+                                                          sectionNameKeyPath: nil,
+                                                          cacheName: nil)
         return resultController
     }
     
@@ -99,9 +102,9 @@ final class CoreManager {
             let existingItems = try context.fetch(fetchRequest)
             if existingItems.isEmpty {
                 let items = OfflineItems(context: context)
-                items.name = name
-                items.date = date
-                items.size = size
+                items.storageName = name
+                items.storageDate = date
+                items.storageSize = size
             }
         } catch {
             print("I cant")
@@ -119,9 +122,9 @@ final class CoreManager {
             let existingItems = try context.fetch(fetchRequest)
             if existingItems.isEmpty {
                 let items = OfflineItems(context: context)
-                items.name = name
-                items.date = date
-                items.size = size
+                items.publishedName = name
+                items.publishedDate = date
+                items.publishedSize = size
             }
         } catch {
             print("I cant")

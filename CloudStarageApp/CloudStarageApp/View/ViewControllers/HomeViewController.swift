@@ -278,7 +278,6 @@ extension HomeViewController: UICollectionViewDataSource {
                 fatalError(FatalError.wrongCell)
             }
             
-            
             cell.configure(model)
             
             return cell

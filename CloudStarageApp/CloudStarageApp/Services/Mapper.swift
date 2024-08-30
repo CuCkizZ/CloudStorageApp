@@ -9,7 +9,9 @@ import Foundation
 
 final class Mapper {
     
-    func mappingProfile(_ model: Account) -> ProfileDataSource {
+    private let dataManager = CoreManager.shared
+    
+    func mapProfile(_ model: Account) -> ProfileDataSource {
         let totalSpace = model.totalSpace
         let usedSpace = model.usedSpace 
         let leftSpace = totalSpace - usedSpace
@@ -19,6 +21,34 @@ final class Mapper {
                      leftSpace: leftSpace
         )
     }
+    
+    func mapLastCoreData(_ model: Embedded) {
+        model.items.forEach({ item in
+            self.dataManager.addLastItem(name: item.name,
+                                         date: item.created,
+                                         size: String(describing: item.size))
+            self.dataManager.saveContext()
+        })
+    }
+    
+    func mapStorageCoreData(_ model: Embedded) {
+        model.items.forEach({ item in
+            self.dataManager.addStorageItem(name: item.name,
+                                         date: item.created,
+                                         size: String(describing: item.size))
+            self.dataManager.saveContext()
+        })
+    }
+    
+    func mapPublishedCoreData(_ model: Embedded) {
+        model.items.forEach({ item in
+            self.dataManager.addPublishedItem(name: item.name,
+                                         date: item.created,
+                                         size: String(describing: item.size))
+            self.dataManager.saveContext()
+        })
+    }
+    
 }
         
 //        init(_ storage: Account) {

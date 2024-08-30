@@ -6,12 +6,16 @@
 //
 
 import Foundation
+import CoreData
 
 protocol BaseCollectionViewModelProtocol {
     //    Observable
     var isLoading: Observable<Bool> { get set }
     var isConnected: Observable<Bool> { get set }
     var gettingUrl: (()->Void)? { get set }
+    var fetchedResultController: NSFetchedResultsController<OfflineItems>? { get set }
+    
+
     //    DataSource
     func numbersOfRowInSection() -> Int
     //   Network
@@ -30,7 +34,10 @@ protocol BaseCollectionViewModelProtocol {
     func presentAvcFiles(path: URL)
     func logout()
     
-    
+//    CoreData
+    func FetchedResultsController()
+    func numberOfRowInCoreDataSection(section: Int) -> Int
+    func returnItems(at indexPath: IndexPath) -> OfflineItems? 
     
     func publishResource2(_ path: String, completion: @escaping (URL?) -> Void)
 }

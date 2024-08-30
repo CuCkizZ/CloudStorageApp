@@ -13,16 +13,12 @@ import CoreData
 protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
     var cellDataSourceOffline: Observable<[OfflineItems]> { get set }
-    var fetchedResultController: NSFetchedResultsController<OfflineItems>? { get set }
 
     var searchText: String { get set }
     func searchFiles()
     func logout()
     func setToken()
     
-    func FetchedResultsController()
-    func numberOfRowInCoreDataSection(section: Int) -> Int
-    func returnItems(at indexPath: IndexPath) -> OfflineItems?
 }
 
 final class HomeViewModel {
@@ -57,7 +53,6 @@ final class HomeViewModel {
     
     private func mapModel() {
         cellDataSource.value = model.compactMap { CellDataModel($0) }
-        // self.saveToCoreData(items: cellDataSource.value ?? [])
     }
 }
     
@@ -248,6 +243,10 @@ extension HomeViewModel: HomeViewModelProtocol {
     
     //    MARK: CoreData
     
+}
+
+extension HomeViewModel {
+
     func FetchedResultsController() {
         let fetchRequest: NSFetchRequest<OfflineItems> = OfflineItems.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
