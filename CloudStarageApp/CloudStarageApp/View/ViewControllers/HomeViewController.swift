@@ -49,6 +49,7 @@ final class HomeViewController: UIViewController {
         bindViewModel()
         bindNetworkMonitor()
     }
+    
     func bindView() {
         viewModel.cellDataSource.bind { [weak self] files in
             guard let self = self, let files = files else { return }
@@ -62,14 +63,13 @@ final class HomeViewController: UIViewController {
 
 private extension HomeViewController {
 
-    
     func bindViewModel() {
         viewModel.isLoading.bind { [weak self] isLoading in
             guard let self = self, let isLoading = isLoading else { return }
             DispatchQueue.main.async {
                 if isLoading {
                     self.activityIndicator.startAnimating()
-                    //self.collectionView.reloadData()
+                    self.collectionView.reloadData()
                 } else {
                     self.activityIndicator.stopAnimating()
                     self.activityIndicator.isHidden = true
@@ -103,9 +103,7 @@ private extension HomeViewController {
         setupNavBar()
         setupUploadButton()
         uploadButtonPressed()
-        
         setupLogout()
-        
         setupConstraints()
         setupLayoutButton()
     }
@@ -116,7 +114,6 @@ private extension HomeViewController {
         view.addSubview(uploadButton)
         view.addSubview(changeLayoutButton)
         view.backgroundColor = .white
-        NotificationCenter.default.addObserver(self, selector: #selector(showOfflineDeviceUI(notification:)), name: NSNotification.Name.connectivityStatus, object: nil)
         activityIndicator.hidesWhenStopped = true
         setupCollectionView()
         setupSearchController()
@@ -178,6 +175,13 @@ private extension HomeViewController {
         } else {
             return false
         }
+    }
+    
+    func checkConnetction() {
+        NotificationCenter.default.addObserver(self, 
+                                               selector: #selector(showOfflineDeviceUI(notification:)),
+                                               name: NSNotification.Name.connectivityStatus, 
+                                               object: nil)
     }
     
     func setupConstraints() {
@@ -289,7 +293,9 @@ extension HomeViewController: UICollectionViewDelegate {
         }
     }
     
-    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+    func collectionView(_ collectionView: UICollectionView, 
+                        contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
+                        point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
         let model = modelReturn(indexPath: indexPath)
         return UIContextMenuConfiguration.contextMenuConfiguration(for: .last,
@@ -325,10 +331,21 @@ extension HomeViewController: UISearchBarDelegate, UISearchResultsUpdating {
 
 extension HomeViewController {
     func setupLogout() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logoutTapped))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab, 
+                                                           style: .plain, 
+                                                           target: self,
+                                                           action: #selector(logoutTapped))
     }
     
     @objc func logoutTapped() {
-        viewModel.logout()
+        let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+            return
+        }))
+        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
+            guard let self = self else { return }
+            self.viewModel.logout()
+        }))
+        present(alert, animated: true)
     }
 }

@@ -99,6 +99,7 @@ private extension StorageViewController {
         setupNetworkStatusView(networkStatusView)
         setupButtonTap()
         uploadButtonPressed()
+        setupLogout()
         setupLayoutButton()
         setupConstraints()
     }
@@ -115,7 +116,6 @@ private extension StorageViewController {
     func setupNavBar() {
         guard let navigationController = navigationController else { return }
         navigationItem.rightBarButtonItem = navigationController.setRightButton()
-        navigationItem.leftBarButtonItem = navigationController.setLeftButton()
         navigationItem.searchController = searchController
         navigationController.navigationBar.prefersLargeTitles = true
         navigationItem.title = navigationTitle
@@ -316,6 +316,14 @@ extension StorageViewController {
     }
     
     @objc func logoutTapped() {
-        viewModel.logout()
+        let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+            return
+        }))
+        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
+            guard let self = self else { return }
+            self.viewModel.logout()
+        }))
+        present(alert, animated: true)
     }
 }

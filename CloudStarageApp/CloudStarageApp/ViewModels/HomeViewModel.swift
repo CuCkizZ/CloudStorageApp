@@ -155,6 +155,13 @@ extension HomeViewModel: HomeViewModelProtocol {
         }
     }
     
+    func publishResource2(_ path: String, completion: @escaping (URL?) -> Void) {
+        NetworkManager.shared.toPublicFile(path: path)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.fetchData()
+        }
+    }
+    
     func unpublishResource(_ path: String) {
         NetworkManager.shared.unpublishFile(path)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -176,10 +183,7 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func presentAvc(item: String) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.coordinator.presentAtivityVc(item: item)
-        }
+        self.coordinator.presentAtivityVc(item: item)
     }
     
     func presentAvcFiles(path: URL) {

@@ -41,20 +41,4 @@ extension UINavigationController {
     func setRightButton() -> UIBarButtonItem {
         return UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .plain, target: self, action: nil)
     }
-    
-    func setLeftButton() -> UIBarButtonItem {
-        return UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logout))
-    }
-    
-    @objc func logout() {
-        let _: CoordinatorProtocol = AppCoordinator(type: .logout, navigationController: self)
-        let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
-            print("Cancel")
-        }))
-        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { action in
-            
-        }))
-        present(alert, animated: true)
-    }
 }

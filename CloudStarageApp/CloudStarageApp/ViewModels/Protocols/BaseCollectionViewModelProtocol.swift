@@ -28,4 +28,8 @@ protocol BaseCollectionViewModelProtocol {
     func presentAvc(item: String)
     func presentAvcFiles(path: URL)
     func logout()
+    
+    
+    
+    func publishResource2(_ path: String, completion: @escaping (URL?) -> Void)
 }

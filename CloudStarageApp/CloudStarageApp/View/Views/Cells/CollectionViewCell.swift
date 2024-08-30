@@ -62,7 +62,7 @@ final class CollectionViewCell: UICollectionViewCell {
     }
     
     func configure(_ model: CellDataModel) {
-        nameLabel.text = model.name
+        nameLabel.attributedText = setMaxCharacters(text: model.name)
         
         if let size = model.size {
             dateLabel.text = model.date + sizeFormatter(bytes:size)
@@ -122,6 +122,16 @@ private extension CollectionViewCell {
         sizeLabel.backgroundColor = .clear
     }
     
+    func setMaxCharacters(text: String) -> NSMutableAttributedString {
+        let maxCharacters = 25
+        let truncatedText = String(text.prefix(maxCharacters))
+        let attributedText = NSMutableAttributedString(string: truncatedText)
+        if text.count > maxCharacters {
+            attributedText.append(NSAttributedString(string: "..."))
+        }
+        return attributedText
+    }
+    
     func setupStackView() {
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
@@ -133,7 +143,7 @@ private extension CollectionViewCell {
             make.height.width.equalTo(38)
         }
         nameLabel.snp.makeConstraints { make in
-            make.height.equalTo(18)
+            make.height.equalTo(20)
         }
         publishIcon.snp.makeConstraints { make in
             make.right.centerY.equalTo(contentView).inset(30)

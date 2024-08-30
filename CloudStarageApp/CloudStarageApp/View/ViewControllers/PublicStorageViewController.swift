@@ -103,6 +103,7 @@ private extension PublicStorageViewController {
         setupNetworkStatusView(networkStatusView)
         setupButtonUp()
         setupLable()
+        setupLogout()
         setupLayoutButton()
         uploadButtonPressed()
         setupConstraints()
@@ -120,7 +121,6 @@ private extension PublicStorageViewController {
     func SetupNavBar() {
         guard let navigationController = navigationController else { return }
         navigationItem.rightBarButtonItem = navigationController.setRightButton()
-        navigationItem.leftBarButtonItem = navigationController.setLeftButton()
         navigationController.navigationBar.prefersLargeTitles = true
         title = navigationTitle
     }
@@ -288,6 +288,14 @@ extension PublicStorageViewController {
     }
     
     @objc func logoutTapped() {
-        viewModel.logout()
+        let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+            return
+        }))
+        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
+            guard let self = self else { return }
+            self.viewModel.logout()
+        }))
+        present(alert, animated: true)
     }
 }
