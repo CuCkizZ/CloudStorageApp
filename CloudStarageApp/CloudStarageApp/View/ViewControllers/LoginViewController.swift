@@ -184,8 +184,8 @@ private extension LoginViewController {
 
 extension LoginViewController {
     
-    @objc func loginButtonPressed() {
-        guard let yandex = yandex else { return }
+    @objc func loginButtonPressed() -> Bool {
+        guard let yandex = yandex else { return false }
         
         let authorizationStrategy: YandexLoginSDK.AuthorizationStrategy = .default
         do {
@@ -194,9 +194,11 @@ extension LoginViewController {
                 customValues: self.customValues.isEmpty ? nil : self.customValues,
                 authorizationStrategy: authorizationStrategy
             )
+            return true
         } catch {
             errorOccured(error)
         }
+        return false
     }
 
     
