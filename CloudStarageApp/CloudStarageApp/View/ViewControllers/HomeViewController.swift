@@ -1,11 +1,17 @@
 import UIKit
 import SnapKit
+import CoreData
 
 final class HomeViewController: UIViewController {
     
     private let viewModel: HomeViewModelProtocol
     private lazy var cellDataSource: [CellDataModel] = []
+
     
+    
+    private let dataManager = CoreManager.shared
+    private var fetchedResultController: NSFetchedResultsController<OfflineItems>?
+
     //   UI
     
     private lazy var selectedStyle: PresentationStyle = .table
@@ -43,6 +49,24 @@ final class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        dataManager.fetchOfflineData()
+        let fetchRequest: NSFetchRequest<OfflineItems> = OfflineItems.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+
+        let context = dataManager.persistentContainer.viewContext
+
+        fetchedResultController = NSFetchedResultsController(fetchRequest: fetchRequest,
+                                                              managedObjectContext: context,
+                                                              sectionNameKeyPath: nil,
+                                                              cacheName: nil)
+
+        do {
+            try fetchedResultController?.performFetch()
+            let items = fetchedResultController?.fetchedObjects
+            print("Items -", items?.count)
+        } catch {
+            print("Error fetching data: \(error.localizedDescription)")
+        }
         
         setupLayout()
         bindView()
@@ -57,6 +81,20 @@ final class HomeViewController: UIViewController {
             collectionView.reloadData()
         }
     }
+    
+    private func updateTableViewWithFetchResultController() {
+        if cellDataSource.isEmpty == true {
+            dataManager.fetchOfflineData()
+            do {
+                try fetchedResultController?.performFetch()
+                collectionView.reloadData()
+                print("updated")
+            } catch {
+                print("cannot update tableView")
+            }
+        }
+    }
+    
 }
     
 // MARK: BindingExtension
@@ -128,10 +166,6 @@ private extension HomeViewController {
         title = "Latests"
     }
     
-    func modelReturn(indexPath: IndexPath) -> CellDataModel {
-        return cellDataSource[indexPath.row]
-    }
-    
     func setupLayoutButton() {
         changeLayoutButton.setImage(selectedStyle.buttonImage, for: .normal)
         changeLayoutButton.addTarget(self, action: #selector(changeContentLayout), for: .touchUpInside)
@@ -149,6 +183,7 @@ private extension HomeViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.reuseID)
+        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         collectionView.refreshControl = refresher
         collectionView.alwaysBounceVertical = true
         refresher.tintColor = AppColors.customGray
@@ -209,6 +244,8 @@ private extension HomeViewController {
         viewModel.fetchData()
         collectionView.reloadData()
         refresher.endRefreshing()
+        dataManager.fetchOfflineData()
+        dataManager.getCount()
     }
     
     @objc func tap() {
@@ -259,24 +296,45 @@ extension HomeViewController: UICollectionViewDataSource {
 //    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        cellDataSource.count
+        guard let section = fetchedResultController?.sections?[section] else { return 0 }
+        return section.numberOfObjects
+
+        //cellDataSourceOffline.count
+        //cellDataSource.count
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let model = modelReturn(indexPath: indexPath)
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
-                                                            for: indexPath) as? CollectionViewCell else {
-            fatalError(FatalError.wrongCell)
+        let connetc = "nope"
+        if connetc == "yep"{
+            let model = cellDataSource[indexPath.row]
+            guard let items = fetchedResultController?.object(at: indexPath) else { return UICollectionViewCell() }
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
+                                                                for: indexPath) as? CollectionViewCell else {
+                fatalError(FatalError.wrongCell)
+            }
+            
+            
+            cell.configure(model)
+            
+            return cell
+        } else {
+            guard let items = fetchedResultController?.object(at: indexPath) else { return UICollectionViewCell() }
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
+                                                                for: indexPath) as? CollectionViewCell else {
+                fatalError(FatalError.wrongCell)
+            }
+            
+            cell.offlineConfigure(items)
+            
+            return cell
         }
-        cell.configure(model)
-        return cell
     }
 }
 
 extension HomeViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let model = modelReturn(indexPath: indexPath)
+        let model = cellDataSource[indexPath.row]
         let name = model.name
         let fileType = model.file
         let mimeType = model.mimeType
@@ -293,16 +351,16 @@ extension HomeViewController: UICollectionViewDelegate {
         }
     }
     
-    func collectionView(_ collectionView: UICollectionView, 
-                        contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
-                        point: CGPoint) -> UIContextMenuConfiguration? {
-        guard let indexPath = indexPaths.first else { return nil }
-        let model = modelReturn(indexPath: indexPath)
-        return UIContextMenuConfiguration.contextMenuConfiguration(for: .last,
-                                                                   viewModel: viewModel,
-                                                                   model: model,
-                                                                   viewController: self)
-    }
+//    func collectionView(_ collectionView: UICollectionView, 
+//                        contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
+//                        point: CGPoint) -> UIContextMenuConfiguration? {
+//        guard let indexPath = indexPaths.first else { return nil }
+//        let model = cellDataSource[indexPath.row]
+//        return UIContextMenuConfiguration.contextMenuConfiguration(for: .last,
+//                                                                   viewModel: viewModel,
+//                                                                   model: model,
+//                                                                   viewController: self)
+//    }
 }
 
 

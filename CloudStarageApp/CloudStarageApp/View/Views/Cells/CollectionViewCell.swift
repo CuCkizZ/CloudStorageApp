@@ -86,6 +86,10 @@ final class CollectionViewCell: UICollectionViewCell {
         }
     }
     
+    func offlineConfigure(_ model: OfflineItems) {
+        nameLabel.text = model.name
+    }
+    
     func animatedShareIcon() {
         UIView.transition(with: publishIcon, duration: 0.3, options: .transitionCrossDissolve, animations: {
             self.publishIcon.isHidden = false

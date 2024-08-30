@@ -8,9 +8,12 @@
 import Network
 import Foundation
 import YandexLoginSDK
+import CoreData
 
 protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
+    var cellDataSourceOffline: Observable<[OfflineItems]> { get set }
+
     var searchText: String { get set }
     func searchFiles()
     func logout()
@@ -28,6 +31,7 @@ final class HomeViewModel {
     }
     private let keychain = KeychainManager.shared
     private let networkManager: NetworkServiceProtocol = NetworkService()
+    private let dataManager = CoreManager.shared
     private var model: [Item] = []
     private let networkMonitor = NWPathMonitor()
     
@@ -35,6 +39,7 @@ final class HomeViewModel {
     var isLoading: Observable<Bool> = Observable(false)
     var isConnected: Observable<Bool> = Observable(true)
     var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
+    var cellDataSourceOffline: Observable<[OfflineItems]> = Observable(nil)
     
     var gettingUrl: (()->Void)? 
     var searchText: String = ""
@@ -47,7 +52,23 @@ final class HomeViewModel {
     
     private func mapModel() {
         cellDataSource.value = model.compactMap { CellDataModel($0) }
+        // self.saveToCoreData(items: cellDataSource.value ?? [])
     }
+    
+    //    func saveToCoreData(items: [CellDataModel]) {
+    //        for item in items {
+    //            dataManager.addItem(name: item.name,
+    //                                 date: item.date,
+    //                                 size: String(describing: item.size))
+    //            print("Saved item \(item.name) to Core Data")
+    //        }
+    //        dataManager.saveContext()
+    //        
+    //        
+    //        print("Data saved")
+    //        
+    //        
+    //       // CoreDataManager.shared.saveContext()
 }
     
 extension HomeViewModel: HomeViewModelProtocol {
@@ -91,7 +112,7 @@ extension HomeViewModel: HomeViewModelProtocol {
                     break
             }
         }
-    }
+    }    
     
 //    MARK: Network
     

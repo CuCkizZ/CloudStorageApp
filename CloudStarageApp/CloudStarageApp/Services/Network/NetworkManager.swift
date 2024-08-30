@@ -17,9 +17,10 @@ final class NetworkManager {
         decoder.allowsJSON5 = true
         return decoder
     }()
-    
     private let mapper = Mapper()
     private let client = NetworkService()
+    private let dataManager = CoreManager.shared
+
     static let shared = NetworkManager()
     
     private init() {}
@@ -36,13 +37,22 @@ final class NetworkManager {
         }
     }
     
-    func fetchLastData(completion: @escaping (Result<[Item], Error>) -> Void) {
-        client.fetchLastData { result in
+    func fetchLastData(completion: @escaping (Result<([Item]), Error>) -> Void) {
+        client.fetchLastData { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(let data):
                 do {
                     let result = try self.decoder.decode(Embedded.self, from: data)
-                    completion(.success(result.items))
+                    for item in result.items {
+                        self.dataManager.addLastItem(name: item.name, 
+                                                     date: item.created,
+                                                     size: String(describing: item.size))
+                        self.dataManager.saveContext()
+                    }
+
+                    completion(.success((result.items)))
+                    print("NetworkDataManagerSaved")
                 } catch {
                     completion(.failure(error))
                     print("Ошибка при парсе: \(error.localizedDescription)")
