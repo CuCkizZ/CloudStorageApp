@@ -15,6 +15,7 @@ protocol PublickStorageViewModelProtocol: BaseCollectionViewModelProtocol, AnyOb
 final class PublicStorageViewModel {
     
     private let coordinator: ProfileCoordinator
+    private let keychain = KeychainManager.shared
     private let networkMonitor = NWPathMonitor()
     private var model: [Item] = []
     var searchKeyword: String = ""
@@ -119,10 +120,6 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
         coordinator.presentDocument(name: name, type: type, fileType: fileType)
     }
     
-    func paggination(title: String, path: String) {
-        coordinator.paggination(path: path, title: title)
-    }
-    
     func presentAvc(item: String) {
         coordinator.presentAtivityVc(item: item)
     }
@@ -149,15 +146,10 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
         }
     }
     
-    func presentDetailVC(path: String) {
-        
+    func logout() {
+        try? keychain.delete(forKey: "token")
+        print("delted")
+        coordinator.finish()
     }
     
-    func presentShareView(shareLink: String) {
-        //coordinator.presentShareScene(shareLink: shareLink)
-    }
-    
-    func sortData() {
-        
-    }
 }

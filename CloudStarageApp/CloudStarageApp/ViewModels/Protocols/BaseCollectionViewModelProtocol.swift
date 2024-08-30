@@ -16,16 +16,20 @@ protocol BaseCollectionViewModelProtocol {
     //   Network
     func fetchData()
     func startMonitoringNetwork()
-    func unpublishResource(_ path: String)
     func createNewFolder(_ name: String)
     func deleteFile(_ name: String)
+    func unpublishResource(_ path: String)
     func publishResource(_ path: String)
     func renameFile(oldName: String, newName: String)
     func loadFile(from path: String, completion: @escaping (URL?) -> Void)
     //    Navigation
-    func presentShareView(shareLink: String)
     func presentImage(model: CellDataModel)
     func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String)
     func presentAvc(item: String)
     func presentAvcFiles(path: URL)
+    func logout()
+    
+    
+    
+    func publishResource2(_ path: String, completion: @escaping (URL?) -> Void)
 }

@@ -17,6 +17,7 @@ final class LoginViewModel {
     private let userStorage = UserStorage.shared
     private let keychain = KeychainManager.shared
     private let coordinator: LoginCoordinator
+    private weak var yandex: YandexLoginSDK?
     
     var isLoading: Observable<Bool> = Observable(false)
     var onLoginStateChanged: ((Bool) -> Void)?
@@ -45,8 +46,9 @@ final class LoginViewModel {
 extension LoginViewModel: LoginViewOutput {
     
     func logout() {
+        yandex = YandexLoginSDK.shared
         do {
-            try YandexLoginSDK.shared.logout()
+            try yandex?.logout()
             loginResult = nil
             cleareKeychain()
         } catch {
@@ -55,14 +57,8 @@ extension LoginViewModel: LoginViewOutput {
     }
     
     func saveToken(token: String) {
-        let token = loginResult?.token ?? "no token"
-        print(token)
-//        do {
-//            try keychain.save(token, forKey: "token")
-//        } catch {
-//            print(error.localizedDescription, "Ошибка при сохранении")
-//        }
-//        setToken()
+        try? keychain.save(token, forKey: "token")
+        print("token from viewmodel", token)
     }
     
     func setToken() {

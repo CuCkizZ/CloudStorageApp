@@ -7,7 +7,7 @@
 
 import UIKit
 
-class HomeCoordinator: Coordinator {
+final class HomeCoordinator: Coordinator {
     
     private let factory = SceneFactory.self
     
@@ -18,13 +18,6 @@ class HomeCoordinator: Coordinator {
         finishDelegate?.coordinatorDidFinish(childCoordinator: self)
         print("Im done")
     }
-    
-    override func logoutFrom() {
-        guard let navigationController = navigationController else { return }
-        let coordinator: Coordinator = Coordinator(type: .app, navigationController: navigationController)
-        coordinator.logoutFromHVC()
-        finishDelegate?.coordinatorDidFinish(childCoordinator: coordinator)
-    }
 }
 
 extension HomeCoordinator {
@@ -34,11 +27,4 @@ extension HomeCoordinator {
         let vc = factory.makeHomeScene(coordinator: self)
         navigationController.pushViewController(vc, animated: true)
     }
-    
-    func logout() {
-        guard let navigationController = navigationController else { return }
-        let coordinator: Coordinator = Coordinator(type: .app, navigationController: navigationController)
-        coordinator.logoutFromHVC()
-    }
-    
 }

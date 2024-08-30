@@ -86,13 +86,13 @@ final class ProfileViewController: UIViewController {
         }))
         alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
             guard let self = self else { return }
-            self.viewModel.logOut()
+            self.viewModel.logout()
         }))
         present(alert, animated: true)
     }
     
     @objc func logout() {
-        viewModel.logOut()
+        viewModel.logout()
     }
 }
 
@@ -101,6 +101,15 @@ final class ProfileViewController: UIViewController {
 private extension ProfileViewController {
     
     func setupLayout() {
+        setupViews()
+        SetupNavBar()
+        setupLogout()
+        setupLabel()
+        setupConstraints()
+        setupShapeLayer()
+    }
+    
+    func setupViews() {
         view.backgroundColor = .white
         view.addSubview(totalStorageLabel)
         view.addSubview(usedStorageLabel)
@@ -108,15 +117,6 @@ private extension ProfileViewController {
         view.addSubview(usedImageView)
         view.addSubview(leftImageView)
         view.addSubview(goToPublicButton)
-        setupViews()
-        SetupNavBar()
-        setupConstraints()
-        setupShapeLayer()
-        setupLabel()
-        //configure(model: dataSource!)
-    }
-    
-    func setupViews() {
         setupButton()
         leftImageView.image = UIImage(resource: .playstore)
         usedImageView.image = UIImage(resource: .playstore)
@@ -124,7 +124,6 @@ private extension ProfileViewController {
     
     func SetupNavBar() {
         guard let navigationController = navigationController else { return }
-        navigationItem.leftBarButtonItem = navigationController.setLeftButton()
         navigationController.navigationBar.prefersLargeTitles = true
         title = "Profile"
     }
@@ -253,5 +252,20 @@ private extension ProfileViewController {
     }
 }
 
-extension UIViewController {
+extension ProfileViewController {
+    func setupLogout() {
+        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logoutTapped))
+    }
+    
+    @objc func logoutTapped() {
+        let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+            return
+        }))
+        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
+            guard let self = self else { return }
+            self.viewModel.logout()
+        }))
+        present(alert, animated: true)
+    }
 }

@@ -12,21 +12,14 @@ final class LoginViewController: UIViewController {
     
     private let viewModel: LoginViewOutput
     private let keychain = KeychainManager.shared
+    private weak var yandex: YandexLoginSDK?
     private var customValues: [String: String] = [:]
     
-    private var loginResult: LoginResult? {
-        didSet {
-            logoutButton.isEnabled = (loginResult != nil)
-        }
-    }
-    
-    private lazy var bottomButtomCT = NSLayoutConstraint()
-    private lazy var bottomStackViewCT = NSLayoutConstraint()
+    private var loginResult: LoginResult?
     
     let activityIndicator = UIActivityIndicatorView(style: .large)
+    
     private let loadingView = UIView()
-    
-    
     private let loginButton = CSBlueButton()
     
     private let yandexButton = YandexButton()
@@ -44,15 +37,21 @@ final class LoginViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    deinit {
+        print("deinited looooogin")
+    }
+    
+    
     //    MARK: ViewDidLoad
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        //loginButtonPressed()
+        loginButtonPressed()
         logoutButton.setTitle("logout")
         yandexButton.addTarget(self, action: #selector(loginButtonPressed), for: .touchUpInside)
-        YandexLoginSDK.shared.add(observer: self)
+        yandex = YandexLoginSDK.shared
+        yandex?.add(observer: self)
         setupView()
     }
     
@@ -110,7 +109,6 @@ private extension LoginViewController {
     
     @objc func presentLogin() {
         let alertController: UIAlertController
-        
         if let loginResult = loginResult {
             alertController = UIAlertController(
                 title: "Login Result",
@@ -186,27 +184,35 @@ private extension LoginViewController {
 
 extension LoginViewController {
     
-    @objc func loginButtonPressed() {
+    @objc func loginButtonPressed() -> Bool {
+        guard let yandex = yandex else { return false }
+        
         let authorizationStrategy: YandexLoginSDK.AuthorizationStrategy = .default
         do {
-            try YandexLoginSDK.shared.authorize(
+            try yandex.authorize(
                 with: self,
                 customValues: self.customValues.isEmpty ? nil : self.customValues,
                 authorizationStrategy: authorizationStrategy
             )
+            return true
         } catch {
             errorOccured(error)
         }
+        return false
     }
 
     
     @objc func logoutButtonPressed() {
+        do {
+            try yandex?.logout()
+        } catch {
+            return
+        }
         viewModel.logout()
     }
     
     func presentLogouted() {
         let alert = UIAlertController(title: "Logout", message: "You have been logged out.", preferredStyle: .alert)
-        
         let okAction = UIAlertAction(title: "OK", style: .default) { _ in
         }
         alert.addAction(okAction)
@@ -222,9 +228,9 @@ extension LoginViewController: YandexLoginSDKObserver {
         switch result {
         case .success(let loginResult):
             self.loginResult = loginResult
-//            try? keychain.save(loginResult.token, forKey: "OAuth")
-//            viewModel.setToken()
-            print(loginResult.token)
+            let result = loginResult.token
+            viewModel.saveToken(token: result)
+            print("token from viewControllerKeychain", keychain.get(forKey: "token"))
         case .failure(let error):
             print("Login error: \(error)")
         }
@@ -234,6 +240,7 @@ extension LoginViewController: YandexLoginSDKObserver {
 extension LoginViewController: LoginViewInput {
     
     func onSighInTapped() {
+        try? yandex?.logout()
            // viewModel.login()
     }
     

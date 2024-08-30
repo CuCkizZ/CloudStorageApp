@@ -2,7 +2,7 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>Entitlement</key>
+	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string></string>
 	<key>com.apple.runningboard.assertions.frontboard</key>
 	<true/>
@@ -25,7 +25,7 @@
 	</array>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-        <string>https</string>
+		<string>https</string>
 		<string>primaryyandexloginsdk</string>
 		<string>secondaryyandexloginsdk</string>
 	</array>

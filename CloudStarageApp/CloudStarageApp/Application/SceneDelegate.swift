@@ -18,9 +18,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window?.rootViewController = navBar
         window?.makeKeyAndVisible()
         
-        let net: NetworkServiceProtocol = NetworkService()
-        net.getOAuthToken()
-        net.setOAuthToken()
+//        let net: NetworkServiceProtocol = NetworkService()
+       // net.getOAuthToken()
+        //net.setOAuthToken()
         
         let appCoordinator = AppCoordinator(type: .app, navigationController: navBar, window: window)
         self.coordinator = appCoordinator

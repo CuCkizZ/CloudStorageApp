@@ -7,6 +7,7 @@
 
 import Network
 import Foundation
+import YandexLoginSDK
 
 protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
@@ -19,7 +20,13 @@ protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
 
 final class HomeViewModel {
     var onErrorReceived: ((String) -> Void)?
-    private weak var coordinator: HomeCoordinator?
+    private let coordinator: HomeCoordinator
+    var loginResult: LoginResult? {
+        didSet {
+            
+        }
+    }
+    private let keychain = KeychainManager.shared
     private let networkManager: NetworkServiceProtocol = NetworkService()
     private var model: [Item] = []
     private let networkMonitor = NWPathMonitor()
@@ -49,8 +56,8 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func setToken() {
-        networkManager.getOAuthToken()
-        networkManager.setOAuthToken()
+        //networkManager.getOAuthToken()
+        //networkManager.setOAuthToken()
     }
     
     func loadFile(from path: String, completion: @escaping (URL?) -> Void) {
@@ -148,6 +155,13 @@ extension HomeViewModel: HomeViewModelProtocol {
         }
     }
     
+    func publishResource2(_ path: String, completion: @escaping (URL?) -> Void) {
+        NetworkManager.shared.toPublicFile(path: path)
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+            self.fetchData()
+        }
+    }
+    
     func unpublishResource(_ path: String) {
         NetworkManager.shared.unpublishFile(path)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -165,14 +179,11 @@ extension HomeViewModel: HomeViewModelProtocol {
 //    MARK: Navigation
     
     func presentShareView(shareLink: String) {
-        coordinator?.presentShareScene(shareLink: shareLink)
+        //coordinator?.presentShareScene(shareLink: shareLink)
     }
     
     func presentAvc(item: String) {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.coordinator?.presentAtivityVc(item: item)
-        }
+        self.coordinator.presentAtivityVc(item: item)
     }
     
     func presentAvcFiles(path: URL) {
@@ -184,10 +195,11 @@ extension HomeViewModel: HomeViewModelProtocol {
                     let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? path.pathExtension
                     let tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString)
                         .appendingPathExtension(fileExtension)
+                    
                     try data.write(to: tempFileURL)
                     DispatchQueue.main.async { [weak self] in
                         guard let self = self else { return }
-                        self.coordinator?.presentAtivityVcFiles(item: tempFileURL)
+                        self.coordinator.presentAtivityVcFiles(item: tempFileURL)
                     }
                 } catch {
                     print ("viewModel error")
@@ -199,15 +211,29 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
         
     func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
-        coordinator?.presentDocument(name: name, type: type, fileType: fileType)
+        coordinator.presentDocument(name: name, type: type, fileType: fileType)
     }
     
     func presentImage(model: CellDataModel) {
-        coordinator?.presentImageScene(model: model)
+        coordinator.presentImageScene(model: model)
     }
     
     func logout() {
-        coordinator?.logoutFrom()
+      //  let token = keychain.get(forKey: "token")
+        try? keychain.delete(forKey: "token")
+        print("delted")
+        let token = keychain.get(forKey: "token")
+        if let loginResult = loginResult {
+            let result = loginResult.token
+            print("Login result = \(result)")
+        }
+//        print("dwqdkskskskskkskksksk \(loginResult?.token)")
+//        print("""
+//_________________
+//                Token aftedelet \(token)
+//__________________
+//""")
+        coordinator.finish()
     }
     
 }

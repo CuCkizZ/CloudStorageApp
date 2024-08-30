@@ -10,7 +10,7 @@ import Foundation
 
 enum KeychainError: Error {
     case duplicated
-    case unoknow(OSStatus)
+    case unknown(OSStatus)
 }
 
 protocol KeychainProtocol {
@@ -64,10 +64,11 @@ final class KeychainManager: KeychainProtocol {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key
         ]
-
+        
         let status = SecItemDelete(query as CFDictionary)
-        guard status == errSecSuccess else {
-            throw KeychainError.unoknow(status)
+        
+        if status != errSecSuccess {
+            throw KeychainError.unknown(status)
         }
     }
 }

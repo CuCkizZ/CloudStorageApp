@@ -68,7 +68,7 @@ final class PresentImageViewController: UIViewController {
         }
         infoView.configure(model: model)
         deleteButtonTapped(name: model.name)
-        shareButtonTapped(link: model.publicUrl ?? "no url", file: model.file)
+        shareButtonTapped(link: model.publicUrl ?? "no url", file: model.file, path: model.path)
     }
 }
 
@@ -111,8 +111,8 @@ private extension PresentImageViewController {
         
     }
     
-    func shareButtonTapped(link: String, file: String) {
-        shareView.configure(link: link, file: file)
+    func shareButtonTapped(link: String, file: String, path: String) {
+        shareView.configure(link: link, file: file, path: path)
     }
     
     func deleteButtonTapped(name: String) {

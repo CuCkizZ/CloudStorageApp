@@ -72,21 +72,16 @@ class Coordinator: CoordinatorProtocol {
         childCoordinators.removeAll()
     }
     
-    
     func start() {
         print("Coordinator starts")
     }
     
     func finish() {
+        finishDelegate?.coordinatorDidFinish(childCoordinator: self)
         print("Coordinator finished")
     }
-    
-    func logoutFrom() {
-        self.type = .app
-        finishDelegate?.coordinatorDidFinish(childCoordinator: self)
-    }
-    
 }
+
 extension Coordinator {
     
     func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
@@ -94,18 +89,7 @@ extension Coordinator {
         let vc = factory.makeDocumentScene(name: name, type: type, fileType: fileType, coordinator: self)
         navigationController.pushViewController(vc, animated: true)
     }
-    
-    func presentShareScene(shareLink: String) {
-        guard let navigationController = navigationController else { return }
-        let vc = factory.makeShareSceneApp(shareLink: shareLink, coordinator: self)
-        if let sheet = vc.sheetPresentationController {
-            sheet.detents = [.custom(resolver: { context in
-                navigationController.view.bounds.height / 4
-            })]
-            navigationController.present(vc, animated: true)
-        }
-    }
-    
+
     func presentAtivityVc(item: String) {
         guard let navigationController = navigationController else { return }
         let avc = factory.makeActivityVc(item: item, coordinator: self)
@@ -128,9 +112,4 @@ extension Coordinator {
         guard let navigationController = navigationController else { return }
         navigationController.popToRootViewController(animated: false)
     }
-    
-    func logoutFromHVC() {
-        
-    }
-    
 }

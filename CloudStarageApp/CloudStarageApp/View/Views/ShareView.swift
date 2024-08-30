@@ -13,6 +13,7 @@ final class ShareView: UIView {
     
     var link: String?
     var file: String?
+    var path: String?
     
     init(viewModel: PresentImageViewModelProtocol, frame: CGRect) {
         self.viewModel = viewModel
@@ -24,9 +25,10 @@ final class ShareView: UIView {
         fatalError("init(coder:) has not been implemented")
     }
     
-    func configure(link: String, file: String) {
+    func configure(link: String, file: String, path: String) {
         self.link = link
         self.file = file
+        self.path = path
     }
 }
 
@@ -97,15 +99,19 @@ private extension ShareView {
     }
     
     @objc func shareLink() {
-        guard let link = link else { return }
+        guard let link = link, let path = path else { return }
+        viewModel.publishFile(path: path)
         viewModel.hideShareView()
         viewModel.shareLink(link: link)
     }
     
     @objc func shareFile() {
-        guard let file = file else { return }
+        guard let file = file, let path = path else { return }
+        viewModel.publishFile(path: path)
         viewModel.hideShareView()
-        viewModel.shareFile(file: file)
+        if let file = URL(string: file) {
+            viewModel.shareFile(path: file)
+        }
     }
     
     func setupShareViews() {

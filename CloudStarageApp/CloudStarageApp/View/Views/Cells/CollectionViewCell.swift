@@ -36,6 +36,8 @@ final class CollectionViewCell: UICollectionViewCell {
     private lazy var stackLabel: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [nameLabel, dateLabel])
         stack.axis = .vertical
+        stack.spacing = 5
+        stack.backgroundColor = .clear
         return stack
     }()
     
@@ -60,7 +62,7 @@ final class CollectionViewCell: UICollectionViewCell {
     }
     
     func configure(_ model: CellDataModel) {
-        nameLabel.text = model.name
+        nameLabel.attributedText = setMaxCharacters(text: model.name)
         
         if let size = model.size {
             dateLabel.text = model.date + sizeFormatter(bytes:size)
@@ -115,6 +117,19 @@ private extension CollectionViewCell {
         nameLabel.textColor = .black
         sizeLabel.textColor = AppColors.customGray
         dateLabel.textColor = AppColors.customGray
+        
+        dateLabel.backgroundColor = .clear
+        sizeLabel.backgroundColor = .clear
+    }
+    
+    func setMaxCharacters(text: String) -> NSMutableAttributedString {
+        let maxCharacters = 25
+        let truncatedText = String(text.prefix(maxCharacters))
+        let attributedText = NSMutableAttributedString(string: truncatedText)
+        if text.count > maxCharacters {
+            attributedText.append(NSAttributedString(string: "..."))
+        }
+        return attributedText
     }
     
     func setupStackView() {
@@ -125,10 +140,10 @@ private extension CollectionViewCell {
             make.left.top.equalTo(contentView)
         }
         contentImageView.snp.makeConstraints { make in
-            make.height.width.equalTo(33)
+            make.height.width.equalTo(38)
         }
         nameLabel.snp.makeConstraints { make in
-            make.height.equalTo(17)
+            make.height.equalTo(20)
         }
         publishIcon.snp.makeConstraints { make in
             make.right.centerY.equalTo(contentView).inset(30)
@@ -141,10 +156,10 @@ private extension CollectionViewCell {
         
         if megabytes >= 1 {
             let roundedMegabytes = String(format: "%.2f", megabytes)
-            return "Размер \(roundedMegabytes) МБ"
+            return ", \(roundedMegabytes) МБ"
         } else {
             let roundedKilobytes = String(format: "%.2f", kilobytes)
-            return "Размер \(roundedKilobytes) КБ"
+            return ", \(roundedKilobytes) КБ"
         }
     }
     
@@ -164,7 +179,7 @@ extension CollectionViewCell {
         dateLabel.textAlignment = isHorizontalStyle ? .left : .center
         let imageSize: CGSize
         if isHorizontalStyle {
-            imageSize = CGSize(width: 33, height: 33)
+            imageSize = CGSize(width: 38, height: 38)
         } else {
             imageSize = CGSize(width: 78, height: 75)
         }

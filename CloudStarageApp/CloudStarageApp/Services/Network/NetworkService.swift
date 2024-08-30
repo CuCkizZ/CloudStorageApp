@@ -9,7 +9,7 @@ import Foundation
 import YandexLoginSDK
 import Alamofire
 
-private enum Constants {
+private enum NetworkConstants {
     static let path = "path"
     static let defaultParams = ["path": "disk:/"]
     
@@ -24,47 +24,40 @@ private enum Constants {
 }
 
 
-final class NetworkService: NetworkServiceProtocol {
+final class NetworkService: NetworkServiceProtocol, YandexLoginSDKObserver {
     
     private let keychain = KeychainManager.shared
-    private var token = "y0_AgAAAAB3PvZkAAxUoQAAAAEO-FBgAAB0x_TZCulFM4Zs4rm-e5ARFQ28vg"
-    private var headers: HTTPHeaders = [:]
-    
-    
-    init() {
-        headers = [
-            "Accept" : "application/json",
-            "Authorization" : "OAuth y0_AgAAAAB3PvZkAAxUoQAAAAEO-FBgAAB0x_TZCulFM4Zs4rm-e5ARFQ28vg"
+    private var loginResult: LoginResult?
+    private var token = "" {
+            didSet {
+                headers["Authorization"] = "OAuth \(token)"
+                print("Haader from didset: \(token)")
+            }
+        }
+        private var headers: HTTPHeaders = [
+            "Accept" : "application/json"
         ]
-    }
-    
-    func getOAuthToken() {
-        //        if let token = keychain.get(forKey: "OAuth") {
-        //            self.token = token
-        //            print(token, "From networkService")
-        //        }
-    }
-    func setOAuthToken() {
         
-    }
-    
-    
-    
-    func setToken() -> String {
-        //        do {
-        //            token = try keychain.get(forKey: "token") ?? "no token"
-        //            print("token:\(token) was setted")
-        //            return token
-        //        } catch {
-        //            print("cant set token")
-        //        }
-        //        return ""
-        return ""
+        init() {
+            YandexLoginSDK.shared.add(observer: self)
+            // Изначальная инициализация токена, например, загрузка из keychain
+            if let savedToken = loginResult?.token {
+                self.token = savedToken
+                self.headers["Authorization"] = "OAuth \(token)"
+            }
+        }
+        
+    func getOAuthToken(result: String) {
+//        if let savedToken = keychain.get(forKey: "token") {
+//            self.token = savedToken
+//            //print(savedToken)
+//            self.headers["Authorization"] = "OAuth \(token)"
+//            //print(headers)
     }
     
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void) {
-        let urlParams = Constants.defaultParams
-        let urlString = Constants.resoursesUrl
+        let urlParams = NetworkConstants.defaultParams
+        let urlString = NetworkConstants.resoursesUrl
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
@@ -78,8 +71,8 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchCurrentData(path: String, completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlParams = [Constants.path: path]
-        let urlString = Constants.resoursesUrl
+        let urlParams = [NetworkConstants.path: path]
+        let urlString = NetworkConstants.resoursesUrl
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
@@ -94,8 +87,8 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchLastData(completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlParams = Constants.defaultParams
-        let urlString = Constants.lastUploadedUrl
+        let urlParams = NetworkConstants.defaultParams
+        let urlString = NetworkConstants.lastUploadedUrl
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
@@ -110,7 +103,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchAccountData(completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlString = Constants.diskInfoUrl
+        let urlString = NetworkConstants.diskInfoUrl
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, headers: headers).response { response in
@@ -125,7 +118,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchPublicData(completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlStirng = Constants.publicFilesUrl
+        let urlStirng = NetworkConstants.publicFilesUrl
         guard let url = URL(string: urlStirng) else { return }
         
         AF.request(url, method: .get, headers: headers).response { response in
@@ -141,7 +134,7 @@ final class NetworkService: NetworkServiceProtocol {
     
     func searchFiles(keyword: String, completion: @escaping (Result<Data, Error>) -> Void) {
         let urlParams = ["path": keyword]
-        let urlString = Constants.resoursesUrl
+        let urlString = NetworkConstants.resoursesUrl
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
@@ -156,7 +149,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func createNewFolder(name: String) {
-        let urlString = Constants.createUrl + name
+        let urlString = NetworkConstants.createUrl + name
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .put, headers: headers).validate().response { response in
@@ -186,7 +179,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func toPublicFile(path: String) {
-        let urlSting = Constants.publishUrl + path
+        let urlSting = NetworkConstants.publishUrl + path
         guard let url = URL(string: urlSting) else { return }
         
         AF.request(url, method: .put, headers: headers).validate().response { response in
@@ -202,7 +195,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func unpublishFile(path: String) {
-        let urlString = Constants.unpublishUrl + path
+        let urlString = NetworkConstants.unpublishUrl + path
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .put, headers: headers).validate().response { response in
@@ -237,6 +230,19 @@ final class NetworkService: NetworkServiceProtocol {
                 let str = String(data: data, encoding: .utf8)
                 print("Data: \(String(describing: str))")
             }
+        }
+    }
+}
+
+extension NetworkService {
+    func didFinishLogin(with result: Result<LoginResult, any Error>) {
+        switch result {
+        case .success(let loginResult):
+            self.loginResult = loginResult
+            token = keychain.get(forKey: "token") ?? "nope"
+            print("Token from KC NS, \(token)")
+        case .failure(_):
+            print("Network service token error")
         }
     }
 }
