@@ -1,17 +1,12 @@
 import UIKit
 import SnapKit
-import CoreData
 
 final class HomeViewController: UIViewController {
     
     private let viewModel: HomeViewModelProtocol
     private lazy var cellDataSource: [CellDataModel] = []
 
-    
-    
-    private let dataManager = CoreManager.shared
-    private var fetchedResultController: NSFetchedResultsController<OfflineItems>?
-
+    var isOffline: Bool = false
     //   UI
     
     private lazy var selectedStyle: PresentationStyle = .table
@@ -22,6 +17,7 @@ final class HomeViewController: UIViewController {
     private lazy var uploadButton = CSUploadButton()
     private lazy var changeLayoutButton = CSChangeLayoutButton()
     private lazy var networkStatusView = UIView()
+    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: view.bounds.width, height: Constants.DefaultHeight)
@@ -49,24 +45,6 @@ final class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        dataManager.fetchOfflineData()
-        let fetchRequest: NSFetchRequest<OfflineItems> = OfflineItems.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
-
-        let context = dataManager.persistentContainer.viewContext
-
-        fetchedResultController = NSFetchedResultsController(fetchRequest: fetchRequest,
-                                                              managedObjectContext: context,
-                                                              sectionNameKeyPath: nil,
-                                                              cacheName: nil)
-
-        do {
-            try fetchedResultController?.performFetch()
-            let items = fetchedResultController?.fetchedObjects
-            print("Items -", items?.count)
-        } catch {
-            print("Error fetching data: \(error.localizedDescription)")
-        }
         
         setupLayout()
         bindView()
@@ -81,20 +59,6 @@ final class HomeViewController: UIViewController {
             collectionView.reloadData()
         }
     }
-    
-    private func updateTableViewWithFetchResultController() {
-        if cellDataSource.isEmpty == true {
-            dataManager.fetchOfflineData()
-            do {
-                try fetchedResultController?.performFetch()
-                collectionView.reloadData()
-                print("updated")
-            } catch {
-                print("cannot update tableView")
-            }
-        }
-    }
-    
 }
     
 // MARK: BindingExtension
@@ -123,8 +87,11 @@ private extension HomeViewController {
             DispatchQueue.main.async {
                 if isConndeted {
                     self.hideNetworkStatusView(self.networkStatusView)
+                    self.isOffline = false
                 } else {
                     self.showNetworkStatusView(self.networkStatusView)
+                    self.viewModel.FetchedResultsController()
+                    self.isOffline = true
                 }
             }
         }
@@ -143,7 +110,7 @@ private extension HomeViewController {
         uploadButtonPressed()
         setupLogout()
         setupConstraints()
-        setupLayoutButton()
+        
     }
     
     func setupView() {
@@ -155,6 +122,7 @@ private extension HomeViewController {
         activityIndicator.hidesWhenStopped = true
         setupCollectionView()
         setupSearchController()
+        setupLayoutButton()
     }
     
     func setupNavBar() {
@@ -183,7 +151,6 @@ private extension HomeViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(CollectionViewCell.self, forCellWithReuseIdentifier: CollectionViewCell.reuseID)
-        collectionView.register(UICollectionViewCell.self, forCellWithReuseIdentifier: "cell")
         collectionView.refreshControl = refresher
         collectionView.alwaysBounceVertical = true
         refresher.tintColor = AppColors.customGray
@@ -244,8 +211,6 @@ private extension HomeViewController {
         viewModel.fetchData()
         collectionView.reloadData()
         refresher.endRefreshing()
-        dataManager.fetchOfflineData()
-        dataManager.getCount()
     }
     
     @objc func tap() {
@@ -296,18 +261,18 @@ extension HomeViewController: UICollectionViewDataSource {
 //    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        guard let section = fetchedResultController?.sections?[section] else { return 0 }
-        return section.numberOfObjects
-
-        //cellDataSourceOffline.count
-        //cellDataSource.count
+        switch isOffline {
+        case true:
+            viewModel.numberOfRowInCoreDataSection(section: section)
+        case false:
+            viewModel.numbersOfRowInSection()
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let connetc = "nope"
-        if connetc == "yep"{
+        switch isOffline {
+        case false:
             let model = cellDataSource[indexPath.row]
-            guard let items = fetchedResultController?.object(at: indexPath) else { return UICollectionViewCell() }
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
                                                                 for: indexPath) as? CollectionViewCell else {
                 fatalError(FatalError.wrongCell)
@@ -317,8 +282,8 @@ extension HomeViewController: UICollectionViewDataSource {
             cell.configure(model)
             
             return cell
-        } else {
-            guard let items = fetchedResultController?.object(at: indexPath) else { return UICollectionViewCell() }
+        case true:
+            guard let items = viewModel.returnItems(at: indexPath) else { return UICollectionViewCell() }
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
                                                                 for: indexPath) as? CollectionViewCell else {
                 fatalError(FatalError.wrongCell)

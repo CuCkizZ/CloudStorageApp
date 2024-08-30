@@ -13,12 +13,16 @@ import CoreData
 protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
     var cellDataSourceOffline: Observable<[OfflineItems]> { get set }
+    var fetchedResultController: NSFetchedResultsController<OfflineItems>? { get set }
 
     var searchText: String { get set }
     func searchFiles()
     func logout()
     func setToken()
     
+    func FetchedResultsController()
+    func numberOfRowInCoreDataSection(section: Int) -> Int
+    func returnItems(at indexPath: IndexPath) -> OfflineItems?
 }
 
 final class HomeViewModel {
@@ -32,6 +36,7 @@ final class HomeViewModel {
     private let keychain = KeychainManager.shared
     private let networkManager: NetworkServiceProtocol = NetworkService()
     private let dataManager = CoreManager.shared
+    var fetchedResultController: NSFetchedResultsController<OfflineItems>?
     private var model: [Item] = []
     private let networkMonitor = NWPathMonitor()
     
@@ -54,21 +59,6 @@ final class HomeViewModel {
         cellDataSource.value = model.compactMap { CellDataModel($0) }
         // self.saveToCoreData(items: cellDataSource.value ?? [])
     }
-    
-    //    func saveToCoreData(items: [CellDataModel]) {
-    //        for item in items {
-    //            dataManager.addItem(name: item.name,
-    //                                 date: item.date,
-    //                                 size: String(describing: item.size))
-    //            print("Saved item \(item.name) to Core Data")
-    //        }
-    //        dataManager.saveContext()
-    //        
-    //        
-    //        print("Data saved")
-    //        
-    //        
-    //       // CoreDataManager.shared.saveContext()
 }
     
 extension HomeViewModel: HomeViewModelProtocol {
@@ -86,7 +76,6 @@ extension HomeViewModel: HomeViewModelProtocol {
         let documentsDirectory = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!
         let path = documentsDirectory.appendingPathComponent(path)
         
-        // Проверка существования файла
         if FileManager.default.fileExists(atPath: "\(path)") {
             completion(path)
             print(path)
@@ -100,21 +89,21 @@ extension HomeViewModel: HomeViewModelProtocol {
         let queue = DispatchQueue.global(qos: .background)
         networkMonitor.start(queue: queue)
         networkMonitor.pathUpdateHandler = { [weak self] path in
-                guard let self = self else { return }
-                switch path.status {
-                case .unsatisfied:
-                    self.isConnected.value = false
-                case .satisfied:
-                    self.isConnected.value = true
-                case .requiresConnection:
-                    self.isConnected.value = true
-                @unknown default:
-                    break
+            guard let self = self else { return }
+            switch path.status {
+            case .unsatisfied:
+                self.isConnected.value = false
+            case .satisfied:
+                self.isConnected.value = true
+            case .requiresConnection:
+                self.isConnected.value = true
+            @unknown default:
+                break
             }
         }
-    }    
+    }
     
-//    MARK: Network
+    //    MARK: Network
     
     func fetchData() {
         if isLoading.value ?? true {
@@ -174,7 +163,7 @@ extension HomeViewModel: HomeViewModelProtocol {
         NetworkManager.shared.toPublicFile(path: path)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.fetchData()
-//            Избавился от ошикбки, но не работает с первого раза
+            //            Избавился от ошикбки, но не работает с первого раза
             self.gettingUrl?()
         }
     }
@@ -197,7 +186,7 @@ extension HomeViewModel: HomeViewModelProtocol {
         }
     }
     
-//    MARK: Navigation
+    //    MARK: Navigation
     
     func presentShareView(shareLink: String) {
         //coordinator?.presentShareScene(shareLink: shareLink)
@@ -230,7 +219,7 @@ extension HomeViewModel: HomeViewModelProtocol {
             }
         }
     }
-        
+    
     func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String) {
         coordinator.presentDocument(name: name, type: type, fileType: fileType)
     }
@@ -240,7 +229,7 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func logout() {
-      //  let token = keychain.get(forKey: "token")
+        //  let token = keychain.get(forKey: "token")
         try? keychain.delete(forKey: "token")
         print("delted")
         let token = keychain.get(forKey: "token")
@@ -248,14 +237,38 @@ extension HomeViewModel: HomeViewModelProtocol {
             let result = loginResult.token
             print("Login result = \(result)")
         }
-//        print("dwqdkskskskskkskksksk \(loginResult?.token)")
-//        print("""
-//_________________
-//                Token aftedelet \(token)
-//__________________
-//""")
+        //        print("dwqdkskskskskkskksksk \(loginResult?.token)")
+        //        print("""
+        //_________________
+        //                Token aftedelet \(token)
+        //__________________
+        //""")
         coordinator.finish()
     }
     
+    //    MARK: CoreData
+    
+    func FetchedResultsController() {
+        let fetchRequest: NSFetchRequest<OfflineItems> = OfflineItems.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        
+        let context = dataManager.persistentContainer.viewContext
+        
+        fetchedResultController = NSFetchedResultsController(fetchRequest: fetchRequest,
+                                                             managedObjectContext: context,
+                                                             sectionNameKeyPath: nil,
+                                                             cacheName: nil)
+        
+        try? fetchedResultController?.performFetch()
+    }
+    
+    func numberOfRowInCoreDataSection(section: Int) -> Int {
+        guard let section = fetchedResultController?.sections?[section] else { return 0 }
+        return section.numberOfObjects
+    }
+    
+    func returnItems(at indexPath: IndexPath) -> OfflineItems? {
+        return fetchedResultController?.object(at: indexPath)
+    }
 }
 
