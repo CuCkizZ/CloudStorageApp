@@ -10,7 +10,9 @@ import CoreData
 
 final class CoreManager {
     static let shared = CoreManager()
-    private var items = [OfflineItems]()
+    private var lastItems = [OfflineItems]()
+    private var storageItems = [OfflineStorage]()
+    private var publishedItems = [OfflinePublished]()
     
     private init() {}
     
@@ -37,7 +39,7 @@ final class CoreManager {
     }
     
     func getCount() {
-        print(items.count)
+        
     }
     
     func setupFetchResultController() -> NSFetchedResultsController<OfflineItems> {

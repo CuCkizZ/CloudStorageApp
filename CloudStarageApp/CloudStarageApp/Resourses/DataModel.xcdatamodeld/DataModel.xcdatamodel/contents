@@ -11,4 +11,14 @@
         <attribute name="storageName" optional="YES" attributeType="String"/>
         <attribute name="storageSize" optional="YES" attributeType="String"/>
     </entity>
+    <entity name="OfflinePublished" representedClassName="OfflinePublished" syncable="YES" codeGenerationType="class">
+        <attribute name="date" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="size" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="OfflineStorage" representedClassName="OfflineStorage" syncable="YES" codeGenerationType="class">
+        <attribute name="date" optional="YES" attributeType="String"/>
+        <attribute name="name" optional="YES" attributeType="String"/>
+        <attribute name="size" optional="YES" attributeType="String"/>
+    </entity>
 </model>
