@@ -48,6 +48,12 @@ final class HomeViewController: UIViewController {
         bindNetworkMonitor()
     }
     
+}
+    
+// MARK: BindingExtension
+
+private extension HomeViewController {
+
     func bindView() {
         viewModel.cellDataSource.bind { [weak self] files in
             guard let self = self, let files = files else { return }
@@ -55,12 +61,7 @@ final class HomeViewController: UIViewController {
             collectionView.reloadData()
         }
     }
-}
     
-// MARK: BindingExtension
-
-private extension HomeViewController {
-
     func bindViewModel() {
         viewModel.isLoading.bind { [weak self] isLoading in
             guard let self = self, let isLoading = isLoading else { return }
@@ -348,6 +349,7 @@ extension HomeViewController: UISearchBarDelegate, UISearchResultsUpdating {
 // MARK: Logout
 
 extension HomeViewController {
+    
     func setupLogout() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab, 
                                                            style: .plain, 

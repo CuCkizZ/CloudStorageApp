@@ -336,6 +336,7 @@ extension StorageViewController: UISearchBarDelegate, UISearchResultsUpdating  {
 }
 
 extension StorageViewController {
+    
     func setupLogout() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logoutTapped))
     }
