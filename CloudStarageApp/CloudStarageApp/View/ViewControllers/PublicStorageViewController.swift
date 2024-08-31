@@ -6,7 +6,8 @@ final class PublicStorageViewController: UIViewController {
     private let viewModel: PublickStorageViewModelProtocol
     private var cellDataSource: [CellDataModel] = []
     private var navigationTitle: String
-//    UI
+    //    UI
+    var isOffline: Bool = false
     
     private lazy var networkStatusView = UIView()
     private lazy var selectedStyle: PresentationStyle = .table
@@ -15,7 +16,7 @@ final class PublicStorageViewController: UIViewController {
     private lazy var uploadButton = CSUploadButton()
     private lazy var changeLayoutButton = CSChangeLayoutButton()
     
-   private lazy var nothingLabel: UILabel = {
+    private lazy var nothingLabel: UILabel = {
         let label = UILabel()
         label.text = "Nothing to show"
         return label
@@ -29,7 +30,7 @@ final class PublicStorageViewController: UIViewController {
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
-
+    
     init(viewModel: PublickStorageViewModelProtocol, navigationTitle: String) {
         self.viewModel = viewModel
         self.navigationTitle = navigationTitle
@@ -42,7 +43,7 @@ final class PublicStorageViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-            viewModel.fetchData()
+        viewModel.fetchData()
     }
     
     override func viewDidLoad() {
@@ -84,13 +85,15 @@ final class PublicStorageViewController: UIViewController {
             DispatchQueue.main.async {
                 if isConndeted {
                     self.hideNetworkStatusView(self.networkStatusView)
+                    self.isOffline = false
                 } else {
                     self.showNetworkStatusView(self.networkStatusView)
+                    self.isOffline = true
+                    self.viewModel.FetchedResultsController()
                 }
             }
         }
     }
-    
 }
 
 // MARK: Layout
@@ -267,18 +270,39 @@ extension PublicStorageViewController: UICollectionViewDelegate {
 }
 
 extension PublicStorageViewController: UICollectionViewDataSource {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        cellDataSource.count
+        switch isOffline {
+        case true:
+            viewModel.numberOfRowInCoreDataSection()
+        case false:
+            viewModel.numbersOfRowInSection()
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let model = modelReturn(indexPath: indexPath)
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
-                                                            for: indexPath) as? CollectionViewCell else {
-            fatalError(FatalError.wrongCell)
+        switch isOffline {
+        case false:
+            let model = cellDataSource[indexPath.row]
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
+                                                                for: indexPath) as? CollectionViewCell else {
+                fatalError(FatalError.wrongCell)
+            }
+            
+            cell.configure(model)
+            
+            return cell
+        case true:
+            guard let items = viewModel.returnItems(at: indexPath) else { return UICollectionViewCell() }
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
+                                                                for: indexPath) as? CollectionViewCell else {
+                fatalError(FatalError.wrongCell)
+            }
+            
+            cell.offlineConfigure(config: .published, items)
+            
+            return cell
         }
-        cell.configure(model)
-        return cell
     }
 }
 

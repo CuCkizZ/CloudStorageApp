@@ -11,16 +11,17 @@ import UIKit
 
 final class NetworkManager {
     
+    static let shared = NetworkManager()
+    
     private let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         decoder.allowsJSON5 = true
         return decoder
     }()
-    
+
     private let mapper = Mapper()
     private let client = NetworkService()
-    static let shared = NetworkManager()
     
     private init() {}
     
@@ -36,13 +37,16 @@ final class NetworkManager {
         }
     }
     
-    func fetchLastData(completion: @escaping (Result<[Item], Error>) -> Void) {
-        client.fetchLastData { result in
+    func fetchLastData(completion: @escaping (Result<([Item]), Error>) -> Void) {
+        client.fetchLastData { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(let data):
                 do {
                     let result = try self.decoder.decode(Embedded.self, from: data)
-                    completion(.success(result.items))
+                    self.mapper.mapLastCoreData(result)
+                    completion(.success((result.items)))
+                    print("NetworkDataManagerSaved")
                 } catch {
                     completion(.failure(error))
                     print("Ошибка при парсе: \(error.localizedDescription)")
@@ -61,6 +65,7 @@ final class NetworkManager {
                 do {
                     let result = try self.decoder.decode(Welcome.self, from: data)
                     completion(.success(result.embedded.items))
+                    self.mapper.mapStorageCoreData(result.embedded)
                 } catch {
                     completion(.failure(error))
                     print("Ошибка при парсе: \(error.localizedDescription)")
@@ -79,6 +84,7 @@ final class NetworkManager {
                 do {
                     let result = try self.decoder.decode(Embedded.self, from: data)
                     completion(.success(result.items))
+                    self.mapper.mapPublishedCoreData(result)
                 } catch {
                     completion(.failure(error))
                     print("Ошибка при парсе: \(error.localizedDescription)")
@@ -114,7 +120,7 @@ final class NetworkManager {
             case .success(let data):
                 do {
                     let result = try self.decoder.decode(Account.self, from: data)
-                    let profile = self.mapper.mappingProfile(result)
+                    let profile = self.mapper.mapProfile(result)
                     completion(.success(profile))
                     print("Acouunt data is okay")
                 } catch {

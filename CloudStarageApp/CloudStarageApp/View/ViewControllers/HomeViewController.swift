@@ -1,11 +1,13 @@
 import UIKit
 import SnapKit
+import YandexLoginSDK
 
 final class HomeViewController: UIViewController {
     
     private let viewModel: HomeViewModelProtocol
     private lazy var cellDataSource: [CellDataModel] = []
-    
+
+    var isOffline: Bool = false
     //   UI
     
     private lazy var selectedStyle: PresentationStyle = .table
@@ -16,6 +18,7 @@ final class HomeViewController: UIViewController {
     private lazy var uploadButton = CSUploadButton()
     private lazy var changeLayoutButton = CSChangeLayoutButton()
     private lazy var networkStatusView = UIView()
+    
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: view.bounds.width, height: Constants.DefaultHeight)
@@ -32,11 +35,6 @@ final class HomeViewController: UIViewController {
     
     required init?(coder: NSCoder) {
         fatalError(FatalError.requiredInit)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        viewModel.setToken()
     }
     
     //    MARK: ViewDidLoad
@@ -85,8 +83,11 @@ private extension HomeViewController {
             DispatchQueue.main.async {
                 if isConndeted {
                     self.hideNetworkStatusView(self.networkStatusView)
+                    self.isOffline = false
                 } else {
                     self.showNetworkStatusView(self.networkStatusView)
+                    self.viewModel.FetchedResultsController()
+                    self.isOffline = true
                 }
             }
         }
@@ -105,7 +106,7 @@ private extension HomeViewController {
         uploadButtonPressed()
         setupLogout()
         setupConstraints()
-        setupLayoutButton()
+        
     }
     
     func setupView() {
@@ -117,6 +118,7 @@ private extension HomeViewController {
         activityIndicator.hidesWhenStopped = true
         setupCollectionView()
         setupSearchController()
+        setupLayoutButton()
     }
     
     func setupNavBar() {
@@ -126,10 +128,6 @@ private extension HomeViewController {
         navigationItem.rightBarButtonItem?.action = #selector((setupSearchController))
         navigationController.navigationBar.prefersLargeTitles = true
         title = "Latests"
-    }
-    
-    func modelReturn(indexPath: IndexPath) -> CellDataModel {
-        return cellDataSource[indexPath.row]
     }
     
     func setupLayoutButton() {
@@ -259,24 +257,44 @@ extension HomeViewController: UICollectionViewDataSource {
 //    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        cellDataSource.count
+        switch isOffline {
+        case true:
+            viewModel.numberOfRowInCoreDataSection()
+        case false:
+            viewModel.numbersOfRowInSection()
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let model = modelReturn(indexPath: indexPath)
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
-                                                            for: indexPath) as? CollectionViewCell else {
-            fatalError(FatalError.wrongCell)
+        switch isOffline {
+        case false:
+            let model = cellDataSource[indexPath.row]
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
+                                                                for: indexPath) as? CollectionViewCell else {
+                fatalError(FatalError.wrongCell)
+            }
+            
+            cell.configure(model)
+            
+            return cell
+        case true:
+            guard let items = viewModel.returnItems(at: indexPath) else { return UICollectionViewCell() }
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
+                                                                for: indexPath) as? CollectionViewCell else {
+                fatalError(FatalError.wrongCell)
+            }
+            
+            cell.offlineConfigure(config: .last, items)
+            
+            return cell
         }
-        cell.configure(model)
-        return cell
     }
 }
 
 extension HomeViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let model = modelReturn(indexPath: indexPath)
+        let model = cellDataSource[indexPath.row]
         let name = model.name
         let fileType = model.file
         let mimeType = model.mimeType
@@ -293,16 +311,16 @@ extension HomeViewController: UICollectionViewDelegate {
         }
     }
     
-    func collectionView(_ collectionView: UICollectionView, 
-                        contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
-                        point: CGPoint) -> UIContextMenuConfiguration? {
-        guard let indexPath = indexPaths.first else { return nil }
-        let model = modelReturn(indexPath: indexPath)
-        return UIContextMenuConfiguration.contextMenuConfiguration(for: .last,
-                                                                   viewModel: viewModel,
-                                                                   model: model,
-                                                                   viewController: self)
-    }
+//    func collectionView(_ collectionView: UICollectionView, 
+//                        contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
+//                        point: CGPoint) -> UIContextMenuConfiguration? {
+//        guard let indexPath = indexPaths.first else { return nil }
+//        let model = cellDataSource[indexPath.row]
+//        return UIContextMenuConfiguration.contextMenuConfiguration(for: .last,
+//                                                                   viewModel: viewModel,
+//                                                                   model: model,
+//                                                                   viewController: self)
+//    }
 }
 
 

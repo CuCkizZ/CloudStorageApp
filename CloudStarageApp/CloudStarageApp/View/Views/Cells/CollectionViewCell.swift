@@ -3,6 +3,12 @@ import SnapKit
 import Kingfisher
 import SDWebImage
 
+enum OfflineConfiguration {
+    case last
+    case storage
+    case published
+}
+
 final class CollectionViewCell: UICollectionViewCell {
     
     static let reuseID = String(describing: CollectionViewCell.self)
@@ -83,6 +89,23 @@ final class CollectionViewCell: UICollectionViewCell {
             animatedShareIcon()
         } else {
             animatedPublishIconTrue()
+        }
+    }
+    
+    func offlineConfigure(config: OfflineConfiguration,_ model: OfflineItems) {
+        switch config {
+        case .last:
+            nameLabel.text = model.name
+            dateLabel.text = model.date
+            sizeLabel.text = model.size
+        case .storage:
+            nameLabel.text = model.storageName
+            dateLabel.text = model.storageDate
+            sizeLabel.text = model.storageDate
+        case .published:
+            nameLabel.text = model.publishedName
+            dateLabel.text = model.publishedDate
+            sizeLabel.text = model.publishedSize
         }
     }
     

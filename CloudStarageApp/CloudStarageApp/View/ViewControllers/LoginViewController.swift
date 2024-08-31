@@ -13,7 +13,7 @@ final class LoginViewController: UIViewController {
     private let viewModel: LoginViewOutput
     private let keychain = KeychainManager.shared
     private weak var yandex: YandexLoginSDK?
-    private var customValues: [String: String] = [:]
+//    private var customValues: [String: String] = [:]
     
     private var loginResult: LoginResult?
     
@@ -184,21 +184,19 @@ private extension LoginViewController {
 
 extension LoginViewController {
     
-    @objc func loginButtonPressed() -> Bool {
-        guard let yandex = yandex else { return false }
+    @objc func loginButtonPressed() {
+        guard let yandex = yandex else { return }
         
         let authorizationStrategy: YandexLoginSDK.AuthorizationStrategy = .default
         do {
             try yandex.authorize(
                 with: self,
-                customValues: self.customValues.isEmpty ? nil : self.customValues,
+                customValues: nil,
                 authorizationStrategy: authorizationStrategy
             )
-            return true
         } catch {
             errorOccured(error)
         }
-        return false
     }
 
     
