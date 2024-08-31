@@ -285,7 +285,7 @@ extension HomeViewController: UICollectionViewDataSource {
                 fatalError(FatalError.wrongCell)
             }
             
-            cell.offlineConfigure(config: .last, items)
+            cell.offlineConfigure(items)
             
             return cell
         }

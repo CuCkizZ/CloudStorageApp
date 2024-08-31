@@ -11,6 +11,7 @@ import CoreData
 
 protocol StorageViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
+    func returnItems(at indexPath: IndexPath) -> OfflineStorage?
     
     var searchText: String { get set }
     func searchFiles()
@@ -32,7 +33,7 @@ final class StorageViewModel {
     var isLoading: Observable<Bool> = Observable(false)
     var isConnected: Observable<Bool> = Observable(nil)
     var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
-    var fetchedResultController: NSFetchedResultsController<OfflineItems>?
+    var fetchedResultController: NSFetchedResultsController<OfflineStorage>?
 
     var gettingUrl: (()->Void)?
     
@@ -223,7 +224,7 @@ extension StorageViewModel: StorageViewModelProtocol {
 extension StorageViewModel {
 
     func FetchedResultsController() {
-        let fetchRequest: NSFetchRequest<OfflineItems> = OfflineItems.fetchRequest()
+        let fetchRequest: NSFetchRequest<OfflineStorage> = OfflineStorage.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         
         let context = dataManager.persistentContainer.viewContext
@@ -237,12 +238,11 @@ extension StorageViewModel {
     }
     
     func numberOfRowInCoreDataSection() -> Int {
-        guard let objects = fetchedResultController?.fetchedObjects else { return 0 }
-        let storageNames = objects.map { $0.storageName }
-        return Set(storageNames).count
+        guard let items = fetchedResultController?.fetchedObjects else { return 0 }
+        return items.count
     }
     
-    func returnItems(at indexPath: IndexPath) -> OfflineItems? {
+    func returnItems(at indexPath: IndexPath) -> OfflineStorage? {
         return fetchedResultController?.object(at: indexPath)
     }
 }

@@ -299,7 +299,7 @@ extension PublicStorageViewController: UICollectionViewDataSource {
                 fatalError(FatalError.wrongCell)
             }
             
-            cell.offlineConfigure(config: .published, items)
+            cell.publishedOffline(items)
             
             return cell
         }

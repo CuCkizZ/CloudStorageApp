@@ -44,7 +44,7 @@ final class NetworkManager {
             case .success(let data):
                 do {
                     let result = try self.decoder.decode(Embedded.self, from: data)
-                    self.mapper.mapLastCoreData(result)
+                    self.mapper.mapCoreData(result, type: .last)
                     completion(.success((result.items)))
                     print("NetworkDataManagerSaved")
                 } catch {
@@ -65,7 +65,7 @@ final class NetworkManager {
                 do {
                     let result = try self.decoder.decode(Welcome.self, from: data)
                     completion(.success(result.embedded.items))
-                    self.mapper.mapStorageCoreData(result.embedded)
+                    self.mapper.mapCoreData(result.embedded, type: .storage)
                 } catch {
                     completion(.failure(error))
                     print("Ошибка при парсе: \(error.localizedDescription)")
@@ -84,7 +84,7 @@ final class NetworkManager {
                 do {
                     let result = try self.decoder.decode(Embedded.self, from: data)
                     completion(.success(result.items))
-                    self.mapper.mapPublishedCoreData(result)
+                    self.mapper.mapCoreData(result, type: .published)
                 } catch {
                     completion(.failure(error))
                     print("Ошибка при парсе: \(error.localizedDescription)")
@@ -103,6 +103,8 @@ final class NetworkManager {
                 do {
                     let result = try self.decoder.decode(Welcome.self, from: data)
                     completion(.success(result.embedded.items))
+                    self.mapper.mapCoreData(result.embedded, type: .storage)
+
                 } catch {
                     completion(.failure(error))
                     print("Ошибка при парсе: \(error.localizedDescription)")

@@ -13,7 +13,6 @@ protocol BaseCollectionViewModelProtocol {
     var isLoading: Observable<Bool> { get set }
     var isConnected: Observable<Bool> { get set }
     var gettingUrl: (()->Void)? { get set }
-    var fetchedResultController: NSFetchedResultsController<OfflineItems>? { get set }
     
 
     //    DataSource
@@ -36,8 +35,6 @@ protocol BaseCollectionViewModelProtocol {
     
 //    CoreData
     func FetchedResultsController()
-    func numberOfRowInCoreDataSection() -> Int
-    func returnItems(at indexPath: IndexPath) -> OfflineItems? 
-    
+    func numberOfRowInCoreDataSection() -> Int    
     func publishResource2(_ path: String, completion: @escaping (URL?) -> Void)
 }

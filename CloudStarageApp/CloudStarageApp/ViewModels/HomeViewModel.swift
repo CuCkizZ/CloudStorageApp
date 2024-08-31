@@ -13,6 +13,7 @@ import CoreData
 protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
     var cellDataSourceOffline: Observable<[OfflineItems]> { get set }
+    func returnItems(at indexPath: IndexPath) -> OfflineItems?
 
     var searchText: String { get set }
     func searchFiles()
@@ -52,7 +53,7 @@ final class HomeViewModel {
         
         guard let loginResult = loginResult else { return }
         didFinishLogin(with: Result<LoginResult, any Error>.success(loginResult))
-        //didFinishLogin()
+        
     }
     
     private func mapModel() {
@@ -273,9 +274,9 @@ extension HomeViewModel {
     }
     
     func numberOfRowInCoreDataSection() -> Int {
-        guard let objects = fetchedResultController?.fetchedObjects else { return 0 }
-           let storageNames = objects.map { $0.name }
-           return Set(storageNames).count
+        guard let items = fetchedResultController?.fetchedObjects else { return 0 }
+        print(items.count)
+        return items.count
     }
     
     func returnItems(at indexPath: IndexPath) -> OfflineItems? {

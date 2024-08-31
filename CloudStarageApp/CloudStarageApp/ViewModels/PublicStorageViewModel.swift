@@ -11,6 +11,7 @@ import CoreData
 
 protocol PublickStorageViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
+    func returnItems(at indexPath: IndexPath) -> OfflinePublished?
 }
 
 final class PublicStorageViewModel {
@@ -19,7 +20,7 @@ final class PublicStorageViewModel {
     private let keychain = KeychainManager.shared
     private let dataManager = CoreManager.shared
     private let networkMonitor = NWPathMonitor()
-    var fetchedResultController: NSFetchedResultsController<OfflineItems>?
+    var fetchedResultController: NSFetchedResultsController<OfflinePublished>?
 
     private var model: [Item] = []
     var searchKeyword: String = ""
@@ -32,7 +33,6 @@ final class PublicStorageViewModel {
     init(coordinator: ProfileCoordinator) {
         self.coordinator = coordinator
         startMonitoringNetwork()
-        numberOfRowInCoreDataSection()
     }
     
     private func mapModel() {
@@ -170,7 +170,7 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
 extension PublicStorageViewModel {
 
     func FetchedResultsController() {
-        let fetchRequest: NSFetchRequest<OfflineItems> = OfflineItems.fetchRequest()
+        let fetchRequest: NSFetchRequest<OfflinePublished> = OfflinePublished.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
         let context = dataManager.persistentContainer.viewContext
         fetchedResultController = NSFetchedResultsController(fetchRequest: fetchRequest,
@@ -183,12 +183,10 @@ extension PublicStorageViewModel {
     
     func numberOfRowInCoreDataSection() -> Int {
         guard let items = fetchedResultController?.fetchedObjects else { return 0 }
-        let publishedNames = items.map { $0.publishedName }
-        print(publishedNames.count)
-        return publishedNames.count
+        return items.count
     }
     
-    func returnItems(at indexPath: IndexPath) -> OfflineItems? {
+    func returnItems(at indexPath: IndexPath) -> OfflinePublished? {
         return fetchedResultController?.object(at: indexPath)
     }
 }

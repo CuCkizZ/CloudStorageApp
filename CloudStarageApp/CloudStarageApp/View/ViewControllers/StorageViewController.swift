@@ -297,7 +297,7 @@ extension StorageViewController: UICollectionViewDataSource {
                 fatalError(FatalError.wrongCell)
             }
             
-            cell.offlineConfigure(config: .storage, items)
+            cell.storageOffline(items)
             
             return cell
         }
