@@ -20,6 +20,7 @@ final class CoreManager {
     private var lastItems = [OfflineItems]()
     private var storageItems = [OfflineStorage]()
     private var publishedItems = [OfflinePublished]()
+    private var profile = [OfflineProfile]()
     
     private init() {}
     
@@ -116,7 +117,7 @@ final class CoreManager {
             } catch {
                 print("I cant")
             }
-
+            
             saveContext()
         case .storage:
             entityName = "OfflineStorage"
@@ -153,6 +154,27 @@ final class CoreManager {
             
             saveContext()
         }
+    }
+    
+    func addProfileData(totalSpace: Int, usedSpace: Int, leftSpace: Int) {
+        let context = persistentContainer.viewContext
+        var entityName: String
+        entityName = "OfflineProfile"
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
+//        fetchRequest.predicate = NSPredicate(format: "totalSpace == %@ AND usedSpace == %@", totalSpace, usedSpace)
+        do {
+            let existingItems = try context.fetch(fetchRequest)
+            if existingItems.isEmpty {
+                clearData(entityName: entityName)
+                let profile = OfflineProfile(context: context)
+                profile.totalSpace = Float(totalSpace)
+                profile.usedSpace = Float(usedSpace)
+                profile.leftSpace = Float(leftSpace)
+            }
+        } catch {
+            print("I cant")
+        }
+        saveContext()
     }
 }
     

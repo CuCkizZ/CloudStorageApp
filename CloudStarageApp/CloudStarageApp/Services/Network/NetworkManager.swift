@@ -59,7 +59,8 @@ final class NetworkManager {
     }
     
     func fetchData(completion: @escaping (Result<[Item], Error>) -> Void) {
-        client.fetchDataWithAlamofire() { result in
+        client.fetchDataWithAlamofire() { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(let data):
                 do {
@@ -78,7 +79,8 @@ final class NetworkManager {
     }
     
     func fetchPublicData(completion: @escaping (Result<[Item], Error>) -> Void) {
-        client.fetchPublicData() { result in
+        client.fetchPublicData() { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(let data):
                 do {
@@ -97,7 +99,8 @@ final class NetworkManager {
     }
     
     func fetchCurentData(path: String, completion: @escaping (Result<[Item], Error>) -> Void) {
-        client.fetchCurrentData(path: path) { result in
+        client.fetchCurrentData(path: path) { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(let data):
                 do {
@@ -117,7 +120,8 @@ final class NetworkManager {
     }
     
     func fetchAccountData(completion: @escaping (Result<ProfileDataSource, Error>) -> Void) {
-        client.fetchAccountData { result in
+        client.fetchAccountData { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(let data):
                 do {
@@ -137,7 +141,8 @@ final class NetworkManager {
     }
     
     func searchFile(keyword: String, completion: @escaping (Result<[Item], Error>) -> Void) {
-        client.searchFiles(keyword: keyword) { result in
+        client.searchFiles(keyword: keyword) { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success(let data):
                 do {
@@ -174,29 +179,4 @@ final class NetworkManager {
     func renameFile(oldName: String, newName: String) {
         client.renameFile(oldName: oldName, newName: newName)
     }
-    
-    
-    
-//    func saveLoginResult(_ loginResult: LoginResult) {
-//        do {
-//            try SharedStorages.loginResultStorage.save(object: loginResult.asDictionary)
-//        } catch {
-//            print("Failed to save login result: \(error)")
-//        }
-//    }
-//    
-//    func getLoginResult() -> LoginResult? {
-//        guard let loginResultAsDictionary = try? SharedStorages.loginResultStorage.loadObject() else {
-//            return nil
-//        }
-//        return LoginResult(dictionary: loginResultAsDictionary)
-//    }
-//    
-//    func authenticateAndNavigateToHome(from viewController: UIViewController) {
-//        // Проверяем, сохранен ли результат логина
-//        guard let loginResult = self.getLoginResult() else {
-//            print("No login result found, user might need to login.")
-//            return
-//        }
-//    }
 }

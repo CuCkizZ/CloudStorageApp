@@ -13,8 +13,12 @@ final class Mapper {
     
     func mapProfile(_ model: Account) -> ProfileDataSource {
         let totalSpace = model.totalSpace
-        let usedSpace = model.usedSpace 
+        let usedSpace = model.usedSpace
         let leftSpace = totalSpace - usedSpace
+        
+        self.dataManager.addProfileData(totalSpace: model.totalSpace,
+                                        usedSpace: model.usedSpace,
+                                        leftSpace: leftSpace)
         
         return .init(totalSpace: totalSpace,
                      usedSpace: usedSpace,
@@ -32,30 +36,4 @@ final class Mapper {
         })
     }
 }
-    
-//    func mapStorageCoreData(_ model: Embedded) {
-//        model.items.forEach({ item in
-//            self.dataManager.addStorageItem(name: item.name,
-//                                         date: item.created,
-//                                         size: String(describing: item.size))
-//            self.dataManager.saveContext()
-//        })
-//    }
-//    
-//    func mapPublishedCoreData(_ model: Embedded) {
-//        model.items.forEach({ item in
-//            self.dataManager.addPublishedItem(name: item.name,
-//                                         date: item.created,
-//                                         size: String(describing: item.size))
-//            self.dataManager.saveContext()
-//        })
-//    }
-//    
-//}
-        
-//        init(_ storage: Account) {
-//            self.total = Float(storage.totalSpace / 1000000000)
-//            self.usage = Float(storage.usedSpace / 1000000000)
-//            self.left = Float(storage.totalSpace - storage.usedSpace)
-//        }
 

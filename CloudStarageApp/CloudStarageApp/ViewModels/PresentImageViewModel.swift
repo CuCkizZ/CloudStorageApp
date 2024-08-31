@@ -25,6 +25,7 @@ final class PresentImageViewModel {
     
     private let coordinator: Coordinator
     private let networkService: NetworkServiceProtocol = NetworkService()
+  
     
     init(coordinator: Coordinator) {
         self.coordinator = coordinator
@@ -37,7 +38,7 @@ final class PresentImageViewModel {
 }
 
 extension PresentImageViewModel: PresentImageViewModelProtocol {
-
+    
     func hideShareView() {
         onButtonShareTapped?()
     }
