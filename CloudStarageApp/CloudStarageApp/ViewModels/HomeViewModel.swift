@@ -17,7 +17,6 @@ protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var searchText: String { get set }
     func searchFiles()
     func logout()
-    func setToken()
     
 }
 
@@ -30,7 +29,7 @@ final class HomeViewModel {
         }
     }
     private let keychain = KeychainManager.shared
-    private let networkManager: NetworkServiceProtocol = NetworkService()
+    private let networkService: NetworkServiceProtocol = NetworkService()
     private let dataManager = CoreManager.shared
     var fetchedResultController: NSFetchedResultsController<OfflineItems>?
     private var model: [Item] = []
@@ -49,6 +48,11 @@ final class HomeViewModel {
         self.coordinator = coordinator
         fetchData()
         startMonitoringNetwork()
+        YandexLoginSDK.shared.add(observer: self)
+        
+        guard let loginResult = loginResult else { return }
+        didFinishLogin(with: Result<LoginResult, any Error>.success(loginResult))
+        //didFinishLogin()
     }
     
     private func mapModel() {
@@ -60,11 +64,6 @@ extension HomeViewModel: HomeViewModelProtocol {
     
     func numbersOfRowInSection() -> Int {
         model.count
-    }
-    
-    func setToken() {
-        //networkManager.getOAuthToken()
-        //networkManager.setOAuthToken()
     }
     
     func loadFile(from path: String, completion: @escaping (URL?) -> Void) {
@@ -223,21 +222,33 @@ extension HomeViewModel: HomeViewModelProtocol {
         coordinator.presentImageScene(model: model)
     }
     
+    func chekLogin() {
+//didFinishLogin(with: Result<LoginResult, any Error>)
+    }
+    
+}
+    
+//    YAndex
+    
+
+
+extension HomeViewModel: YandexLoginSDKObserver {
+    
+    func didFinishLogin(with result: Result<LoginResult, any Error>) {
+        switch result {
+        case .success(let loginResult):
+            networkService.getOAuthToken()
+        case .failure(_):
+            return
+        }
+    }
+    
     func logout() {
-        //  let token = keychain.get(forKey: "token")
-        try? keychain.delete(forKey: "token")
-        print("delted")
-        let token = keychain.get(forKey: "token")
+        let tokenKey = "token"
+        try? keychain.delete(forKey: tokenKey)
         if let loginResult = loginResult {
             let result = loginResult.token
-            print("Login result = \(result)")
         }
-        //        print("dwqdkskskskskkskksksk \(loginResult?.token)")
-        //        print("""
-        //_________________
-        //                Token aftedelet \(token)
-        //__________________
-        //""")
         coordinator.finish()
     }
     

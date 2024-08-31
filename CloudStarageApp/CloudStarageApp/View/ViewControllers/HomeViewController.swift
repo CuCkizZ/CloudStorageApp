@@ -1,5 +1,6 @@
 import UIKit
 import SnapKit
+import YandexLoginSDK
 
 final class HomeViewController: UIViewController {
     
@@ -34,11 +35,6 @@ final class HomeViewController: UIViewController {
     
     required init?(coder: NSCoder) {
         fatalError(FatalError.requiredInit)
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-        viewModel.setToken()
     }
     
     //    MARK: ViewDidLoad
