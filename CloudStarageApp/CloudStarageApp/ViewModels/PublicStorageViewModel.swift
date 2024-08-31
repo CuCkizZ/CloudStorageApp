@@ -32,6 +32,7 @@ final class PublicStorageViewModel {
     init(coordinator: ProfileCoordinator) {
         self.coordinator = coordinator
         startMonitoringNetwork()
+        numberOfRowInCoreDataSection()
     }
     
     private func mapModel() {
@@ -181,9 +182,10 @@ extension PublicStorageViewModel {
     }
     
     func numberOfRowInCoreDataSection() -> Int {
-        guard let objects = fetchedResultController?.fetchedObjects else { return 0 }
-           let storageNames = objects.map { $0.publishedName }
-           return storageNames.count
+        guard let items = fetchedResultController?.fetchedObjects else { return 0 }
+        let publishedNames = items.map { $0.publishedName }
+        print(publishedNames.count)
+        return publishedNames.count
     }
     
     func returnItems(at indexPath: IndexPath) -> OfflineItems? {
