@@ -7,16 +7,21 @@
 
 import Foundation
 import Network
+import CoreData
 
 protocol PublickStorageViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
+    func returnItems(at indexPath: IndexPath) -> OfflinePublished?
 }
 
 final class PublicStorageViewModel {
     
     private let coordinator: ProfileCoordinator
     private let keychain = KeychainManager.shared
+    private let dataManager = CoreManager.shared
     private let networkMonitor = NWPathMonitor()
+    var fetchedResultController: NSFetchedResultsController<OfflinePublished>?
+
     private var model: [Item] = []
     var searchKeyword: String = ""
     
@@ -136,7 +141,9 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
                 do {
                     let tempDirectory = FileManager.default.temporaryDirectory
                     let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? path.pathExtension
-                    let tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension(fileExtension)
+                    let tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString)
+                        .appendingPathExtension(fileExtension)
+                    
                     try data.write(to: tempFileURL)
                     DispatchQueue.main.async { [weak self] in
                         guard let self = self else { return }
@@ -156,5 +163,31 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
         print("delted")
         coordinator.finish()
     }
-    
 }
+
+//  MARK: CoreDataExtension
+
+extension PublicStorageViewModel {
+
+    func FetchedResultsController() {
+        let fetchRequest: NSFetchRequest<OfflinePublished> = OfflinePublished.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        let context = dataManager.persistentContainer.viewContext
+        fetchedResultController = NSFetchedResultsController(fetchRequest: fetchRequest,
+                                                             managedObjectContext: context,
+                                                             sectionNameKeyPath: nil,
+                                                             cacheName: nil)
+        
+        try? fetchedResultController?.performFetch()
+    }
+    
+    func numberOfRowInCoreDataSection() -> Int {
+        guard let items = fetchedResultController?.fetchedObjects else { return 0 }
+        return items.count
+    }
+    
+    func returnItems(at indexPath: IndexPath) -> OfflinePublished? {
+        return fetchedResultController?.object(at: indexPath)
+    }
+}
+

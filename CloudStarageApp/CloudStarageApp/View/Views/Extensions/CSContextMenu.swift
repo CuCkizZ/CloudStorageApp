@@ -38,14 +38,12 @@ extension UIContextMenuConfiguration {
                 let shareLinkAction = UIAction(title: "Share a link", image: UIImage(systemName: "link.badge.plus")) { _ in
                     viewModel.publishResource(path)
                     DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        var gtp: Void? = viewModel.gettingUrl?()
-                        gtp = {
+                        viewModel.gettingUrl? = {
                             guard let publicUrl = publicUrl else { return }
-                                print("no url")
-                                viewModel.presentAvc(item: publicUrl)
-                                print("\(publicUrl)")
-                            
-                        }()
+                            print("no url")
+                            viewModel.presentAvc(item: publicUrl)
+                            print("\(publicUrl)")
+                        }
                     }
                     
                 }

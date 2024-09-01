@@ -9,21 +9,31 @@ import Foundation
 
 final class Mapper {
     
-    func mappingProfile(_ model: Account) -> ProfileDataSource {
+    private let dataManager = CoreManager.shared
+    
+    func mapProfile(_ model: Account) -> ProfileDataSource {
         let totalSpace = model.totalSpace
-        let usedSpace = model.usedSpace 
+        let usedSpace = model.usedSpace
         let leftSpace = totalSpace - usedSpace
-
+        
+        self.dataManager.addProfileData(totalSpace: model.totalSpace,
+                                        usedSpace: model.usedSpace,
+                                        leftSpace: leftSpace)
+        
         return .init(totalSpace: totalSpace,
                      usedSpace: usedSpace,
                      leftSpace: leftSpace
         )
     }
+    
+    func mapCoreData(_ model: Embedded, type: TypeOfEntity) {
+        model.items.forEach({ item in
+            self.dataManager.addItemsTo(to: type,
+                                        name: item.name,
+                                        date: item.created,
+                                        size: String(describing: item.size))
+            self.dataManager.saveContext()
+        })
+    }
 }
-        
-//        init(_ storage: Account) {
-//            self.total = Float(storage.totalSpace / 1000000000)
-//            self.usage = Float(storage.usedSpace / 1000000000)
-//            self.left = Float(storage.totalSpace - storage.usedSpace)
-//        }
 

@@ -7,9 +7,11 @@
 
 import Foundation
 import Network
+import CoreData
 
 protocol StorageViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
+    func returnItems(at indexPath: IndexPath) -> OfflineStorage?
     
     var searchText: String { get set }
     func searchFiles()
@@ -22,6 +24,7 @@ final class StorageViewModel {
     
     private let coordinator: StorageCoordinator
     private let keychain = KeychainManager.shared
+    private let dataManager = CoreManager.shared
     private var model: [Item] = []
     private let networkMonitor = NWPathMonitor()
     private var path: String?
@@ -30,6 +33,8 @@ final class StorageViewModel {
     var isLoading: Observable<Bool> = Observable(false)
     var isConnected: Observable<Bool> = Observable(nil)
     var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
+    var fetchedResultController: NSFetchedResultsController<OfflineStorage>?
+
     var gettingUrl: (()->Void)?
     
     init(coordinator: StorageCoordinator) {
@@ -213,5 +218,31 @@ extension StorageViewModel: StorageViewModelProtocol {
         try? keychain.delete(forKey: "token")
         print("delted")
         coordinator.finish()
+    }
+}
+
+extension StorageViewModel {
+
+    func FetchedResultsController() {
+        let fetchRequest: NSFetchRequest<OfflineStorage> = OfflineStorage.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        
+        let context = dataManager.persistentContainer.viewContext
+        
+        fetchedResultController = NSFetchedResultsController(fetchRequest: fetchRequest,
+                                                             managedObjectContext: context,
+                                                             sectionNameKeyPath: nil,
+                                                             cacheName: nil)
+        
+        try? fetchedResultController?.performFetch()
+    }
+    
+    func numberOfRowInCoreDataSection() -> Int {
+        guard let items = fetchedResultController?.fetchedObjects else { return 0 }
+        return items.count
+    }
+    
+    func returnItems(at indexPath: IndexPath) -> OfflineStorage? {
+        return fetchedResultController?.object(at: indexPath)
     }
 }

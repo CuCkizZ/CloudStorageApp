@@ -7,6 +7,7 @@
 
 import Foundation
 import Network
+import CoreData
 
 protocol ProfileViewModelProtocol: AnyObject {
     var onDataLoaded: (() -> Void)? { get set }
@@ -17,6 +18,8 @@ protocol ProfileViewModelProtocol: AnyObject {
     func fetchData()
     func logout()
     func paggination(title: String, path: String)
+    func FetchedResultsController()
+    func fetchOfflineProfile() -> OfflineProfile?
 }
 
 final class ProfileViewModel {
@@ -29,6 +32,11 @@ final class ProfileViewModel {
     var isConnected: Observable<Bool> = Observable(nil)
     private let networkMonitor = NWPathMonitor()
     var onDataLoaded: (() -> Void)?
+    
+    
+    private let dataManager = CoreManager.shared
+    var fetchedResultController: NSFetchedResultsController<OfflineProfile>?
+
  
     init(coordinator: ProfileCoordinator) {
         self.coordinator = coordinator
@@ -86,5 +94,36 @@ extension ProfileViewModel: ProfileViewModelProtocol {
         try? keychain.delete(forKey: "token")
         print("delted")
         coordinator.finish()
+    }
+}
+
+extension ProfileViewModel {
+
+    func FetchedResultsController() {
+        let fetchRequest: NSFetchRequest<OfflineProfile> = OfflineProfile.fetchRequest()
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "totalSpace", ascending: true)]
+        
+        let context = dataManager.persistentContainer.viewContext
+        
+        fetchedResultController = NSFetchedResultsController(fetchRequest: fetchRequest,
+                                                             managedObjectContext: context,
+                                                             sectionNameKeyPath: nil,
+                                                             cacheName: nil)
+        
+        try? fetchedResultController?.performFetch()
+    }
+    
+    func fetchOfflineProfile() -> OfflineProfile? {
+        let context = dataManager.persistentContainer.viewContext
+        let fetchRequest: NSFetchRequest<OfflineProfile> = OfflineProfile.fetchRequest()
+        
+        do {
+            // Предполагаем, что у нас только один объект в базе данных
+            let results = try context.fetch(fetchRequest)
+            return results.first
+        } catch {
+            print("Failed to fetch OfflineProfile: \(error)")
+            return nil
+        }
     }
 }

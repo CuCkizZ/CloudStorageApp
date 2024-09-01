@@ -6,10 +6,11 @@ final class StorageViewController: UIViewController {
     private var viewModel: StorageViewModelProtocol
     private var cellDataSource: [CellDataModel] = []
     var searchController = UISearchController(searchResultsController: nil)
-
+    var isOffline: Bool = false
+    
     private var navigationTitle: String
     private var fetchPath: String
-//    UI
+    //    UI
     
     private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
@@ -25,7 +26,7 @@ final class StorageViewController: UIViewController {
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
-
+    
     init(viewModel: StorageViewModelProtocol, navigationTitle: String, fetchpath: String) {
         self.viewModel = viewModel
         self.navigationTitle = navigationTitle
@@ -36,7 +37,7 @@ final class StorageViewController: UIViewController {
     required init?(coder: NSCoder) {
         fatalError(FatalError.requiredInit)
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         setupNavBarAfterPaggination()
@@ -82,8 +83,11 @@ final class StorageViewController: UIViewController {
             DispatchQueue.main.async {
                 if isConndeted {
                     self.hideNetworkStatusView(self.networkStatusView)
+                    self.isOffline = false
                 } else {
                     self.showNetworkStatusView(self.networkStatusView)
+                    self.viewModel.FetchedResultsController()
+                    self.isOffline = true
                 }
             }
         }
@@ -264,18 +268,39 @@ extension StorageViewController: UICollectionViewDelegate {
 }
 
 extension StorageViewController: UICollectionViewDataSource {
+    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        viewModel.numbersOfRowInSection()
+        switch isOffline {
+        case true:
+            viewModel.numberOfRowInCoreDataSection()
+        case false:
+            viewModel.numbersOfRowInSection()
+        }
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID, 
-                                                            for: indexPath) as? CollectionViewCell else {
-            fatalError(FatalError.wrongCell)
+        switch isOffline {
+        case false:
+            let model = cellDataSource[indexPath.row]
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
+                                                                for: indexPath) as? CollectionViewCell else {
+                fatalError(FatalError.wrongCell)
+            }
+            
+            cell.configure(model)
+            
+            return cell
+        case true:
+            guard let items = viewModel.returnItems(at: indexPath) else { return UICollectionViewCell() }
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
+                                                                for: indexPath) as? CollectionViewCell else {
+                fatalError(FatalError.wrongCell)
+            }
+            
+            cell.storageOffline(items)
+            
+            return cell
         }
-        let model = cellDataSource[indexPath.row]
-        cell.configure(model)
-        return cell
     }
 }
 
@@ -311,6 +336,7 @@ extension StorageViewController: UISearchBarDelegate, UISearchResultsUpdating  {
 }
 
 extension StorageViewController {
+    
     func setupLogout() {
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logoutTapped))
     }
