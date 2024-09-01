@@ -19,8 +19,8 @@ final class PresentImageViewController: UIViewController {
     private var viewModel: PresentImageViewModelProtocol
     
     private var isHidden = true
-    private lazy var initialSize = CGSize()
     private let minimumSize: CGFloat = 300.0
+    private lazy var initialSize = CGSize()
     
     private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var infoButton = UIButton()
@@ -146,7 +146,7 @@ private extension PresentImageViewController {
             imageView.snp.remakeConstraints { make in
                 make.left.right.equalToSuperview()
                 make.top.equalToSuperview().inset(-200)
-                make.bottom.equalTo(self.infoView.snp.top).inset(-16)
+                make.bottom.equalTo(self.infoView.snp.top).inset(-Constants.defaultPadding)
             }
             navigationController?.navigationBar.alpha = 0
             shareButton.alpha = 0
@@ -216,14 +216,14 @@ private extension PresentImageViewController {
             make.width.equalToSuperview()
         }
         shareButton.snp.makeConstraints { make in
-            make.left.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.left.bottom.equalTo(view.safeAreaLayoutGuide).inset(Constants.defaultPadding)
         }
         deleteButton.snp.makeConstraints { make in
-            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(Constants.defaultPadding)
         }
         infoButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(16)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(Constants.defaultPadding)
         }
     }
 }

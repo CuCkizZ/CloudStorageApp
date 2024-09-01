@@ -3,21 +3,21 @@ import SnapKit
 
 final class ProfileViewController: UIViewController {
     
-    private var viewModel: ProfileViewModelProtocol
-    private var dataSource: ProfileDataSource?
+    private let viewModel: ProfileViewModelProtocol
+//    private let dataSource: ProfileDataSource?
     private let activityIndicator = UIActivityIndicatorView()
     
-    private var totalStorageLabel = UILabel()
-    private let usedStorageLabel = UILabel()
-    private let leftStorageLabel = UILabel()
-    private let usedImageView = UIImageView()
-    private let leftImageView = UIImageView()
-    private let storageCircleView = UIImageView()
-    private let goToPublicButton = UIButton()
+    private lazy var totalStorageLabel = UILabel()
+    private lazy var usedStorageLabel = UILabel()
+    private lazy var leftStorageLabel = UILabel()
+    private lazy var usedImageView = UIImageView()
+    private lazy var leftImageView = UIImageView()
+    private lazy var storageCircleView = UIImageView()
+    private lazy var goToPublicButton = UIButton()
     private lazy var totalShapeLayer = CAShapeLayer()
     private lazy var usageShapeLayer = CAShapeLayer()
     
-    private let networkStatusView = UIView()
+    private lazy var networkStatusView = UIView()
     
     init(viewModel: ProfileViewModelProtocol) {
         self.viewModel = viewModel
