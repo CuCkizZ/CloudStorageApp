@@ -65,18 +65,17 @@ final class InfoView: UIView {
 private extension InfoView {
     
     func setupLayout() {
-        
         setupInfoView()
         setupLabels()
         setupConstaints()
     }
     
     func setupInfoView() {
+        layer.cornerRadius = 20
         addSubview(headerLabel)
         addSubview(mainStackView)
         backgroundColor = .white
         mainStackView.backgroundColor = .clear
-        layer.cornerRadius = 20
     }
     
     func setupLabels() {

@@ -36,18 +36,20 @@ private extension ShareView {
     
     func setupLayout() {
         setupView()
+        setupButtons()
+        setupShareViews()
+        setupStackView()
         addGesture()
         setupConstraints()
     }
     
     func setupView() {
-        self.layer.cornerRadius = 20
-        self.addSubview(stackView)
+        layer.cornerRadius = 20
+        layer.borderWidth = 0.5
+        layer.borderColor = CGColor(gray: 0.5, alpha: 1)
+        addSubview(stackView)
         linkView.addSubview(shareLinkButton)
         fileView.addSubview(shareFileButton)
-        setupButtons()
-        setupShareViews()
-        setupStackView()
     }
     
     func addGesture() {
@@ -123,6 +125,7 @@ private extension ShareView {
     }
     
     func setupStackView() {
+        stackView.layer.cornerRadius = 20
         stackView.backgroundColor = .systemGray6
         stackView.axis = .vertical
         stackView.alignment = .center
@@ -133,7 +136,7 @@ private extension ShareView {
     func setupConstraints() {
         stackView.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
-            make.top.equalToSuperview().inset(10)
+            make.top.equalToSuperview()
             make.bottom.equalToSuperview()
         }
         linkView.snp.makeConstraints { make in
