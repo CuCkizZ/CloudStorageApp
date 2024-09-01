@@ -6,14 +6,13 @@ protocol LoginViewOutput: AnyObject {
     var loginResult: LoginResult? { get set }
     
     func login()
-    func logout()
-    func setToken()
+    func logout() 
     func saveToken(token: String)
 }
 
 final class LoginViewModel {
     
-    private var client: NetworkServiceProtocol = NetworkService()
+    private let client: NetworkServiceProtocol = NetworkService()
     private let userStorage = UserStorage.shared
     private let keychain = KeychainManager.shared
     private let coordinator: LoginCoordinator
@@ -59,10 +58,6 @@ extension LoginViewModel: LoginViewOutput {
     func saveToken(token: String) {
         try? keychain.save(token, forKey: "token")
         print("token from viewmodel", token)
-    }
-    
-    func setToken() {
-        
     }
     
     func login() {
