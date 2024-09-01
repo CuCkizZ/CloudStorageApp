@@ -100,7 +100,7 @@ struct SceneFactory {
     //    MARK: LoginCoordinator
     
     static func makeLoginScene(coordinator: LoginCoordinator) -> LoginViewController {
-        let viewModel: LoginViewOutput = LoginViewModel(coordinator: coordinator)
+        let viewModel: LoginViewModelProtocol = LoginViewModel(coordinator: coordinator)
         let loginVC = LoginViewController(viewModel: viewModel)
         return loginVC
     }

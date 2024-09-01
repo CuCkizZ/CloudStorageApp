@@ -9,7 +9,7 @@ protocol LoginViewControllerProtocol: AnyObject {
 
 final class LoginViewController: UIViewController {
     
-    private let viewModel: LoginViewOutput
+    private let viewModel: LoginViewModelProtocol
     private let keychain = KeychainManager.shared
     private var loginResult: LoginResult?
     private weak var yandex: YandexLoginSDK?
@@ -22,7 +22,7 @@ final class LoginViewController: UIViewController {
     
     
     
-    init(viewModel: LoginViewOutput) {
+    init(viewModel: LoginViewModelProtocol) {
         self.viewModel = viewModel
         super .init(nibName: nil, bundle: nil)
     }
