@@ -110,7 +110,7 @@ private extension LoginViewController {
 
     func setupConstraints() {
         yandexButton.snp.makeConstraints { make in
-            make.bottom.equalToSuperview().inset(140)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(50)
             make.horizontalEdges.equalToSuperview().inset(20)
             make.height.equalTo(50)
         }
