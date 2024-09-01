@@ -30,8 +30,9 @@ final class HomeViewModel {
         }
     }
     private let keychain = KeychainManager.shared
-    private let networkService: NetworkServiceProtocol = NetworkService()
     private let dataManager = CoreManager.shared
+    private let userStorage = UserStorage.shared
+    private let networkService: NetworkServiceProtocol = NetworkService()
     var fetchedResultController: NSFetchedResultsController<OfflineItems>?
     private var model: [Item] = []
     private let networkMonitor = NWPathMonitor()
@@ -229,15 +230,14 @@ extension HomeViewModel: HomeViewModelProtocol {
     
 }
     
-//    YAndex
-    
-
+//    MARK: YandexLoginSDK
 
 extension HomeViewModel: YandexLoginSDKObserver {
     
     func didFinishLogin(with result: Result<LoginResult, any Error>) {
         switch result {
         case .success(let loginResult):
+            self.loginResult = loginResult
             networkService.getOAuthToken()
         case .failure(_):
             return
@@ -247,9 +247,8 @@ extension HomeViewModel: YandexLoginSDKObserver {
     func logout() {
         let tokenKey = "token"
         try? keychain.delete(forKey: tokenKey)
-        if let loginResult = loginResult {
-            let result = loginResult.token
-        }
+        try? YandexLoginSDK.shared.logout()
+        userStorage.isLoginIn = false
         coordinator.finish()
     }
     

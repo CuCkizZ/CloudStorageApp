@@ -1,7 +1,7 @@
 import Foundation
 import YandexLoginSDK
 
-protocol LoginViewOutput: AnyObject {
+protocol LoginViewModelProtocol: AnyObject {
     var isLoading: Observable<Bool> { get set }
     var loginResult: LoginResult? { get set }
     
@@ -42,7 +42,7 @@ final class LoginViewModel {
     
 }
 
-extension LoginViewModel: LoginViewOutput {
+extension LoginViewModel: LoginViewModelProtocol {
     
     func logout() {
         yandex = YandexLoginSDK.shared
@@ -50,6 +50,7 @@ extension LoginViewModel: LoginViewOutput {
             try yandex?.logout()
             loginResult = nil
             cleareKeychain()
+            userStorage.isLoginIn = false
         } catch {
             print("Logout error: \(error)")
         }

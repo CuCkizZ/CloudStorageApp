@@ -36,9 +36,11 @@ final class NetworkService: NetworkServiceProtocol {
         
     init() {
         getOAuthToken()
+        print("token init ", token)
     }
         
     func getOAuthToken() {
+        print("token keychain,", keychain.get(forKey: NetworkConstants.tokenKey))
         guard let token = keychain.get(forKey: NetworkConstants.tokenKey) else { return }
         self.token = token
     }
