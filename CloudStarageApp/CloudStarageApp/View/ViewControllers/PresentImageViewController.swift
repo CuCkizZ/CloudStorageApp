@@ -13,7 +13,6 @@ protocol PresentImageViewControllerProtocol {
     func hideShareView()
 }
 
-
 final class PresentImageViewController: UIViewController {
     
     private var viewModel: PresentImageViewModelProtocol
@@ -57,7 +56,6 @@ final class PresentImageViewController: UIViewController {
         self.activityIndicator.startAnimating()
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-//            if let originalUrlString = model.sizes.first(where: { $0.name == "XS" })?.url,
             if let url = URL(string: model.file) {
                 self.imageView.sd_setImage(with: url) { [weak self] _,_,_,_ in
                     guard let self = self else { return }
@@ -70,6 +68,12 @@ final class PresentImageViewController: UIViewController {
         deleteButtonTapped(name: model.name)
         shareButtonTapped(link: model.publicUrl ?? "no url", file: model.file, path: model.path)
     }
+    
+    func path(name: String) {
+        viewModel.fetchData(path: name)
+        print(path)
+    }
+    
 }
 
 private extension PresentImageViewController {
@@ -95,8 +99,6 @@ private extension PresentImageViewController {
         view.addSubview(deleteButton)
         view.addSubview(shareView)
     }
-    
-    
     
     func setupButtons() {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 20)

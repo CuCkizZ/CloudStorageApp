@@ -123,7 +123,6 @@ private extension PublicStorageViewController {
     
     func SetupNavBar() {
         guard let navigationController = navigationController else { return }
-        navigationItem.rightBarButtonItem = navigationController.setRightButton()
         navigationController.navigationBar.prefersLargeTitles = true
         title = navigationTitle
     }
@@ -308,7 +307,7 @@ extension PublicStorageViewController: UICollectionViewDataSource {
 
 extension PublicStorageViewController {
     func setupLogout() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logoutTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logoutTapped))
     }
     
     @objc func logoutTapped() {

@@ -268,7 +268,7 @@ private extension ProfileViewController {
 
 extension ProfileViewController {
     func setupLogout() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logoutTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logoutTapped))
     }
     
     @objc func logoutTapped() {

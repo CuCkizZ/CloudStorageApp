@@ -2,6 +2,7 @@ import UIKit
 import SDWebImage
 
 struct CellDataModel {
+    let resourceId: String?
     let publickKey: String?
     let publicUrl: String?
     let name: String
@@ -15,6 +16,7 @@ struct CellDataModel {
     let mimeType: String
     
     init(_ item: Item) {
+        self.resourceId = item.resourceID
         self.publickKey = item.publicKey
         self.publicUrl = item.publicUrl
         self.name = item.name

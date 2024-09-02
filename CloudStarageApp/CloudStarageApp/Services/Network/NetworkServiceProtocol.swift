@@ -18,7 +18,6 @@ protocol NetworkServiceProtocol {
     func toPublicFile(path: String)
     func unpublishFile(path: String)
     func renameFile(oldName: String, newName: String)
-    func searchFiles(keyword: String, completion: @escaping (Result<Data, Error>) -> Void)
     
     func getOAuthToken()
 }

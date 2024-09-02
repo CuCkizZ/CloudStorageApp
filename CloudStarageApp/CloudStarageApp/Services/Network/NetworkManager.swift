@@ -107,7 +107,6 @@ final class NetworkManager {
                     let result = try self.decoder.decode(Welcome.self, from: data)
                     completion(.success(result.embedded.items))
                     self.mapper.mapCoreData(result.embedded, type: .storage)
-
                 } catch {
                     completion(.failure(error))
                     print("Ошибка при парсе: \(error.localizedDescription)")
@@ -129,25 +128,6 @@ final class NetworkManager {
                     let profile = self.mapper.mapProfile(result)
                     completion(.success(profile))
                     print("Acouunt data is okay")
-                } catch {
-                    completion(.failure(error))
-                    print("Ошибка при парсе: \(error.localizedDescription)")
-                }
-            case .failure(let error):
-                completion(.failure(error))
-                print("Нечего парсить")
-            }
-        }
-    }
-    
-    func searchFile(keyword: String, completion: @escaping (Result<[Item], Error>) -> Void) {
-        client.searchFiles(keyword: keyword) { [weak self] result in
-            guard let self = self else { return }
-            switch result {
-            case .success(let data):
-                do {
-                    let result = try self.decoder.decode(Welcome.self, from: data)
-                    completion(.success(result.embedded.items))
                 } catch {
                     completion(.failure(error))
                     print("Ошибка при парсе: \(error.localizedDescription)")

@@ -11,7 +11,6 @@ final class HomeViewController: UIViewController {
     //   UI
     
     private lazy var selectedStyle: PresentationStyle = .table
-    var searchController = UISearchController(searchResultsController: nil)
     
     private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
@@ -107,7 +106,6 @@ private extension HomeViewController {
         uploadButtonPressed()
         setupLogout()
         setupConstraints()
-        
     }
     
     func setupView() {
@@ -118,15 +116,11 @@ private extension HomeViewController {
         view.backgroundColor = .white
         activityIndicator.hidesWhenStopped = true
         setupCollectionView()
-        setupSearchController()
         setupLayoutButton()
     }
     
     func setupNavBar() {
         guard let navigationController = navigationController else { return }
-        navigationItem.rightBarButtonItem = navigationController.setRightButton()
-        navigationItem.searchController = searchController
-        navigationItem.rightBarButtonItem?.action = #selector((setupSearchController))
         navigationController.navigationBar.prefersLargeTitles = true
         title = "Latests"
     }
@@ -312,37 +306,20 @@ extension HomeViewController: UICollectionViewDelegate {
         }
     }
     
-//    func collectionView(_ collectionView: UICollectionView, 
-//                        contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
-//                        point: CGPoint) -> UIContextMenuConfiguration? {
-//        guard let indexPath = indexPaths.first else { return nil }
-//        let model = cellDataSource[indexPath.row]
-//        return UIContextMenuConfiguration.contextMenuConfiguration(for: .last,
-//                                                                   viewModel: viewModel,
-//                                                                   model: model,
-//                                                                   viewController: self)
-//    }
-}
-
-
-extension HomeViewController: UISearchBarDelegate, UISearchResultsUpdating {
-    
-    @objc func setupSearchController() {
-        searchController.searchBar.placeholder = "Введите запрос"
-        searchController.searchBar.delegate = self
-        searchController.searchResultsUpdater = self
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        viewModel.searchText = searchText
-        if searchText != "" {
-            viewModel.searchFiles()
+    func collectionView(_ collectionView: UICollectionView, 
+                        contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
+                        point: CGPoint) -> UIContextMenuConfiguration? {
+        switch isOffline {
+        case true:
+            return UIContextMenuConfiguration()
+        case false:
+            guard let indexPath = indexPaths.first else { return nil }
+            let model = cellDataSource[indexPath.row]
+            return UIContextMenuConfiguration.contextMenuConfiguration(for: .last,
+                                                                       viewModel: viewModel,
+                                                                       model: model,
+                                                                       viewController: self)
         }
-    }
-    
-    func updateSearchResults(for searchController: UISearchController) {
-        self.definesPresentationContext = true
-        self.navigationItem.searchController = searchController
     }
 }
 
@@ -351,7 +328,7 @@ extension HomeViewController: UISearchBarDelegate, UISearchResultsUpdating {
 extension HomeViewController {
     
     func setupLogout() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab, 
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .profileTab, 
                                                            style: .plain, 
                                                            target: self,
                                                            action: #selector(logoutTapped))

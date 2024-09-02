@@ -8,6 +8,7 @@
 import Foundation
 
 protocol PresentImageViewModelProtocol {
+    func fetchData(path: String)
     func sizeFormatter(bytes: Int) -> String
     func popToRoot()
     func publishFile(path: String)
@@ -16,6 +17,7 @@ protocol PresentImageViewModelProtocol {
     func shareFile(path: URL)
     
     var onButtonShareTapped: (() -> Void)? { get set }
+    var isDataLoaded: Observable<Bool> { get set }
     func hideShareView()
 }
 
@@ -23,9 +25,12 @@ final class PresentImageViewModel {
     
     var onButtonShareTapped: (() -> Void)?
     
+    var isDataLoaded: Observable<Bool> = Observable(nil)
+    var OnButtonTapped: Observable<Bool> = Observable(nil)
+
+    private var model: [Item] = []
     private let coordinator: Coordinator
-    private let networkService: NetworkServiceProtocol = NetworkService()
-  
+    
     
     init(coordinator: Coordinator) {
         self.coordinator = coordinator
@@ -34,10 +39,25 @@ final class PresentImageViewModel {
     func publishFile(path: String) {
         NetworkManager.shared.toPublicFile(path: path)
     }
-    
 }
 
 extension PresentImageViewModel: PresentImageViewModelProtocol {
+   
+    func fetchData(path: String) {
+        print(path)
+        NetworkManager.shared.fetchCurentData(path: path) { result in
+            DispatchQueue.main.async {
+                switch result {
+                case .success(let file):
+                    self.model = file
+                    print("parsed")
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            }
+        }
+    }
+    
     
     func hideShareView() {
         onButtonShareTapped?()

@@ -5,7 +5,6 @@ final class StorageViewController: UIViewController {
     // MARK: Model
     private var viewModel: StorageViewModelProtocol
     private var cellDataSource: [CellDataModel] = []
-    var searchController = UISearchController(searchResultsController: nil)
     var isOffline: Bool = false
     
     private var navigationTitle: String
@@ -119,20 +118,14 @@ private extension StorageViewController {
     
     func setupNavBar() {
         guard let navigationController = navigationController else { return }
-        navigationItem.rightBarButtonItem = navigationController.setRightButton()
-        navigationItem.searchController = searchController
         navigationController.navigationBar.prefersLargeTitles = true
         navigationItem.title = navigationTitle
-        setupSearchController()
     }
     
     func setupNavBar2() {
         guard let navigationController = navigationController else { return }
-        navigationItem.rightBarButtonItem = navigationController.setRightButton()
-        navigationItem.searchController = searchController
         navigationController.navigationBar.prefersLargeTitles = true
         navigationItem.title = navigationTitle
-        setupSearchController()
     }
     
     func setupNavBarAfterPaggination() {
@@ -314,31 +307,13 @@ extension StorageViewController: StorageViewControllerProtocol {
     }
 }
 
-extension StorageViewController: UISearchBarDelegate, UISearchResultsUpdating  {
-    
-    @objc func setupSearchController() {
-        searchController.searchBar.placeholder = "Введите запрос"
-        searchController.searchBar.delegate = self
-        searchController.searchResultsUpdater = self
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        viewModel.searchText = searchText
-        if searchText != "" {
-            viewModel.searchFiles()
-        }
-    }
-    
-    func updateSearchResults(for searchController: UISearchController) {
-        self.definesPresentationContext = true
-        self.navigationItem.searchController = searchController
-    }
-}
-
 extension StorageViewController {
     
     func setupLogout() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logoutTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .profileTab, 
+                                                           style: .plain,
+                                                           target: self,
+                                                           action: #selector(logoutTapped))
     }
     
     @objc func logoutTapped() {

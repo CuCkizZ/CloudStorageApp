@@ -122,22 +122,6 @@ final class NetworkService: NetworkServiceProtocol {
         }
     }
     
-    func searchFiles(keyword: String, completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlParams = ["path": keyword]
-        let urlString = NetworkConstants.resoursesUrl
-        guard let url = URL(string: urlString) else { return }
-        
-        AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
-            if let error = response.error {
-                completion(.failure(error))
-                print("Url error")
-                return
-            }
-            guard let data = response.data else { return }
-            completion(.success(data))
-        }
-    }
-    
     func createNewFolder(name: String) {
         let urlString = NetworkConstants.createUrl + name
         guard let url = URL(string: urlString) else { return }
