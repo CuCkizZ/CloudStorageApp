@@ -19,6 +19,7 @@ protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
 }
 
 final class HomeViewModel {
+    
     var onErrorReceived: ((String) -> Void)?
     private let coordinator: HomeCoordinator
     var loginResult: LoginResult? {
@@ -26,11 +27,12 @@ final class HomeViewModel {
             
         }
     }
+    
     private let keychain = KeychainManager.shared
     private let dataManager = CoreManager.shared
     private let userStorage = UserStorage.shared
     private let networkService: NetworkServiceProtocol = NetworkService()
-    var fetchedResultController: NSFetchedResultsController<OfflineItems>?
+    private var fetchedResultController: NSFetchedResultsController<OfflineItems>?
     private var model: [Item] = []
     private let networkMonitor = NWPathMonitor()
     
@@ -40,9 +42,6 @@ final class HomeViewModel {
     var isSharing: Observable<Bool> = Observable(nil)
     var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
     var cellDataSourceOffline: Observable<[OfflineItems]> = Observable(nil)
-    
-    var isPublished: (() -> IndexPath)?
-    
     
     init(coordinator: HomeCoordinator) {
         self.coordinator = coordinator
@@ -62,26 +61,11 @@ final class HomeViewModel {
     
 extension HomeViewModel: HomeViewModelProtocol {
     
-    func getUrl(at indexPath: IndexPath) -> String? {
-        return model[indexPath.row].publicUrl
-    }
-    
     func numbersOfRowInSection() -> Int {
         model.count
     }
     
-    func loadFile(from path: String, completion: @escaping (URL?) -> Void) {
-        let documentsDirectory = FileManager.default.urls(for: .downloadsDirectory, in: .userDomainMask).first!
-        let path = documentsDirectory.appendingPathComponent(path)
-        
-        if FileManager.default.fileExists(atPath: "\(path)") {
-            completion(path)
-            print(path)
-        } else {
-            print("Файл не найден по пути: \(documentsDirectory)")
-            completion(nil)
-        }
-    }
+    //    MARK: Network
     
     func startMonitoringNetwork() {
         let queue = DispatchQueue.global(qos: .background)
@@ -101,7 +85,6 @@ extension HomeViewModel: HomeViewModelProtocol {
         }
     }
     
-    //    MARK: Network
     
     func fetchData() {
         if isLoading.value ?? true {
@@ -151,10 +134,6 @@ extension HomeViewModel: HomeViewModelProtocol {
         }
     }
     
-    func publishResource2(_ path: String, completion: @escaping (URL?) -> Void) {
-        
-    }
-    
     func unpublishResource(_ path: String) {
         NetworkManager.shared.unpublishFile(path)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -170,10 +149,6 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     //    MARK: Navigation
-    
-    func presentShareView(shareLink: String) {
-        //coordinator?.presentShareScene(shareLink: shareLink)
-    }
     
     func presentAvc(indexPath: IndexPath) {
         guard let item = model[indexPath.row].publicUrl else { return }
@@ -212,11 +187,6 @@ extension HomeViewModel: HomeViewModelProtocol {
     func presentImage(model: CellDataModel) {
         coordinator.presentImageScene(model: model)
     }
-    
-    func chekLogin() {
-//didFinishLogin(with: Result<LoginResult, any Error>)
-    }
-    
 }
     
 //    MARK: YandexLoginSDK
@@ -240,10 +210,9 @@ extension HomeViewModel: YandexLoginSDKObserver {
         userStorage.isLoginIn = false
         coordinator.finish()
     }
-    
-    //    MARK: CoreData
-    
 }
+
+//    MARK: CoreData
 
 extension HomeViewModel {
 

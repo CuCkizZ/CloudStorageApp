@@ -17,7 +17,7 @@ final class HomeViewController: UIViewController {
     private lazy var uploadButton = CSUploadButton()
     private lazy var changeLayoutButton = CSChangeLayoutButton()
     private lazy var networkStatusView = UIView()
-    private lazy var isSheringView = UIView(frame: view.bounds)
+    private lazy var whileGettingLinkView = UIView(frame: view.bounds)
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -94,24 +94,6 @@ private extension HomeViewController {
             }
         }
     }
-    
-    func bindShareing() {
-        viewModel.isSharing.bind { [weak self] isSharing in
-            guard let self = self, let isSharing = isSharing else { return }
-            DispatchQueue.main.async {
-                if isSharing {
-                    self.isSheringView.isHidden = false
-                    self.activityIndicator.style = .medium
-                    self.activityIndicator.startAnimating()
-                } else {
-                    self.isSheringView.isHidden = true
-                    self.tabBarController?.tabBar.backgroundColor = .white
-
-                }
-            }
-        }
-    }
-    
 }
 
     // MARK: Layout
@@ -133,7 +115,7 @@ private extension HomeViewController {
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
         view.addSubview(changeLayoutButton)
-        view.addSubview(isSheringView)
+        view.addSubview(whileGettingLinkView)
         view.backgroundColor = .white
         activityIndicator.hidesWhenStopped = true
         setupCollectionView()
@@ -199,10 +181,28 @@ private extension HomeViewController {
                                                object: nil)
     }
     
+    func bindShareing() {
+        viewModel.isSharing.bind { [weak self] isSharing in
+            guard let self = self, let isSharing = isSharing else { return }
+            DispatchQueue.main.async {
+                if isSharing {
+                    self.whileGettingLinkView.isHidden = false
+                    self.activityIndicator.style = .medium
+                    self.activityIndicator.startAnimating()
+                } else {
+                    self.whileGettingLinkView.isHidden = true
+                    self.tabBarController?.tabBar.backgroundColor = .white
+
+                }
+            }
+        }
+    }
+    
+    
     func setupIsSharingView() {
-        isSheringView.isHidden = true
-        isSheringView.backgroundColor = AppColors.customGray.withAlphaComponent(0.5)
-        isSheringView.addSubview(activityIndicator)
+        whileGettingLinkView.isHidden = true
+        whileGettingLinkView.backgroundColor = AppColors.customGray.withAlphaComponent(0.5)
+        whileGettingLinkView.addSubview(activityIndicator)
     }
     
     func setupConstraints() {

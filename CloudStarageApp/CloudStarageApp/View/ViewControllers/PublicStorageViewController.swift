@@ -10,6 +10,7 @@ final class PublicStorageViewController: UIViewController {
     var isOffline: Bool = false
     
     private lazy var networkStatusView = UIView()
+    private lazy var whileGettingLinkView = UIView(frame: view.bounds)
     private lazy var selectedStyle: PresentationStyle = .table
     private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
@@ -53,7 +54,12 @@ final class PublicStorageViewController: UIViewController {
         bindViewModel()
         bindNetworkMonitor()
     }
-    
+}
+
+// MARK: Bind Extension
+
+private extension PublicStorageViewController {
+
     func bindView() {
         viewModel.cellDataSource.bind { [weak self] files in
             guard let self = self, let files = files else { return }
@@ -265,6 +271,30 @@ extension PublicStorageViewController: UICollectionViewDelegate {
                                                                    viewModel: viewModel,
                                                                    model: model, indexPath: indexPath,
                                                                    viewController: self)
+    }
+    
+    func bindShareing() {
+        viewModel.isSharing.bind { [weak self] isSharing in
+            guard let self = self, let isSharing = isSharing else { return }
+            DispatchQueue.main.async {
+                if isSharing {
+                    self.whileGettingLinkView.isHidden = false
+                    self.activityIndicator.style = .medium
+                    self.activityIndicator.startAnimating()
+                } else {
+                    self.whileGettingLinkView.isHidden = true
+                    self.tabBarController?.tabBar.backgroundColor = .white
+
+                }
+            }
+        }
+    }
+    
+    
+    func setupIsSharingView() {
+        whileGettingLinkView.isHidden = true
+        whileGettingLinkView.backgroundColor = AppColors.customGray.withAlphaComponent(0.5)
+        whileGettingLinkView.addSubview(activityIndicator)
     }
 }
 

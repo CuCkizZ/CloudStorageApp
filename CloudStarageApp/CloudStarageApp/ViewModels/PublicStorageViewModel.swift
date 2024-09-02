@@ -23,13 +23,11 @@ final class PublicStorageViewModel {
     var fetchedResultController: NSFetchedResultsController<OfflinePublished>?
 
     private var model: [Item] = []
-    var searchKeyword: String = ""
     
     var isLoading: Observable<Bool> = Observable(false)
     var isConnected: Observable<Bool> = Observable(nil)
-    var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
     var isSharing: Observable<Bool> = Observable(nil)
-    var isPublished: (() -> IndexPath)?
+    var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
     
     init(coordinator: ProfileCoordinator) {
         self.coordinator = coordinator
@@ -42,27 +40,28 @@ final class PublicStorageViewModel {
 }
 
 extension PublicStorageViewModel: PublickStorageViewModelProtocol {
-    func publishResource(_ path: String, indexPath: IndexPath) {
-        
-    }
-    
-    
-    func publishResource2(_ path: String, completion: @escaping (URL?) -> Void) {
-        
-    }
-    
-    
     func loadFile(from path: String, completion: @escaping (URL?) -> Void) {
         
     }
+    
     
 //    DataSource
     func numbersOfRowInSection() -> Int {
         model.count
     }
 //    Network
-    func publishResource(_ path: String) {
+    func publishResource(_ path: String, indexPath: IndexPath) {
         NetworkManager.shared.toPublicFile(path: path)
+        isSharing.value = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            self.fetchData()
+            if isSharing.value == true {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.presentAvc(indexPath: indexPath)
+                }
+            }
+        }
     }
     
     func startMonitoringNetwork() {
@@ -136,7 +135,9 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     }
     
     func presentAvc(indexPath: IndexPath) {
-       // coordinator.presentAtivityVc(item: item)
+        guard let item = model[indexPath.row].publicUrl else { return }
+        coordinator.presentAtivityVc(item: item)
+        isSharing.value = false
     }
     
     func presentAvcFiles(path: URL) {

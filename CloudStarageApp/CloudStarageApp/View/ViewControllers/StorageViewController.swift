@@ -17,6 +17,7 @@ final class StorageViewController: UIViewController {
     private lazy var uploadButton = CSUploadButton()
     private lazy var changeLayoutButton = CSChangeLayoutButton()
     private lazy var selectedStyle: PresentationStyle = .table
+    private lazy var whileGettingLinkView = UIView(frame: view.bounds)
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: view.bounds.width, height: Constants.DefaultHeight)
@@ -51,6 +52,11 @@ final class StorageViewController: UIViewController {
         bindViewModel()
         bindNetworkMonitor()
     }
+}
+
+// MARK: Bind Extension
+
+private extension StorageViewController {
     
     func bindView() {
         viewModel.cellDataSource.bind { [weak self] files in
@@ -296,6 +302,31 @@ extension StorageViewController: UICollectionViewDataSource {
             return cell
         }
     }
+    
+    func bindShareing() {
+        viewModel.isSharing.bind { [weak self] isSharing in
+            guard let self = self, let isSharing = isSharing else { return }
+            DispatchQueue.main.async {
+                if isSharing {
+                    self.whileGettingLinkView.isHidden = false
+                    self.activityIndicator.style = .medium
+                    self.activityIndicator.startAnimating()
+                } else {
+                    self.whileGettingLinkView.isHidden = true
+                    self.tabBarController?.tabBar.backgroundColor = .white
+
+                }
+            }
+        }
+    }
+    
+    
+    func setupIsSharingView() {
+        whileGettingLinkView.isHidden = true
+        whileGettingLinkView.backgroundColor = AppColors.customGray.withAlphaComponent(0.5)
+        whileGettingLinkView.addSubview(activityIndicator)
+    }
+    
 }
 
 extension StorageViewController: StorageViewControllerProtocol {
