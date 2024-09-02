@@ -26,15 +26,12 @@ protocol PresentImageViewModelProtocol {
 final class PresentImageViewModel {
     
     var onButtonShareTapped: (() -> Void)?
-    var itemPublished: (() -> Void)?
-    
     var isDataLoading: Observable<Bool> = Observable(nil)
     var OnButtonTapped: Observable<Bool> = Observable(nil)
     var shareViewModel: Observable<Item> = Observable(nil)
 
     private var model: Item?
     private let coordinator: Coordinator
-    
     
     init(coordinator: Coordinator) {
         self.coordinator = coordinator
