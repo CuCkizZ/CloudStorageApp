@@ -118,6 +118,25 @@ final class NetworkManager {
         }
     }
     
+    func fetchCurentItem(path: String, completion: @escaping (Result<Item, Error>) -> Void) {
+        client.fetchCurrentData(path: path) { [weak self] result in
+            guard let self = self else { return }
+            switch result {
+            case .success(let data):
+                do {
+                    let result = try self.decoder.decode(Item.self, from: data)
+                    completion(.success(result))
+                } catch {
+                    completion(.failure(error))
+                    print("Ошибка при парсе: \(error.localizedDescription)")
+                }
+            case .failure(let error):
+                completion(.failure(error))
+                print("Нечего парсить")
+            }
+        }
+    }
+    
     func fetchAccountData(completion: @escaping (Result<ProfileDataSource, Error>) -> Void) {
         client.fetchAccountData { [weak self] result in
             guard let self = self else { return }
