@@ -5,11 +5,13 @@ final class ShareView: UIView {
     
     private let viewModel: PresentImageViewModelProtocol
     
+    private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var stackView = UIStackView(arrangedSubviews: [linkView, fileView])
     private lazy var linkView = UIView()
     private lazy var fileView = UIView()
     private lazy var shareLinkButton = UIButton()
     private lazy var shareFileButton = UIButton()
+    private var shareViewModel: Item?
     
     var link: String?
     var file: String?
@@ -19,6 +21,8 @@ final class ShareView: UIView {
         self.viewModel = viewModel
         super.init(frame: .zero)
         setupLayout()
+        bindView()
+        bindShareView()
     }
     
     required init?(coder: NSCoder) {
@@ -29,6 +33,31 @@ final class ShareView: UIView {
         self.link = link
         self.file = file
         self.path = path
+    }
+    
+    func bindView() {
+        viewModel.shareViewModel.bind { [weak self] item in
+            guard let self = self else { return }
+            self.shareViewModel = item
+        }
+    }
+    
+    func bindShareView() {
+        viewModel.isDataLoading.bind { [weak self] isDataLoading in
+            guard let self = self, let isDataLoading = isDataLoading else { return }
+            DispatchQueue.main.async {
+                if isDataLoading {
+                    self.activityIndicator.startAnimating()
+                    self.shareLinkButton.titleLabel?.text = "Getting link..."
+                } else {
+                    self.activityIndicator.stopAnimating()
+                    self.viewModel.shareLink(link: self.shareViewModel?.publicUrl ?? "")
+                    self.activityIndicator.isHidden = true
+                    self.viewModel.hideShareView()
+                    self.setupButtons()
+                }
+            }
+        }
     }
 }
 
@@ -47,7 +76,9 @@ private extension ShareView {
         layer.cornerRadius = 20
         layer.borderWidth = 0.5
         layer.borderColor = CGColor(gray: 0.5, alpha: 1)
+        activityIndicator.isHidden = true
         addSubview(stackView)
+        addSubview(activityIndicator)
         linkView.addSubview(shareLinkButton)
         fileView.addSubview(shareFileButton)
     }
@@ -92,7 +123,7 @@ private extension ShareView {
         shareFileButton.addTarget(self, action: #selector(shareFile), for: .touchUpInside)
     }
     
-//    TODO: close after tap
+//    MARK: Logic
     
     @objc func swipeToHide(_ gestureRecgnizer: UISwipeGestureRecognizer) {
         if gestureRecgnizer.state == .ended {
@@ -101,10 +132,9 @@ private extension ShareView {
     }
     
     @objc func shareLink() {
-        guard let link = link, let path = path else { return }
+        viewModel.OnButtonTapped.value = true
+        guard let path = path else { return }
         viewModel.publishFile(path: path)
-        viewModel.hideShareView()
-        viewModel.shareLink(link: link)
     }
     
     @objc func shareFile() {
@@ -134,6 +164,9 @@ private extension ShareView {
     }
     
     func setupConstraints() {
+        activityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
         stackView.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
             make.top.equalToSuperview()
