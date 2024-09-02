@@ -35,10 +35,3 @@ final class TabBarController: UITabBarController {
         tabBar.shadowImage = shadowImage
     }
 }
-
-extension UINavigationController {
-    
-    func setRightButton() -> UIBarButtonItem {
-        return UIBarButtonItem(image: UIImage(systemName: "magnifyingglass"), style: .plain, target: self, action: nil)
-    }
-}
