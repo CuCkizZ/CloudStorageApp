@@ -263,7 +263,7 @@ extension PublicStorageViewController: UICollectionViewDelegate {
         let model = modelReturn(indexPath: indexPath)
         return UIContextMenuConfiguration.contextMenuConfiguration(for: .publish,
                                                                    viewModel: viewModel,
-                                                                   model: model,
+                                                                   model: model, indexPath: indexPath,
                                                                    viewController: self)
     }
 }
