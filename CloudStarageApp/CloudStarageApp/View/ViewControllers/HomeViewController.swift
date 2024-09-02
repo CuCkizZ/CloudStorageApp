@@ -17,6 +17,7 @@ final class HomeViewController: UIViewController {
     private lazy var uploadButton = CSUploadButton()
     private lazy var changeLayoutButton = CSChangeLayoutButton()
     private lazy var networkStatusView = UIView()
+    private lazy var isSheringView = UIView(frame: view.bounds)
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -45,6 +46,7 @@ final class HomeViewController: UIViewController {
         bindView()
         bindViewModel()
         bindNetworkMonitor()
+        bindShareing()
     }
     
 }
@@ -77,7 +79,7 @@ private extension HomeViewController {
     }
     
     func bindNetworkMonitor() {
-        self.setupNetworkStatusView(networkStatusView)
+        setupNetworkStatusView(networkStatusView)
         viewModel.isConnected.bind { [weak self] isConndeted in
             guard let self = self, let isConndeted = isConndeted else { return }
             DispatchQueue.main.async {
@@ -92,6 +94,24 @@ private extension HomeViewController {
             }
         }
     }
+    
+    func bindShareing() {
+        viewModel.isSharing.bind { [weak self] isSharing in
+            guard let self = self, let isSharing = isSharing else { return }
+            DispatchQueue.main.async {
+                if isSharing {
+                    self.isSheringView.isHidden = false
+                    self.activityIndicator.style = .medium
+                    self.activityIndicator.startAnimating()
+                } else {
+                    self.isSheringView.isHidden = true
+                    self.tabBarController?.tabBar.backgroundColor = .white
+
+                }
+            }
+        }
+    }
+    
 }
 
     // MARK: Layout
@@ -113,9 +133,11 @@ private extension HomeViewController {
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
         view.addSubview(changeLayoutButton)
+        view.addSubview(isSheringView)
         view.backgroundColor = .white
         activityIndicator.hidesWhenStopped = true
         setupCollectionView()
+        setupIsSharingView()
         setupLayoutButton()
     }
     
@@ -175,6 +197,12 @@ private extension HomeViewController {
                                                selector: #selector(showOfflineDeviceUI(notification:)),
                                                name: NSNotification.Name.connectivityStatus, 
                                                object: nil)
+    }
+    
+    func setupIsSharingView() {
+        isSheringView.isHidden = true
+        isSheringView.backgroundColor = AppColors.customGray.withAlphaComponent(0.5)
+        isSheringView.addSubview(activityIndicator)
     }
     
     func setupConstraints() {
@@ -318,6 +346,7 @@ extension HomeViewController: UICollectionViewDelegate {
             return UIContextMenuConfiguration.contextMenuConfiguration(for: .last,
                                                                        viewModel: viewModel,
                                                                        model: model,
+                                                                       indexPath: indexPath,
                                                                        viewController: self)
         }
     }

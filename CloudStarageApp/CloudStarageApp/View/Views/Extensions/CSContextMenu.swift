@@ -21,6 +21,7 @@ extension UIContextMenuConfiguration {
     static func contextMenuConfiguration(for modelType: ModelType,
                                          viewModel: BaseCollectionViewModelProtocol,
                                          model: CellDataModel,
+                                         indexPath: IndexPath,
                                          viewController: UIViewController) -> UIContextMenuConfiguration? {
         var menu = UIMenu()
         let name = model.name
@@ -36,19 +37,10 @@ extension UIContextMenuConfiguration {
                     viewModel.deleteFile(name)
                 }
                 let shareLinkAction = UIAction(title: "Share a link", image: UIImage(systemName: "link.badge.plus")) { _ in
-                    viewModel.publishResource(path)
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
-                        viewModel.gettingUrl? = {
-                            guard let publicUrl = publicUrl else { return }
-                            print("no url")
-                            viewModel.presentAvc(item: publicUrl)
-                            print("\(publicUrl)")
-                        }
-                    }
-                    
+                    viewModel.publishResource(path, indexPath: indexPath)
                 }
                 let shareFileAction = UIAction(title: "Share a file", image: UIImage(systemName: "arrow.up.doc")) { _ in
-                    viewModel.publishResource(path)
+                    viewModel.publishResource(path, indexPath: indexPath)
                     guard let file = URL(string: file) else { return }
                     viewModel.presentAvcFiles(path: file)
                 }
@@ -81,13 +73,13 @@ extension UIContextMenuConfiguration {
                     viewModel.deleteFile(name)
                 }
                 let shareLinkAction = UIAction(title: "Share a link", image: UIImage(systemName: "link.badge.plus")) { _ in
-                    viewModel.publishResource(path)
+                    viewModel.publishResource(path, indexPath: indexPath)
                     if let publicUrl = publicUrl {
-                        viewModel.presentAvc(item: publicUrl)
+                       // viewModel.presentAvc(item: publicUrl)
                     }
                 }
                 let shareFileAction = UIAction(title: "Share a file", image: UIImage(systemName: "arrow.up.doc")) { _ in
-                    viewModel.publishResource(path)
+                    viewModel.publishResource(path, indexPath: indexPath)
                     guard let file = URL(string: file) else { return }
                     viewModel.presentAvcFiles(path: file)
                 }
@@ -128,11 +120,11 @@ extension UIContextMenuConfiguration {
                 }
                 let shareLinkAction = UIAction(title: "Share a link", image: UIImage(systemName: "link.badge.plus")) { _ in
                     if let publicUrl = publicUrl {
-                        viewModel.presentAvc(item: publicUrl)
+                       // viewModel.presentAvc(item: publicUrl)
                     }
                 }
                 let shareFileAction = UIAction(title: "Share a file", image: UIImage(systemName: "arrow.up.doc")) { _ in
-                    viewModel.publishResource(path)
+                    viewModel.publishResource(path, indexPath: indexPath)
                     guard let file = URL(string: file) else { return }
                     viewModel.presentAvcFiles(path: file)
                 }

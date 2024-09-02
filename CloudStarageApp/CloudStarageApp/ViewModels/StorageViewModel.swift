@@ -29,6 +29,8 @@ final class StorageViewModel {
     var isConnected: Observable<Bool> = Observable(nil)
     var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
     var fetchedResultController: NSFetchedResultsController<OfflineStorage>?
+    var isSharing: Observable<Bool> = Observable(nil)
+    var isPublished: (() -> IndexPath)?
 
     var gettingUrl: (()->Void)?
     
@@ -43,6 +45,11 @@ final class StorageViewModel {
 }
     
 extension StorageViewModel: StorageViewModelProtocol {
+ 
+    func publishResource(_ path: String, indexPath: IndexPath) {
+        
+    }
+    
     func publishResource2(_ path: String, completion: @escaping (URL?) -> Void) {
         
     }
@@ -56,8 +63,8 @@ extension StorageViewModel: StorageViewModelProtocol {
         
     }
     
-    func presentAvc(item: String) {
-        coordinator.presentAtivityVc(item: item)
+    func presentAvc(indexPath: IndexPath) {
+        //coordinator.presentAtivityVc(item: item)
     }
     
     func presentAvcFiles(path: URL) {

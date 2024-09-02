@@ -256,6 +256,7 @@ extension StorageViewController: UICollectionViewDelegate {
         return UIContextMenuConfiguration.contextMenuConfiguration(for: .full,
                                                                    viewModel: viewModel,
                                                                    model: model,
+                                                                   indexPath: indexPath,
                                                                    viewController: self)
     }
 }
