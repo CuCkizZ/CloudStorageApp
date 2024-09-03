@@ -6,7 +6,7 @@ import YandexLoginSDK
 private let clientID = "e10974fe4b64489bac4eb6ab97efae3f"
 
 @main
-final class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
     
