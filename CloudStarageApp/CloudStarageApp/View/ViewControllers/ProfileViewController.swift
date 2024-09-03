@@ -13,7 +13,7 @@ final class ProfileViewController: UIViewController {
     private lazy var leftStorageLabel = UILabel()
     private lazy var usedImageView = UIImageView()
     private lazy var leftImageView = UIImageView()
-    private lazy var storageCircleView = UIView()
+    private lazy var storageCircleView = UIView(frame: CGRect(x: 0, y: 0, width: 250, height: 250))
     private lazy var goToPublicButton = UIButton()
     private lazy var totalShapeLayer = CAShapeLayer()
     private lazy var usageShapeLayer = CAShapeLayer()
@@ -37,6 +37,7 @@ final class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        storageCircleView.isHidden = false
         bindNetworkMonitor()
         setupNetworkStatusView(networkStatusView)
         
@@ -112,9 +113,8 @@ private extension ProfileViewController {
         SetupNavBar()
         setupLogout()
         setupLabel()
-        setupStorageCircleView()
-        setupConstraints()
         setupShapeLayer()
+        setupConstraints()
     }
     
     func setupViews() {
@@ -135,10 +135,6 @@ private extension ProfileViewController {
         guard let navigationController = navigationController else { return }
         navigationController.navigationBar.prefersLargeTitles = true
         title = "Profile"
-    }
-    
-    func setupStorageCircleView() {
-        storageCircleView.backgroundColor = .clear
     }
     
     func configure() {
@@ -227,14 +223,13 @@ private extension ProfileViewController {
     
     
     func setupShapeLayer() {
-        let center = CGPoint(x: view.bounds.midX, y: view.bounds.midY - 300)
-        let radius = min(view.bounds.width, view.bounds.height) / 4
+        let center = CGPoint(x: storageCircleView.bounds.midX, y: storageCircleView.bounds.midY)
+        let radius = min(storageCircleView.bounds.width, storageCircleView.bounds.height) / 3 + 20
         let startAngle = -CGFloat.pi / 2
         let endAngle = 2 * CGFloat.pi - CGFloat.pi / 2
         
         configureShapeLayer(shapeLayer: totalShapeLayer, center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, strokeColor: AppColors.customGray.cgColor)
         configureShapeLayer(shapeLayer: usageShapeLayer, center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, strokeColor: AppColors.storagePink.cgColor, lineCap: .round)
-        
         storageCircleView.layer.addSublayer(totalShapeLayer)
         storageCircleView.layer.addSublayer(usageShapeLayer)
     }
@@ -258,10 +253,13 @@ private extension ProfileViewController {
     }
     
     func setupConstraints() {
-        storageCircleView.snp.makeConstraints { make in
-            make.top.left.right.equalTo(view.safeAreaLayoutGuide)
-            make.height.equalTo(250)
-        }
+        storageCircleView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+        storageCircleView.widthAnchor.constraint(equalToConstant: 250),
+        storageCircleView.heightAnchor.constraint(equalToConstant: 250),
+        storageCircleView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+        storageCircleView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+    ])
         totalStorageLabel.snp.makeConstraints { make in
             make.center.equalTo(storageCircleView.snp.center)
         }
