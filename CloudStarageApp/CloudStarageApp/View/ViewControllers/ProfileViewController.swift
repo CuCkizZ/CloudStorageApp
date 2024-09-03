@@ -15,9 +15,11 @@ final class ProfileViewController: UIViewController {
     private lazy var totalStorageLabel = UILabel()
     private lazy var usedStorageLabel = UILabel()
     private lazy var leftStorageLabel = UILabel()
+    private lazy var buttonTitleLabel = UILabel()
     private lazy var usedImageView = UIImageView()
     private lazy var leftImageView = UIImageView()
     private lazy var storageCircleView = UIView(frame: CGRect(x: 0, y: 0, width: 210, height: 210))
+    private lazy var arrowImageView = UIImageView()
     private lazy var goToPublicButton = UIButton()
     private lazy var totalShapeLayer = CAShapeLayer()
     private lazy var usageShapeLayer = CAShapeLayer()
@@ -132,6 +134,8 @@ private extension ProfileViewController {
         view.addSubview(leftImageView)
         view.addSubview(goToPublicButton)
         view.addSubview(storageCircleView)
+        goToPublicButton.addSubview(arrowImageView)
+        goToPublicButton.addSubview(buttonTitleLabel)
     }
     
     func SetupNavBar() {
@@ -167,23 +171,26 @@ private extension ProfileViewController {
         totalStorageLabel.textColor = .black
         leftStorageLabel.textColor = .black
         usedStorageLabel.textColor = .black
+        buttonTitleLabel.textColor = .black
         
         totalStorageLabel.font = .Inter.medium.size(of: 19)
         leftStorageLabel.font = .Inter.regular.size(of: 15)
         usedStorageLabel.font = .Inter.regular.size(of: 15)
+        buttonTitleLabel.font = .Inter.regular.size(of: 17)
         totalStorageLabel.layer.zPosition = 1
     }
     
     func setupImages() {
         leftImageView.image = UIImage(resource: .leftEllipse)
         usedImageView.image = UIImage(resource: .usageEllipse)
+        arrowImageView.image = UIImage(resource: .arrow)
     }
     
     func setupButton() {
-        goToPublicButton.setTitle("Public Files", for: .normal)
+        buttonTitleLabel.text = "Published files"
         goToPublicButton.setTitleColor(.black, for: .normal)
         goToPublicButton.backgroundColor = .white
-        goToPublicButton.layer.cornerRadius = 12
+        goToPublicButton.layer.cornerRadius = 10
         goToPublicButton.layer.shadowColor = UIColor.black.cgColor
         goToPublicButton.layer.shadowOffset = CGSize(width: 1, height: 2)
         goToPublicButton.layer.shadowRadius = 4
@@ -292,6 +299,15 @@ private extension ProfileViewController {
         goToPublicButton.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(leftStorageLabel.snp.bottom).offset(50)
+            make.height.equalTo(45)
+        }
+        arrowImageView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.right.equalTo(goToPublicButton.snp.right).inset(18)
+        }
+        buttonTitleLabel.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.left.equalTo(goToPublicButton.snp.left).inset(18)
         }
     }
 }
