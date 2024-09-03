@@ -9,7 +9,7 @@ import Foundation
 import Alamofire
 import UIKit
 
-final class NetworkManager {
+final class NetworkManager: NetworkManagerProtocol {
     
     static let shared = NetworkManager()
     
@@ -22,8 +22,6 @@ final class NetworkManager {
 
     private let mapper = Mapper()
     private let client = NetworkService()
-    
-    private init() {}
     
     func shareFile(with url: URL, completion: @escaping (Result<(URLResponse, Data), Error>) -> Void) {
         AF.request(url, method: .get).validate().response {  response in

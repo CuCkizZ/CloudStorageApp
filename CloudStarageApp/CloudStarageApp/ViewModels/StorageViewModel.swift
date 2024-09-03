@@ -19,6 +19,8 @@ protocol StorageViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
 final class StorageViewModel {
     
     private let coordinator: StorageCoordinator
+    private let networkManager: NetworkManagerProtocol
+    
     private let keychain = KeychainManager.shared
     private let dataManager = CoreManager.shared
     private var model: [Item] = []
@@ -32,8 +34,9 @@ final class StorageViewModel {
     var isSharing: Observable<Bool> = Observable(nil)
     var isPublished: (() -> IndexPath)?
     
-    init(coordinator: StorageCoordinator) {
+    init(coordinator: StorageCoordinator, networkManager: NetworkManagerProtocol) {
         self.coordinator = coordinator
+        self.networkManager = networkManager
         startMonitoringNetwork()
     }
     
@@ -51,7 +54,7 @@ extension StorageViewModel: StorageViewModelProtocol {
             return
         }
         isLoading.value = true
-        NetworkManager.shared.fetchData() { [weak self] result in
+        networkManager.fetchData() { [weak self] result in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 switch result {
@@ -71,7 +74,7 @@ extension StorageViewModel: StorageViewModelProtocol {
             return
         }
         isLoading.value = true
-        NetworkManager.shared.fetchCurentData(path: path) { [weak self] result in
+        networkManager.fetchCurentData(path: path) { [weak self] result in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 switch result {
@@ -88,7 +91,7 @@ extension StorageViewModel: StorageViewModelProtocol {
     }
     
     func publishResource(_ path: String, indexPath: IndexPath) {
-        NetworkManager.shared.toPublicFile(path: path)
+        networkManager.toPublicFile(path: path)
         isSharing.value = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             guard let self = self else { return }
@@ -102,7 +105,7 @@ extension StorageViewModel: StorageViewModelProtocol {
     }
     
     func unpublishResource(_ path: String) {
-        NetworkManager.shared.unpublishFile(path)
+        networkManager.unpublishFile(path)
     }
     
     func startMonitoringNetwork() {
@@ -124,16 +127,16 @@ extension StorageViewModel: StorageViewModelProtocol {
     }
     
     func publishResource(_ path: String) {
-        NetworkManager.shared.toPublicFile(path: path)
+        networkManager.toPublicFile(path: path)
     }
     
     func deleteFile(_ name: String) {
-        NetworkManager.shared.deleteReqest(name: name)
+        networkManager.deleteReqest(name: name)
     }
     
     func createNewFolder(_ name: String) {
         if name.isEmpty == true {
-            NetworkManager.shared.createNewFolder("New Folder")
+            networkManager.createNewFolder("New Folder")
             DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
                 guard let self = self else { return }
                 self.fetchData()
@@ -142,7 +145,7 @@ extension StorageViewModel: StorageViewModelProtocol {
     }
     
     func renameFile(oldName: String, newName: String) {
-        NetworkManager.shared.renameFile(oldName: oldName, newName: newName)
+        networkManager.renameFile(oldName: oldName, newName: newName)
         fetchData()
     }
 
@@ -155,7 +158,7 @@ extension StorageViewModel: StorageViewModelProtocol {
     }
     
     func presentAvcFiles(path: URL) {
-        NetworkManager.shared.shareFile(with: path) { result in
+        networkManager.shareFile(with: path) { result in
             switch result {
             case .success((let response, let data)):
                 do {
@@ -194,7 +197,7 @@ extension StorageViewModel: StorageViewModelProtocol {
     }
     
     func logout() {
-        try? keychain.delete(forKey: "token")
+        keychain.delete(forKey: "token")
         coordinator.finish()
     }
 }

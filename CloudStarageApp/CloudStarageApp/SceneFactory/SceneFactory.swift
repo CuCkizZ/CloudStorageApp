@@ -108,7 +108,8 @@ struct SceneFactory {
     //    MARK: HomeCoordinator
     
     static func makeHomeScene(coordinator: HomeCoordinator) -> HomeViewController {
-        let vm: HomeViewModelProtocol = HomeViewModel(coordinator: coordinator)
+        let nm: NetworkManagerProtocol = NetworkManager()
+        let vm: HomeViewModelProtocol = HomeViewModel(coordinator: coordinator, neworkManager: nm)
         let vc = HomeViewController(viewModel: vm)
         return vc
     }
@@ -135,7 +136,8 @@ struct SceneFactory {
 //    MARK: StorageCoordinator
     
     static func makeStorageScene(fetchpath: String, navigationTitle: String, coordinator: StorageCoordinator) -> StorageViewController {
-        let vm: StorageViewModelProtocol = StorageViewModel(coordinator: coordinator)
+        let nm: NetworkManagerProtocol = NetworkManager()
+        let vm: StorageViewModelProtocol = StorageViewModel(coordinator: coordinator, networkManager: nm)
         let vc = StorageViewController(viewModel: vm, navigationTitle: navigationTitle, fetchpath: fetchpath)
         return vc
     }

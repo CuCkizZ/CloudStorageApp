@@ -19,6 +19,8 @@ protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
 final class HomeViewModel {
     
     private let coordinator: HomeCoordinator
+    private let neworkManager: NetworkManagerProtocol
+    
     var loginResult: LoginResult? {
         didSet {
             
@@ -28,7 +30,6 @@ final class HomeViewModel {
     private let keychain = KeychainManager.shared
     private let dataManager = CoreManager.shared
     private let userStorage = UserStorage.shared
-    private let networkService: NetworkServiceProtocol = NetworkService()
     private var fetchedResultController: NSFetchedResultsController<OfflineItems>?
     private var model: [Item] = []
     private let networkMonitor = NWPathMonitor()
@@ -40,8 +41,9 @@ final class HomeViewModel {
     var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
     var cellDataSourceOffline: Observable<[OfflineItems]> = Observable(nil)
     
-    init(coordinator: HomeCoordinator) {
+    init(coordinator: HomeCoordinator, neworkManager: NetworkManagerProtocol) {
         self.coordinator = coordinator
+        self.neworkManager = neworkManager
         startMonitoringNetwork()
         fetchData()
     }
@@ -82,7 +84,7 @@ extension HomeViewModel: HomeViewModelProtocol {
             return
         }
         isLoading.value = true
-        NetworkManager.shared.fetchLastData { [weak self] result in
+        neworkManager.fetchLastData { [weak self] result in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 switch result {
@@ -98,12 +100,12 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func deleteFile(_ name: String) {
-        NetworkManager.shared.deleteReqest(name: name)
+        neworkManager.deleteReqest(name: name)
     }
     
     func createNewFolder(_ name: String) {
         if name.isEmpty == true {
-            NetworkManager.shared.createNewFolder("New Folder")
+            neworkManager.createNewFolder("New Folder")
             DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
                 guard let self = self else { return }
                 self.fetchData()
@@ -112,7 +114,7 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func publishResource(_ path: String, indexPath: IndexPath) {
-        NetworkManager.shared.toPublicFile(path: path)
+        neworkManager.toPublicFile(path: path)
         isSharing.value = true
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
             guard let self = self else { return }
@@ -126,14 +128,14 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func unpublishResource(_ path: String) {
-        NetworkManager.shared.unpublishFile(path)
+        neworkManager.unpublishFile(path)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.fetchData()
         }
     }
     
     func renameFile(oldName: String, newName: String) {
-        NetworkManager.shared.renameFile(oldName: oldName, newName: newName)
+        neworkManager.renameFile(oldName: oldName, newName: newName)
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
             self.fetchData()
         }
@@ -148,7 +150,7 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func presentAvcFiles(path: URL) {
-        NetworkManager.shared.shareFile(with: path) { result in
+        neworkManager.shareFile(with: path) { result in
             switch result {
             case .success((let response, let data)):
                 do {

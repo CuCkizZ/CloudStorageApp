@@ -35,9 +35,13 @@ final class NetworkService: NetworkServiceProtocol {
             }
         }
     }
+    
+    init() {
+        updateToken()
+    }
    
     private func updateToken() {
-        if let savedToken = self.keychain.get(forKey: "token") {
+        if let savedToken = self.keychain.get(forKey: NetworkConstants.tokenKey) {
             self.token = savedToken
             headers = ["Authorization" : "OAuth \(savedToken)"]
         }
