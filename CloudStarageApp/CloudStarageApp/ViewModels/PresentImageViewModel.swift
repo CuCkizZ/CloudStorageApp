@@ -32,14 +32,16 @@ final class PresentImageViewModel {
 
     private var model: Item?
     private let coordinator: Coordinator
+    private let networkManager: NetworkManagerProtocol?
     
-    init(coordinator: Coordinator) {
+    init(coordinator: Coordinator, networkManager: NetworkManagerProtocol? = nil) {
         self.coordinator = coordinator
+        self.networkManager = networkManager
     }
     
     func publishFile(path: String) {
         if OnButtonTapped.value ?? true {
-            NetworkManager.shared.toPublicFile(path: path)
+            networkManager?.toPublicFile(path: path)
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                 guard let self = self else { return }
                 self.isDataLoading.value = true
@@ -53,7 +55,7 @@ extension PresentImageViewModel: PresentImageViewModelProtocol {
    
     func fetchData(path: String) {
         if isDataLoading.value == true {
-            NetworkManager.shared.fetchCurentItem(path: path) { [weak self] result in
+            networkManager?.fetchCurentItem(path: path) { [weak self] result in
                 guard let self = self else { return }
                 DispatchQueue.main.async {
                     switch result {
@@ -96,7 +98,7 @@ extension PresentImageViewModel: PresentImageViewModelProtocol {
     }
     
     func deleteFile(name: String) {
-        NetworkManager.shared.deleteReqest(name: name)
+        networkManager?.deleteReqest(name: name)
     }
     
     func shareLink(link: String) {
@@ -104,7 +106,7 @@ extension PresentImageViewModel: PresentImageViewModelProtocol {
     }
     
     func shareFile(path: URL) {
-        NetworkManager.shared.shareFile(with: path) { result in
+        networkManager?.shareFile(with: path) { result in
             switch result {
             case .success((let response, let data)):
                 do {

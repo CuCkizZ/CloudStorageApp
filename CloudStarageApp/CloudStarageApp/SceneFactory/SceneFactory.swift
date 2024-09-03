@@ -127,7 +127,8 @@ struct SceneFactory {
     }
     
     static func makeImageScene(model: CellDataModel, coordinator: Coordinator) -> PresentImageViewController {
-        let vm = PresentImageViewModel(coordinator: coordinator)
+        let nm: NetworkManagerProtocol = NetworkManager()
+        let vm = PresentImageViewModel(coordinator: coordinator, networkManager: nm)
         let vc = PresentImageViewController(viewModel: vm)
         vc.configure(model: model)
         return vc
@@ -145,7 +146,8 @@ struct SceneFactory {
     //    MARK: ProfileCoordinator
     
     static func makeProfileScene(coordinator: ProfileCoordinator) -> ProfileViewController {
-        let vm: ProfileViewModelProtocol = ProfileViewModel(coordinator: coordinator)
+        let nm: NetworkManagerProtocol = NetworkManager()
+        let vm: ProfileViewModelProtocol = ProfileViewModel(coordinator: coordinator, networkManager: nm)
         let vc = ProfileViewController(viewModel: vm)
         return vc
     }
@@ -153,7 +155,8 @@ struct SceneFactory {
 //    MARK: PublicStorageViewController
     
     static func makePublicScene(navigationTitle: String, coordinator: ProfileCoordinator) -> PublicStorageViewController {
-        let vm: PublickStorageViewModelProtocol = PublicStorageViewModel(coordinator: coordinator)
+        let nm: NetworkManagerProtocol = NetworkManager()
+        let vm: PublickStorageViewModelProtocol = PublicStorageViewModel(coordinator: coordinator, networkManager: nm)
         let vc = PublicStorageViewController(viewModel: vm, navigationTitle: navigationTitle)
         return vc
     }

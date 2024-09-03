@@ -17,14 +17,14 @@ protocol ProfileViewModelProtocol: AnyObject {
     func pushToPublic()
     func fetchData()
     func logout()
-    func paggination(title: String, path: String)
     func FetchedResultsController()
     func fetchOfflineProfile() -> OfflineProfile?
 }
 
 final class ProfileViewModel {
-    
+
     private let coordinator: ProfileCoordinator
+    private let networkManager: NetworkManagerProtocol
     private let keychain = KeychainManager.shared
     private var model: Account?
     var dataSource: ProfileDataSource?
@@ -38,8 +38,9 @@ final class ProfileViewModel {
     var fetchedResultController: NSFetchedResultsController<OfflineProfile>?
 
  
-    init(coordinator: ProfileCoordinator) {
+    init(coordinator: ProfileCoordinator, networkManager: NetworkManagerProtocol) {
         self.coordinator = coordinator
+        self.networkManager = networkManager
         fetchData()
         startMonitoringNetwork()
     }
@@ -67,7 +68,7 @@ final class ProfileViewModel {
 extension ProfileViewModel: ProfileViewModelProtocol {
     
     func fetchData() {
-        NetworkManager.shared.fetchAccountData { [weak self] result in
+        networkManager.fetchAccountData { [weak self] result in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 switch result {
@@ -86,13 +87,8 @@ extension ProfileViewModel: ProfileViewModelProtocol {
         coordinator.goToPublic()
     }
     
-    func paggination(title: String, path: String) {
-        //coordinator.paggination(path: path, title: title)
-    }
-    
     func logout() {
-        try? keychain.delete(forKey: "token")
-        print("delted")
+        keychain.delete(forKey: "token")
         coordinator.finish()
     }
 }
@@ -118,7 +114,6 @@ extension ProfileViewModel {
         let fetchRequest: NSFetchRequest<OfflineProfile> = OfflineProfile.fetchRequest()
         
         do {
-            // Предполагаем, что у нас только один объект в базе данных
             let results = try context.fetch(fetchRequest)
             return results.first
         } catch {
