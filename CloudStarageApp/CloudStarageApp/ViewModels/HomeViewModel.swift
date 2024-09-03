@@ -14,13 +14,10 @@ protocol HomeViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
     var cellDataSourceOffline: Observable<[OfflineItems]> { get set }
     func returnItems(at indexPath: IndexPath) -> OfflineItems?
-    func logout()
-    
 }
 
 final class HomeViewModel {
     
-    var onErrorReceived: ((String) -> Void)?
     private let coordinator: HomeCoordinator
     var loginResult: LoginResult? {
         didSet {
@@ -47,11 +44,9 @@ final class HomeViewModel {
         self.coordinator = coordinator
         startMonitoringNetwork()
         fetchData()
-        YandexLoginSDK.shared.add(observer: self)
     }
     
     private func mapModel() {
-        cellDataSource.value = nil
         cellDataSource.value = model.compactMap { CellDataModel($0) }
     }
 }
@@ -187,22 +182,10 @@ extension HomeViewModel: HomeViewModelProtocol {
     
 //    MARK: YandexLoginSDK
 
-extension HomeViewModel: YandexLoginSDKObserver {
-    
-    func didFinishLogin(with result: Result<LoginResult, any Error>) {
-//        switch result {
-//        case .success(let loginResult):
-//            self.loginResult = loginResult
-//            networkService.getOAuthToken()
-//            fetchData()
-//        case .failure(_):
-//            return
-//        }
-    }
+extension HomeViewModel {
     
     func logout() {
         try? YandexLoginSDK.shared.logout()
-        model.removeAll()
         coordinator.finish()
     }
 }

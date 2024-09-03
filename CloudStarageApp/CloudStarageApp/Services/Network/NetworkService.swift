@@ -35,19 +35,14 @@ final class NetworkService: NetworkServiceProtocol {
             }
         }
     }
-    
-    init() {
-        updateToken()
-    }
-    
-    func updateToken() {
+   
+    private func updateToken() {
         if let savedToken = self.keychain.get(forKey: "token") {
             self.token = savedToken
-            print("saved token------", savedToken)
             headers = ["Authorization" : "OAuth \(savedToken)"]
         }
     }
-    
+
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void) {
         let urlParams = NetworkConstants.defaultParams
         let urlString = NetworkConstants.resoursesUrl
@@ -80,9 +75,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchLastData(completion: @escaping (Result<Data, Error>) -> Void) {
-        print("Last parms", headers)
         updateToken()
-        print("Last token after undate", headers)
         let urlParams = NetworkConstants.defaultParams
         let urlString = NetworkConstants.lastUploadedUrl
         guard let url = URL(string: urlString) else { return }
@@ -99,7 +92,6 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchAccountData(completion: @escaping (Result<Data, Error>) -> Void) {
-        print("Acaunt parms", headers)
         let urlString = NetworkConstants.diskInfoUrl
         guard let url = URL(string: urlString) else { return }
         
@@ -138,7 +130,6 @@ final class NetworkService: NetworkServiceProtocol {
                 print("Error: no response")
                 return
             }
-            //completion(statusCode)
             print("status code: \(statusCode)")
             if let error = response.error {
                 print("Error: \(error)")
