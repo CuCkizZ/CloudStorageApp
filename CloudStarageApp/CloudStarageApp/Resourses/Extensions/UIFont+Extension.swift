@@ -8,9 +8,19 @@ extension UIFont {
                 UIFont(name: Constants.Inter.regular, size: size)!
             }
         }
+        enum medium {
+            static func size(of size: CGFloat) -> UIFont {
+                UIFont(name: Constants.Inter.medium, size: size)!
+            }
+        }
         enum bold {
             static func size(of size: CGFloat) -> UIFont {
                 UIFont(name: Constants.Inter.bold, size: size)!
+            }
+        }
+        enum semiBold {
+            static func size(of size: CGFloat) -> UIFont {
+                UIFont(name: Constants.Inter.semiBold, size: size)!
             }
         }
         enum light {

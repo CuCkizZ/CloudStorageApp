@@ -1,6 +1,10 @@
 import UIKit
 import SnapKit
 
+private enum LocalConstants {
+    static let animationKey = "strokeEnd"
+}
+
 final class ProfileViewController: UIViewController {
     
     private let viewModel: ProfileViewModelProtocol
@@ -13,7 +17,7 @@ final class ProfileViewController: UIViewController {
     private lazy var leftStorageLabel = UILabel()
     private lazy var usedImageView = UIImageView()
     private lazy var leftImageView = UIImageView()
-    private lazy var storageCircleView = UIView(frame: CGRect(x: 0, y: 0, width: 250, height: 250))
+    private lazy var storageCircleView = UIView(frame: CGRect(x: 0, y: 0, width: 210, height: 210))
     private lazy var goToPublicButton = UIButton()
     private lazy var totalShapeLayer = CAShapeLayer()
     private lazy var usageShapeLayer = CAShapeLayer()
@@ -109,15 +113,17 @@ final class ProfileViewController: UIViewController {
 private extension ProfileViewController {
     
     func setupLayout() {
-        setupViews()
+        setupView()
         SetupNavBar()
         setupLogout()
         setupLabel()
+        setupButton()
+        setupImages()
         setupShapeLayer()
         setupConstraints()
     }
     
-    func setupViews() {
+    func setupView() {
         view.backgroundColor = .white
         view.addSubview(totalStorageLabel)
         view.addSubview(usedStorageLabel)
@@ -126,9 +132,6 @@ private extension ProfileViewController {
         view.addSubview(leftImageView)
         view.addSubview(goToPublicButton)
         view.addSubview(storageCircleView)
-        setupButton()
-        leftImageView.image = UIImage(resource: .playstore)
-        usedImageView.image = UIImage(resource: .playstore)
     }
     
     func SetupNavBar() {
@@ -144,7 +147,7 @@ private extension ProfileViewController {
             let intT = Int((model.totalSpace) / 1000000000)
             let intL = Float(model.leftSpace) / 1000000000
             let intU = Float(model.usedSpace) / 1000000000
-            totalStorageLabel.text = String(describing: intT) + "гб"
+            totalStorageLabel.text = String(describing: intT) + " гб"
             leftStorageLabel.text = "\(intL) гб - свободно"
             usedStorageLabel.text = "\(intU) гб - занято"
         case true:
@@ -165,10 +168,15 @@ private extension ProfileViewController {
         leftStorageLabel.textColor = .black
         usedStorageLabel.textColor = .black
         
-        totalStorageLabel.font = .Inter.regular.size(of: 50)
-        leftStorageLabel.font = .Inter.regular.size(of: 12)
-        usedStorageLabel.font = .Inter.regular.size(of: 12)
+        totalStorageLabel.font = .Inter.medium.size(of: 19)
+        leftStorageLabel.font = .Inter.regular.size(of: 15)
+        usedStorageLabel.font = .Inter.regular.size(of: 15)
         totalStorageLabel.layer.zPosition = 1
+    }
+    
+    func setupImages() {
+        leftImageView.image = UIImage(resource: .leftEllipse)
+        usedImageView.image = UIImage(resource: .usageEllipse)
     }
     
     func setupButton() {
@@ -211,20 +219,20 @@ private extension ProfileViewController {
     }
     
     private func animateLayer(layer: CAShapeLayer, toValue: CGFloat) {
-        let animation = CABasicAnimation(keyPath: "strokeEnd")
+        let animation = CABasicAnimation(keyPath: LocalConstants.animationKey)
         animation.fromValue = layer.strokeEnd
         animation.toValue = toValue
         animation.duration = 1
         animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
         
         layer.strokeEnd = toValue
-        layer.add(animation, forKey: "strokeEnd")
+        layer.add(animation, forKey: LocalConstants.animationKey)
     }
     
     
     func setupShapeLayer() {
         let center = CGPoint(x: storageCircleView.bounds.midX, y: storageCircleView.bounds.midY)
-        let radius = min(storageCircleView.bounds.width, storageCircleView.bounds.height) / 3 + 20
+        let radius = min(storageCircleView.bounds.width, storageCircleView.bounds.height) / 3 + 10
         let startAngle = -CGFloat.pi / 2
         let endAngle = 2 * CGFloat.pi - CGFloat.pi / 2
         
@@ -255,8 +263,8 @@ private extension ProfileViewController {
     func setupConstraints() {
         storageCircleView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-        storageCircleView.widthAnchor.constraint(equalToConstant: 250),
-        storageCircleView.heightAnchor.constraint(equalToConstant: 250),
+        storageCircleView.widthAnchor.constraint(equalToConstant: 210),
+        storageCircleView.heightAnchor.constraint(equalToConstant: 210),
         storageCircleView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
         storageCircleView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
     ])
@@ -264,22 +272,22 @@ private extension ProfileViewController {
             make.center.equalTo(storageCircleView.snp.center)
         }
         usedImageView.snp.makeConstraints { make in
-            make.left.equalToSuperview().inset(20)
-            make.centerY.equalToSuperview()
-            make.size.equalTo(30)
+            make.left.equalToSuperview().inset(35)
+            make.top.equalTo(storageCircleView.snp.bottom).inset(-30)
+            make.size.equalTo(21)
         }
         leftImageView.snp.makeConstraints { make in
-            make.left.equalToSuperview().inset(20)
-            make.top.equalTo(usedImageView.snp.bottom).offset(10)
-            make.size.equalTo(30)
+            make.left.equalToSuperview().inset(35)
+            make.top.equalTo(usedImageView.snp.bottom).offset(21)
+            make.size.equalTo(21)
         }
         usedStorageLabel.snp.makeConstraints { make in
-            make.left.equalTo(usedImageView.snp.right).offset(10)
-            make.centerY.equalToSuperview()
+            make.top.equalTo(storageCircleView.snp.bottom).inset(-30)
+            make.left.equalTo(usedImageView.snp.right).offset(8)
         }
         leftStorageLabel.snp.makeConstraints { make in
-            make.left.equalTo(leftImageView.snp.right).offset(10)
-            make.top.equalTo(usedStorageLabel.snp.bottom).offset(20)
+            make.left.equalTo(leftImageView.snp.right).offset(8)
+            make.top.equalTo(usedStorageLabel.snp.bottom).offset(24)
         }
         goToPublicButton.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
