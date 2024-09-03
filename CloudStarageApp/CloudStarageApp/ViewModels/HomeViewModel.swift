@@ -51,9 +51,8 @@ final class HomeViewModel {
     }
     
     private func mapModel() {
+        cellDataSource.value = nil
         cellDataSource.value = model.compactMap { CellDataModel($0) }
-        print("celdatafomViewModel", cellDataSource.value?.first?.name)
-        print("maodelVoew",model.first?.name)
     }
 }
     
@@ -191,18 +190,19 @@ extension HomeViewModel: HomeViewModelProtocol {
 extension HomeViewModel: YandexLoginSDKObserver {
     
     func didFinishLogin(with result: Result<LoginResult, any Error>) {
-        switch result {
-        case .success(let loginResult):
-            self.loginResult = loginResult
-            networkService.getOAuthToken()
-            fetchData()
-        case .failure(_):
-            return
-        }
+//        switch result {
+//        case .success(let loginResult):
+//            self.loginResult = loginResult
+//            networkService.getOAuthToken()
+//            fetchData()
+//        case .failure(_):
+//            return
+//        }
     }
     
     func logout() {
         try? YandexLoginSDK.shared.logout()
+        model.removeAll()
         coordinator.finish()
     }
 }

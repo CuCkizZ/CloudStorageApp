@@ -148,7 +148,6 @@ extension LoginViewController: YandexLoginSDKObserver {
             self.loginResult = loginResult
             let result = loginResult.token
             viewModel.saveToken(token: result)
-            networkService.getOAuthToken()
             viewModel.login()
         case .failure(let error):
             self.errorOccured(error)

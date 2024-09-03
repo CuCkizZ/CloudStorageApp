@@ -59,7 +59,6 @@ private extension HomeViewController {
         viewModel.cellDataSource.bind { [weak self] files in
             guard let self = self, let files = files else { return }
             self.cellDataSource = files
-            print(cellDataSource.first?.name)
             collectionView.reloadData()
         }
     }
@@ -108,7 +107,6 @@ private extension HomeViewController {
                 } else {
                     self.whileGettingLinkView.isHidden = true
                     self.tabBarController?.tabBar.backgroundColor = .white
-
                 }
             }
         }

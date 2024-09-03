@@ -74,7 +74,6 @@ final class CoreManager {
         do {
             try context.execute(deleteRequest)
             try context.save()
-            print("deleted data")
         } catch {
             print("Error clearing Core Data: \(error.localizedDescription)")
         }

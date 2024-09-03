@@ -108,7 +108,6 @@ private extension AppCoordinator {
         window?.layer.add(transition, forKey: kCATransition)
         window?.rootViewController = authNavigationController
         window?.makeKeyAndVisible()
-        print("User logged out, and authentication screen presented.")
     }
 }
 

@@ -28,19 +28,27 @@ final class NetworkService: NetworkServiceProtocol {
     
     private let keychain = KeychainManager.shared
     private var headers: HTTPHeaders = [ "Accept" : "application/json"]
-    private var token = "" {
-            didSet {
+    private var token: String? {
+        didSet {
+            if let token = token {
                 headers["Authorization"] = "OAuth \(token)"
             }
         }
-        
-    init() {
-        getOAuthToken()
     }
-        
-    func getOAuthToken() {
-        guard let token = keychain.get(forKey: NetworkConstants.tokenKey) else { return }
-        self.token = token
+    
+    init() {
+        updateToken()
+    }
+    
+    private func updateToken(completion: (() -> Void)? = nil) {
+        DispatchQueue.global().async {
+            if let savedToken = self.keychain.get(forKey: "token") {
+                self.token = savedToken
+            }
+            DispatchQueue.main.async {
+                completion?()
+            }
+        }
     }
     
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void) {
@@ -75,18 +83,22 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchLastData(completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlParams = NetworkConstants.defaultParams
-        let urlString = NetworkConstants.lastUploadedUrl
-        guard let url = URL(string: urlString) else { return }
-        
-        AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
-            if let error = response.error {
-                completion(.failure(error))
-                print("fetchLastData error")
-                return
+        updateToken {
+            print("Headers in fetchLastData:", self.headers)
+            
+            let urlParams = NetworkConstants.defaultParams
+            let urlString = NetworkConstants.lastUploadedUrl
+            guard let url = URL(string: urlString) else { return }
+            
+            AF.request(url, method: .get, parameters: urlParams, headers: self.headers).validate().response { response in
+                if let error = response.error {
+                    completion(.failure(error))
+                    print("fetchLastData error:", error)
+                    return
+                }
+                guard let data = response.data else { return }
+                completion(.success(data))
             }
-            guard let data = response.data else { return }
-            completion(.success(data))
         }
     }
     
@@ -205,4 +217,3 @@ final class NetworkService: NetworkServiceProtocol {
         }
     }
 }
-                                              

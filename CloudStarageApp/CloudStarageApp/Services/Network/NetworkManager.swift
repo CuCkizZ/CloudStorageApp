@@ -46,7 +46,6 @@ final class NetworkManager {
                     let result = try self.decoder.decode(Embedded.self, from: data)
                     self.mapper.mapCoreData(result, type: .last)
                     completion(.success((result.items)))
-                    print("NetworkDataManagerSaved")
                 } catch {
                     completion(.failure(error))
                     print("Ошибка при парсе: \(error.localizedDescription)")
@@ -146,7 +145,6 @@ final class NetworkManager {
                     let result = try self.decoder.decode(Account.self, from: data)
                     let profile = self.mapper.mapProfile(result)
                     completion(.success(profile))
-                    print("Acouunt data is okay")
                 } catch {
                     completion(.failure(error))
                     print("Ошибка при парсе: \(error.localizedDescription)")
