@@ -85,7 +85,6 @@ extension HomeViewModel: HomeViewModelProtocol {
         }
     }
     
-    
     func fetchData() {
         if isLoading.value ?? true {
             return

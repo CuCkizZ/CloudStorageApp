@@ -62,18 +62,10 @@ private extension AppCoordinator {
     }
 }
 
-extension AppCoordinator {
+private extension AppCoordinator {
     
     func showMainFlow() {
         showMainScene()
-    }
-    
-    func showAuthScene() {
-        showAuthFlow()
-    }
-    
-    func showPublicFlow() {
-        showPublicScene()
     }
     
     func logout() {
@@ -91,7 +83,7 @@ extension AppCoordinator {
         navigationController?.view.removeFromSuperview()
         navigationController = nil
         
-        // userStorage.clearUserData()
+        //userStorage.clearUserData()
         
         let authNavigationController = UINavigationController()
         

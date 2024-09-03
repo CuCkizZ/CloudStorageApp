@@ -17,7 +17,6 @@ final class OnboardingCoordinator: Coordinator {
     }
     override func finish() {
         finishDelegate?.coordinatorDidFinish(childCoordinator: self)
-        print("Im done")
     }
 }
 
@@ -27,5 +26,4 @@ private extension OnboardingCoordinator {
         let view = SceneFactory.makeOnbording(coordinaror: self)
         navigationController?.pushViewController(view, animated: true)
     }
-    
 }

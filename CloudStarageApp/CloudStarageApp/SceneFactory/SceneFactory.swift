@@ -148,13 +148,15 @@ struct SceneFactory {
         return vc
     }
     
+//    MARK: PublicStorageViewController
+    
     static func makePublicScene(navigationTitle: String, coordinator: ProfileCoordinator) -> PublicStorageViewController {
         let vm: PublickStorageViewModelProtocol = PublicStorageViewModel(coordinator: coordinator)
         let vc = PublicStorageViewController(viewModel: vm, navigationTitle: navigationTitle)
         return vc
     }
     
-    //    MARK: ShareViewController
+    //    MARK: UIActivityViewController
     
     static func makeActivityVc(item: String, coordinator: Coordinator) -> UIActivityViewController {
         let avc = UIActivityViewController(activityItems: [item], applicationActivities: nil)

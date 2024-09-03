@@ -2,11 +2,10 @@
 import UIKit
 import YandexLoginSDK
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+final class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
     var coordinator: AppCoordinator?
-
 
     func scene(_ scene: UIScene, willConnectTo session: UISceneSession, options connectionOptions: UIScene.ConnectionOptions) {
         guard let windowScene = (scene as? UIWindowScene) else { return }
@@ -17,10 +16,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         window = UIWindow(windowScene: windowScene)
         window?.rootViewController = navBar
         window?.makeKeyAndVisible()
-        
-//        let net: NetworkServiceProtocol = NetworkService()
-       // net.getOAuthToken()
-        //net.setOAuthToken()
         
         let appCoordinator = AppCoordinator(type: .app, navigationController: navBar, window: window)
         self.coordinator = appCoordinator
@@ -54,7 +49,5 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidEnterBackground(_ scene: UIScene) {
         CoreManager.shared.saveContext()
     }
-
-
 }
 

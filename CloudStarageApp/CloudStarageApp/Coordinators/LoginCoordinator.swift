@@ -16,7 +16,6 @@ final class LoginCoordinator: Coordinator {
     }
     
     override func finish() {
-        print("finish Login coordinator")
         finishDelegate?.coordinatorDidFinish(childCoordinator: self)
     }
 }

@@ -49,7 +49,6 @@ final class ProfileViewController: UIViewController {
         viewModel.onDataLoaded = { [weak self] in
             guard let self = self else { return }
             offlineConfigure()
-
         }
     }
     

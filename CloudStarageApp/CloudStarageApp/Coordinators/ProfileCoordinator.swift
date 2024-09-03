@@ -17,7 +17,6 @@ final class ProfileCoordinator: Coordinator {
     }
     override func finish() {
         finishDelegate?.coordinatorDidFinish(childCoordinator: self)
-        print("Profile done")
     }
 }
     

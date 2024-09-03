@@ -36,7 +36,6 @@ extension CoordinatorProtocol {
     
     func removeChildCoordinator(_ childCoordinator: CoordinatorProtocol) {
         childCoordinators = childCoordinators.filter { $0 !== childCoordinator }
-        print("filtred")
     }
 }
 
@@ -67,7 +66,6 @@ class Coordinator: CoordinatorProtocol {
     }
     
     deinit {
-        print("deinited \(type)")
         childCoordinators.forEach { $0.finishDelegate = nil }
         childCoordinators.removeAll()
     }

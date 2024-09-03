@@ -10,8 +10,8 @@ import Network
 import CoreData
 
 protocol ProfileViewModelProtocol: AnyObject {
-    var onDataLoaded: (() -> Void)? { get set }
     var dataSource: ProfileDataSource? { get set }
+    var onDataLoaded: (() -> Void)? { get set }
     var isLoading: Observable<Bool> { get set }
     var isConnected: Observable<Bool> { get set }
     func pushToPublic()

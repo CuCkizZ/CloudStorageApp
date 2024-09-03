@@ -94,6 +94,23 @@ private extension HomeViewController {
             }
         }
     }
+    
+    func bindShareing() {
+        viewModel.isSharing.bind { [weak self] isSharing in
+            guard let self = self, let isSharing = isSharing else { return }
+            DispatchQueue.main.async {
+                if isSharing {
+                    self.whileGettingLinkView.isHidden = false
+                    self.activityIndicator.style = .medium
+                    self.activityIndicator.startAnimating()
+                } else {
+                    self.whileGettingLinkView.isHidden = true
+                    self.tabBarController?.tabBar.backgroundColor = .white
+
+                }
+            }
+        }
+    }
 }
 
     // MARK: Layout
@@ -181,23 +198,6 @@ private extension HomeViewController {
                                                object: nil)
     }
     
-    func bindShareing() {
-        viewModel.isSharing.bind { [weak self] isSharing in
-            guard let self = self, let isSharing = isSharing else { return }
-            DispatchQueue.main.async {
-                if isSharing {
-                    self.whileGettingLinkView.isHidden = false
-                    self.activityIndicator.style = .medium
-                    self.activityIndicator.startAnimating()
-                } else {
-                    self.whileGettingLinkView.isHidden = true
-                    self.tabBarController?.tabBar.backgroundColor = .white
-
-                }
-            }
-        }
-    }
-    
     
     func setupIsSharingView() {
         whileGettingLinkView.isHidden = true
@@ -282,10 +282,21 @@ extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch isOffline {
         case true:
-            viewModel.numberOfRowInCoreDataSection()
+            let numbers = viewModel.numberOfRowInCoreDataSection()
+            if viewModel.numberOfRowInCoreDataSection() == 0 {
+                errorConnection()
+            } else {
+                return numbers
+            }
         case false:
-            viewModel.numbersOfRowInSection()
+            let numbers = viewModel.numbersOfRowInSection()
+            if viewModel.numbersOfRowInSection() == 0 {
+                errorConnection()
+            } else {
+                return numbers
+            }
         }
+        return Int()
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -317,22 +328,29 @@ extension HomeViewController: UICollectionViewDataSource {
 extension HomeViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let model = cellDataSource[indexPath.row]
-        let name = model.name
-        let fileType = model.file
-        let mimeType = model.mimeType
-        
-        switch mimeType {
-        case mimeType where mimeType.contains(Constants.FileTypes.word) || mimeType.contains(Constants.FileTypes.doc):
-            viewModel.presentDocument(name: name, type: .web, fileType: fileType)
-        case mimeType where mimeType.contains(Constants.FileTypes.pdf):
-            viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
-        case mimeType where mimeType.contains(Constants.FileTypes.image):
-            viewModel.presentImage(model: model)
-        default:
-            break
+        switch isOffline {
+        case true:
+            print("offline")
+            errorConnection()
+        case false:
+            let model = cellDataSource[indexPath.row]
+            let name = model.name
+            let fileType = model.file
+            let mimeType = model.mimeType
+            
+            switch mimeType {
+            case mimeType where mimeType.contains(Constants.FileTypes.word) || mimeType.contains(Constants.FileTypes.doc):
+                viewModel.presentDocument(name: name, type: .web, fileType: fileType)
+            case mimeType where mimeType.contains(Constants.FileTypes.pdf):
+                viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
+            case mimeType where mimeType.contains(Constants.FileTypes.image):
+                viewModel.presentImage(model: model)
+            default:
+                break
+            }
         }
     }
+        
     
     func collectionView(_ collectionView: UICollectionView, 
                         contextMenuConfigurationForItemsAt indexPaths: [IndexPath],

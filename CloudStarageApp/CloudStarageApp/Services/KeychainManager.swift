@@ -32,13 +32,6 @@ final class KeychainManager: KeychainProtocol {
             kSecAttrAccount as String: key,
             kSecValueData as String: data
         ]
-        _ = SecItemAdd(query as CFDictionary, nil)
-        //        guard status != errSecDuplicateItem else {
-        //            throw KeychainError.duplicated
-        //        }
-        //        guard status == errSecSuccess else {
-        //            throw KeychainError.unoknow(status)
-        //        }
     }
     
     func get(forKey key: String) -> String? {
