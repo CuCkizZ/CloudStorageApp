@@ -27,11 +27,11 @@ private enum NetworkConstants {
 final class NetworkService: NetworkServiceProtocol {
     
     private let keychain = KeychainManager.shared
-    private var headers: HTTPHeaders = [ "Accept" : "application/json"]
+    private var headers: HTTPHeaders = [ : ]
     private var token: String? {
         didSet {
             if let token = token {
-                headers["Authorization"] = "OAuth \(token)"
+                headers = ["Authorization" : "OAuth \(token)"]
             }
         }
     }
@@ -40,14 +40,11 @@ final class NetworkService: NetworkServiceProtocol {
         updateToken()
     }
     
-    private func updateToken(completion: (() -> Void)? = nil) {
-        DispatchQueue.global().async {
-            if let savedToken = self.keychain.get(forKey: "token") {
-                self.token = savedToken
-            }
-            DispatchQueue.main.async {
-                completion?()
-            }
+    func updateToken() {
+        if let savedToken = self.keychain.get(forKey: "token") {
+            self.token = savedToken
+            print("saved token------", savedToken)
+            headers = ["Authorization" : "OAuth \(savedToken)"]
         }
     }
     
@@ -83,26 +80,26 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchLastData(completion: @escaping (Result<Data, Error>) -> Void) {
-        updateToken {
-            print("Headers in fetchLastData:", self.headers)
-            
-            let urlParams = NetworkConstants.defaultParams
-            let urlString = NetworkConstants.lastUploadedUrl
-            guard let url = URL(string: urlString) else { return }
-            
-            AF.request(url, method: .get, parameters: urlParams, headers: self.headers).validate().response { response in
-                if let error = response.error {
-                    completion(.failure(error))
-                    print("fetchLastData error:", error)
-                    return
-                }
-                guard let data = response.data else { return }
-                completion(.success(data))
+        print("Last parms", headers)
+        updateToken()
+        print("Last token after undate", headers)
+        let urlParams = NetworkConstants.defaultParams
+        let urlString = NetworkConstants.lastUploadedUrl
+        guard let url = URL(string: urlString) else { return }
+        
+        AF.request(url, method: .get, parameters: urlParams, headers: self.headers).validate().response { response in
+            if let error = response.error {
+                completion(.failure(error))
+                print("fetchLastData error:", error)
+                return
             }
+            guard let data = response.data else { return }
+            completion(.success(data))
         }
     }
     
     func fetchAccountData(completion: @escaping (Result<Data, Error>) -> Void) {
+        print("Acaunt parms", headers)
         let urlString = NetworkConstants.diskInfoUrl
         guard let url = URL(string: urlString) else { return }
         

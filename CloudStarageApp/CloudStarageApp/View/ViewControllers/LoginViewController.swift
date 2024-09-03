@@ -68,7 +68,6 @@ private extension LoginViewController {
         bindViewModel()
         setupView()
         setupNavBar()
-        setupButton()
         setupConstraints()
     }
     
@@ -87,17 +86,6 @@ private extension LoginViewController {
                                                            style: .plain,
                                                            target: self,
                                                            action: #selector(logoutTapped))
-    }
-    
-    func setupButton() {
-        //        loginButton.action = { [weak self] in
-        //            guard let self = self else { return }
-        //            self.buttonPressed()
-//    }
-//        logoutButton.action = { [weak self] in
-//            guard let self = self else { return }
-//            self.logoutButtonPressed()
-        
     }
     
     func loadAnimating() {
@@ -148,6 +136,7 @@ extension LoginViewController: YandexLoginSDKObserver {
             self.loginResult = loginResult
             let result = loginResult.token
             viewModel.saveToken(token: result)
+            networkService.updateToken()
             viewModel.login()
         case .failure(let error):
             self.errorOccured(error)

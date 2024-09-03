@@ -13,7 +13,7 @@ final class ProfileViewController: UIViewController {
     private lazy var leftStorageLabel = UILabel()
     private lazy var usedImageView = UIImageView()
     private lazy var leftImageView = UIImageView()
-    private lazy var storageCircleView = UIImageView()
+    private lazy var storageCircleView = UIView()
     private lazy var goToPublicButton = UIButton()
     private lazy var totalShapeLayer = CAShapeLayer()
     private lazy var usageShapeLayer = CAShapeLayer()
@@ -112,6 +112,7 @@ private extension ProfileViewController {
         SetupNavBar()
         setupLogout()
         setupLabel()
+        setupStorageCircleView()
         setupConstraints()
         setupShapeLayer()
     }
@@ -124,6 +125,7 @@ private extension ProfileViewController {
         view.addSubview(usedImageView)
         view.addSubview(leftImageView)
         view.addSubview(goToPublicButton)
+        view.addSubview(storageCircleView)
         setupButton()
         leftImageView.image = UIImage(resource: .playstore)
         usedImageView.image = UIImage(resource: .playstore)
@@ -135,6 +137,10 @@ private extension ProfileViewController {
         title = "Profile"
     }
     
+    func setupStorageCircleView() {
+        storageCircleView.backgroundColor = .clear
+    }
+    
     func configure() {
         switch isOffline {
         case false:
@@ -142,7 +148,7 @@ private extension ProfileViewController {
             let intT = Int((model.totalSpace) / 1000000000)
             let intL = Float(model.leftSpace) / 1000000000
             let intU = Float(model.usedSpace) / 1000000000
-            totalStorageLabel.text = String(describing: intT) + "гб/n online"
+            totalStorageLabel.text = String(describing: intT) + "гб"
             leftStorageLabel.text = "\(intL) гб - свободно"
             usedStorageLabel.text = "\(intU) гб - занято"
         case true:
@@ -150,7 +156,7 @@ private extension ProfileViewController {
             let intT = Int((model.totalSpace) / 1000000000)
             let intL = Float(model.leftSpace) / 1000000000
             let intU = Float(model.usedSpace) / 1000000000
-            totalStorageLabel.text = String(describing: intT) + "гб/n offline"
+            totalStorageLabel.text = String(describing: intT) + "гб"
             leftStorageLabel.text = "\(intL) гб - свободно"
             usedStorageLabel.text = "\(intU) гб - занято"
             print("model stace:", model.totalSpace)
@@ -221,7 +227,7 @@ private extension ProfileViewController {
     
     
     func setupShapeLayer() {
-        let center = CGPoint(x: view.bounds.midX, y: view.bounds.midY - 150)
+        let center = CGPoint(x: view.bounds.midX, y: view.bounds.midY - 300)
         let radius = min(view.bounds.width, view.bounds.height) / 4
         let startAngle = -CGFloat.pi / 2
         let endAngle = 2 * CGFloat.pi - CGFloat.pi / 2
@@ -229,8 +235,8 @@ private extension ProfileViewController {
         configureShapeLayer(shapeLayer: totalShapeLayer, center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, strokeColor: AppColors.customGray.cgColor)
         configureShapeLayer(shapeLayer: usageShapeLayer, center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, strokeColor: AppColors.storagePink.cgColor, lineCap: .round)
         
-        view.layer.addSublayer(totalShapeLayer)
-        view.layer.addSublayer(usageShapeLayer)
+        storageCircleView.layer.addSublayer(totalShapeLayer)
+        storageCircleView.layer.addSublayer(usageShapeLayer)
     }
     
     private func configureShapeLayer(shapeLayer: CAShapeLayer, 
@@ -252,9 +258,12 @@ private extension ProfileViewController {
     }
     
     func setupConstraints() {
+        storageCircleView.snp.makeConstraints { make in
+            make.top.left.right.equalTo(view.safeAreaLayoutGuide)
+            make.height.equalTo(250)
+        }
         totalStorageLabel.snp.makeConstraints { make in
-            make.centerX.equalTo(view.safeAreaLayoutGuide)
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(110)
+            make.center.equalTo(storageCircleView.snp.center)
         }
         usedImageView.snp.makeConstraints { make in
             make.left.equalToSuperview().inset(20)

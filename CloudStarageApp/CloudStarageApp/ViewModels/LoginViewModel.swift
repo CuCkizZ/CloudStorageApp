@@ -75,3 +75,7 @@ extension LoginViewModel: LoginViewModelProtocol {
         }
     }
 }
+
+extension LoginViewModel {
+    
+}

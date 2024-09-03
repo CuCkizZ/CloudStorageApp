@@ -45,9 +45,9 @@ final class HomeViewModel {
     
     init(coordinator: HomeCoordinator) {
         self.coordinator = coordinator
-        fetchData()
         startMonitoringNetwork()
-        YandexLoginSDK.shared.add(observer: self)        
+        fetchData()
+        YandexLoginSDK.shared.add(observer: self)
     }
     
     private func mapModel() {
