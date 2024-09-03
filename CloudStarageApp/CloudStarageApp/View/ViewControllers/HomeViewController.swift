@@ -59,6 +59,7 @@ private extension HomeViewController {
         viewModel.cellDataSource.bind { [weak self] files in
             guard let self = self, let files = files else { return }
             self.cellDataSource = files
+            print(cellDataSource.first?.name)
             collectionView.reloadData()
         }
     }
@@ -73,6 +74,7 @@ private extension HomeViewController {
                 } else {
                     self.activityIndicator.stopAnimating()
                     self.activityIndicator.isHidden = true
+                    self.collectionView.reloadData()
                 }
             }
         }
@@ -282,21 +284,11 @@ extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch isOffline {
         case true:
-            let numbers = viewModel.numberOfRowInCoreDataSection()
-            if viewModel.numberOfRowInCoreDataSection() == 0 {
-                errorConnection()
-            } else {
-                return numbers
-            }
+            errorConnection()
+            return viewModel.numberOfRowInCoreDataSection()
         case false:
-            let numbers = viewModel.numbersOfRowInSection()
-            if viewModel.numbersOfRowInSection() == 0 {
-                errorConnection()
-            } else {
-                return numbers
-            }
+            return viewModel.numbersOfRowInSection()
         }
-        return Int()
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {

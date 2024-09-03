@@ -82,7 +82,7 @@ final class NetworkService: NetworkServiceProtocol {
         AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
             if let error = response.error {
                 completion(.failure(error))
-                print("Url error")
+                print("fetchLastData error")
                 return
             }
             guard let data = response.data else { return }

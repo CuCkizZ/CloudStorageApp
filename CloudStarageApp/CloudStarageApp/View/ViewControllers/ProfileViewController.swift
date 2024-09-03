@@ -4,7 +4,8 @@ import SnapKit
 final class ProfileViewController: UIViewController {
     
     private let viewModel: ProfileViewModelProtocol
-//    private let dataSource: ProfileDataSource?
+   // private let dataSource: ProfileDataSource?
+    private var isOffline: Bool = false
     private let activityIndicator = UIActivityIndicatorView()
     
     private lazy var totalStorageLabel = UILabel()
@@ -40,7 +41,6 @@ final class ProfileViewController: UIViewController {
         setupNetworkStatusView(networkStatusView)
         
         setupLayout()
-        updateViewLayer()
         bindViewModel()
         bindView()
     }
@@ -48,7 +48,7 @@ final class ProfileViewController: UIViewController {
     private func bindView() {
         viewModel.onDataLoaded = { [weak self] in
             guard let self = self else { return }
-            offlineConfigure()
+           
         }
     }
     
@@ -72,10 +72,15 @@ final class ProfileViewController: UIViewController {
             DispatchQueue.main.async {
                 if isConndeted {
                     self.hideNetworkStatusView(self.networkStatusView)
+                    self.isOffline = false
+                    self.updateViewLayer()
+                    self.configure()
                 } else {
                     self.showNetworkStatusView(self.networkStatusView)
+                    self.isOffline = true
+                    self.updateViewLayer()
                     self.viewModel.FetchedResultsController()
-                    self.offlineConfigure()
+                    self.configure()
                 }
             }
         }
@@ -131,23 +136,26 @@ private extension ProfileViewController {
     }
     
     func configure() {
-        guard let model = viewModel.dataSource else { return }
-        let intT = Int((model.totalSpace) / 1000000000)
-        let intL = Float(model.leftSpace) / 1000000000
-        let intU = Float(model.usedSpace) / 1000000000
-        totalStorageLabel.text = String(describing: intT) + "гб"
-        leftStorageLabel.text = "\(intL) гб - свободно"
-        usedStorageLabel.text = "\(intU) гб - занято"
-    }
-    
-    func offlineConfigure() {
-        guard let model = viewModel.fetchOfflineProfile() else { return }
-        let intT = Int((model.totalSpace) / 1000000000)
-        let intL = Float(model.leftSpace) / 1000000000
-        let intU = Float(model.usedSpace) / 1000000000
-        totalStorageLabel.text = String(describing: intT) + "гб"
-        leftStorageLabel.text = "\(intL) гб - свободно"
-        usedStorageLabel.text = "\(intU) гб - занято"
+        switch isOffline {
+        case false:
+            guard let model = viewModel.dataSource else { return }
+            let intT = Int((model.totalSpace) / 1000000000)
+            let intL = Float(model.leftSpace) / 1000000000
+            let intU = Float(model.usedSpace) / 1000000000
+            totalStorageLabel.text = String(describing: intT) + "гб/n online"
+            leftStorageLabel.text = "\(intL) гб - свободно"
+            usedStorageLabel.text = "\(intU) гб - занято"
+        case true:
+            guard let model = viewModel.fetchOfflineProfile() else { return }
+            let intT = Int((model.totalSpace) / 1000000000)
+            let intL = Float(model.leftSpace) / 1000000000
+            let intU = Float(model.usedSpace) / 1000000000
+            totalStorageLabel.text = String(describing: intT) + "гб/n offline"
+            leftStorageLabel.text = "\(intL) гб - свободно"
+            usedStorageLabel.text = "\(intU) гб - занято"
+            print("model stace:", model.totalSpace)
+
+        }
     }
     
     func setupLabel() {
@@ -182,14 +190,22 @@ private extension ProfileViewController {
     }
     
     func updateViewLayer() {
-        guard let model = viewModel.dataSource else { return }
-        guard let offline = viewModel.fetchOfflineProfile() else { return }
-        
-        // let totalSpaceInGB = CGFloat(model.totalSpace) / 1000000000
-        let usedSpaceFraction = CGFloat(offline.usedSpace) / CGFloat(offline.totalSpace)
-        
-        animateLayer(layer: totalShapeLayer, toValue: 1)
-        animateLayer(layer: usageShapeLayer, toValue: usedSpaceFraction)
+        switch isOffline {
+        case true:
+            guard let offline = viewModel.fetchOfflineProfile() else { return }
+            _ = CGFloat(offline.totalSpace) / 1000000000
+            let usedSpaceFraction = CGFloat(offline.usedSpace) / CGFloat(offline.totalSpace)
+            
+            animateLayer(layer: totalShapeLayer, toValue: 1)
+            animateLayer(layer: usageShapeLayer, toValue: usedSpaceFraction)
+        case false:
+            guard let model = viewModel.dataSource else { return }
+            _ = CGFloat(model.totalSpace) / 1000000000
+            let usedSpaceFraction = CGFloat(model.usedSpace) / CGFloat(model.totalSpace)
+            
+            animateLayer(layer: totalShapeLayer, toValue: 1)
+            animateLayer(layer: usageShapeLayer, toValue: usedSpaceFraction)
+        }
     }
     
     private func animateLayer(layer: CAShapeLayer, toValue: CGFloat) {

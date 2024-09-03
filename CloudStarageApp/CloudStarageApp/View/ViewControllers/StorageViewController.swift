@@ -272,9 +272,10 @@ extension StorageViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch isOffline {
         case true:
-            viewModel.numberOfRowInCoreDataSection()
+            errorConnection()
+            return viewModel.numberOfRowInCoreDataSection()
         case false:
-            viewModel.numbersOfRowInSection()
+            return viewModel.numbersOfRowInSection()
         }
     }
     

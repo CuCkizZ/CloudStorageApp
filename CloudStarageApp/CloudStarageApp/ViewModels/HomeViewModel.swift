@@ -47,15 +47,13 @@ final class HomeViewModel {
         self.coordinator = coordinator
         fetchData()
         startMonitoringNetwork()
-        YandexLoginSDK.shared.add(observer: self)
-        
-        guard let loginResult = loginResult else { return }
-        didFinishLogin(with: Result<LoginResult, any Error>.success(loginResult))
-        
+        YandexLoginSDK.shared.add(observer: self)        
     }
     
     private func mapModel() {
         cellDataSource.value = model.compactMap { CellDataModel($0) }
+        print("celdatafomViewModel", cellDataSource.value?.first?.name)
+        print("maodelVoew",model.first?.name)
     }
 }
     
@@ -197,16 +195,14 @@ extension HomeViewModel: YandexLoginSDKObserver {
         case .success(let loginResult):
             self.loginResult = loginResult
             networkService.getOAuthToken()
+            fetchData()
         case .failure(_):
             return
         }
     }
     
     func logout() {
-        let tokenKey = "token"
-        try? keychain.delete(forKey: tokenKey)
         try? YandexLoginSDK.shared.logout()
-        userStorage.isLoginIn = false
         coordinator.finish()
     }
 }

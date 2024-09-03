@@ -32,6 +32,8 @@ final class KeychainManager: KeychainProtocol {
             kSecAttrAccount as String: key,
             kSecValueData as String: data
         ]
+        print(query)
+        _ = SecItemAdd(query as CFDictionary, nil)
     }
     
     func get(forKey key: String) -> String? {
@@ -41,7 +43,7 @@ final class KeychainManager: KeychainProtocol {
             kSecReturnData as String: kCFBooleanTrue!,
             kSecMatchLimit as String: kSecMatchLimitOne
         ]
-        
+        print(query)
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         
@@ -52,16 +54,17 @@ final class KeychainManager: KeychainProtocol {
         return String(data: data, encoding: .utf8)
     }
 
-    func delete(forKey key: String) throws {
+    func delete(forKey key: String) {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key
         ]
         
         let status = SecItemDelete(query as CFDictionary)
+        print(query)
         
         if status != errSecSuccess {
-            throw KeychainError.unknown(status)
+             print(KeychainError.unknown(status))
         }
     }
 }

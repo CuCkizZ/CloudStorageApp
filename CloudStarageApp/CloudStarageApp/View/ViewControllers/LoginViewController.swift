@@ -11,6 +11,7 @@ final class LoginViewController: UIViewController {
     
     private let viewModel: LoginViewModelProtocol
     private let keychain = KeychainManager.shared
+    let networkService: NetworkServiceProtocol = NetworkService()
     private var loginResult: LoginResult?
     private weak var yandex: YandexLoginSDK?
 
@@ -147,6 +148,7 @@ extension LoginViewController: YandexLoginSDKObserver {
             self.loginResult = loginResult
             let result = loginResult.token
             viewModel.saveToken(token: result)
+            networkService.getOAuthToken()
             viewModel.login()
         case .failure(let error):
             self.errorOccured(error)
