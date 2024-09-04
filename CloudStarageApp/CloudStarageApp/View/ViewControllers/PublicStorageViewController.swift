@@ -17,10 +17,27 @@ final class PublicStorageViewController: UIViewController {
     private lazy var uploadButton = CSUploadButton()
     private lazy var changeLayoutButton = CSChangeLayoutButton()
     
-    private lazy var nothingLabel: UILabel = {
+    private lazy var noDataImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(resource: .)
+        return imageView
+    }()
+    
+    private lazy var noDataLabel: UILabel = {
         let label = UILabel()
-        label.text = "Nothing to show"
+        label.font = .Inter.light.size(of: 17)
+        label.textColor = .black
+        label.textAlignment = .center
+        label.numberOfLines = 0
         return label
+    }()
+    
+    private lazy var stackView: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [noDataImage, noDataLabel])
+        stack.axis = .vertical
+        stack.spacing = 20
+        stack.alignment = .center
+        return stack
     }()
     
     private lazy var collectionView: UICollectionView = {
@@ -111,7 +128,8 @@ private extension PublicStorageViewController {
         SetupNavBar()
         setupNetworkStatusView(networkStatusView)
         setupButtonUp()
-        setupLable()
+        setupStackView()
+        setupCollectionView()
         setupLogout()
         setupLayoutButton()
         uploadButtonPressed()
@@ -123,8 +141,8 @@ private extension PublicStorageViewController {
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
         view.addSubview(changeLayoutButton)
+        view.addSubview(stackView)
         view.backgroundColor = .white
-        setupCollectionView()
     }
     
     func SetupNavBar() {
@@ -168,14 +186,7 @@ private extension PublicStorageViewController {
         }
     }
     
-    func setupLable() {
-        //nothingLabel.isHidden = true
-        if cellDataSource.isEmpty == true {
-            nothingLabel.isHidden = false
-            view.addSubview(nothingLabel)
-        } else {
-            nothingLabel.isHidden = true
-        }
+    func setupStackView() {
     }
     
     func uploadButtonPressed() {
@@ -210,7 +221,7 @@ private extension PublicStorageViewController {
         uploadButton.snp.makeConstraints { make in
             make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(Constants.defaultPadding)
         }
-        nothingLabel.snp.makeConstraints { make in
+        stackView.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
     }
@@ -220,7 +231,6 @@ private extension PublicStorageViewController {
     @objc func pullToRefresh() {
         viewModel.fetchData()
         refresher.endRefreshing()
-        setupLable()
     }
     
     @objc func tap() {
@@ -289,7 +299,6 @@ extension PublicStorageViewController: UICollectionViewDelegate {
             }
         }
     }
-    
     
     func setupIsSharingView() {
         whileGettingLinkView.isHidden = true

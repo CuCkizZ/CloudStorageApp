@@ -10,7 +10,9 @@ final class ProfileViewController: UIViewController {
     private let viewModel: ProfileViewModelProtocol
    // private let dataSource: ProfileDataSource?
     private var isOffline: Bool = false
-    private let activityIndicator = UIActivityIndicatorView()
+    private lazy var totalLabelActivityIndicator = UIActivityIndicatorView()
+    private lazy var usageLabelActivityIndicator = UIActivityIndicatorView()
+    private lazy var leftLabelActivityIndicator = UIActivityIndicatorView()
     
     private lazy var totalStorageLabel = UILabel()
     private lazy var usedStorageLabel = UILabel()
@@ -43,7 +45,6 @@ final class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        storageCircleView.isHidden = false
         bindNetworkMonitor()
         setupNetworkStatusView(networkStatusView)
         
@@ -64,9 +65,9 @@ final class ProfileViewController: UIViewController {
             guard let self = self, let isLoading = isLoading else { return }
             DispatchQueue.main.async {
                 if isLoading {
-                    self.activityIndicator.startAnimating()
+                    self.configureWhileIsLoading(state: "start")
                 } else {
-                    self.activityIndicator.stopAnimating()
+                    self.configureWhileIsLoading(state: "end")
                 }
             }
         }
@@ -115,7 +116,7 @@ final class ProfileViewController: UIViewController {
 private extension ProfileViewController {
     
     func setupLayout() {
-        setupView()
+        setupViews()
         SetupNavBar()
         setupLogout()
         setupLabel()
@@ -125,7 +126,7 @@ private extension ProfileViewController {
         setupConstraints()
     }
     
-    func setupView() {
+    func setupViews() {
         view.backgroundColor = .white
         view.addSubview(totalStorageLabel)
         view.addSubview(usedStorageLabel)
@@ -134,6 +135,9 @@ private extension ProfileViewController {
         view.addSubview(leftImageView)
         view.addSubview(goToPublicButton)
         view.addSubview(storageCircleView)
+        view.addSubview(usageLabelActivityIndicator)
+        view.addSubview(leftLabelActivityIndicator)
+        storageCircleView.addSubview(totalLabelActivityIndicator)
         goToPublicButton.addSubview(arrowImageView)
         goToPublicButton.addSubview(buttonTitleLabel)
     }
@@ -152,8 +156,8 @@ private extension ProfileViewController {
             let intL = Float(model.leftSpace) / 1000000000
             let intU = Float(model.usedSpace) / 1000000000
             totalStorageLabel.text = String(describing: intT) + " гб"
-            leftStorageLabel.text = "\(intL) гб - свободно"
-            usedStorageLabel.text = "\(intU) гб - занято"
+            leftStorageLabel.text = String(format: "%.2f гб - свободно", intL)
+            usedStorageLabel.text = String(format: "%.2f гб - занято", intU)
         case true:
             guard let model = viewModel.fetchOfflineProfile() else { return }
             let intT = Int((model.totalSpace) / 1000000000)
@@ -164,6 +168,27 @@ private extension ProfileViewController {
             usedStorageLabel.text = "\(intU) гб - занято"
             print("model stace:", model.totalSpace)
 
+        }
+    }
+    
+    func configureWhileIsLoading(state: String) {
+        switch state {
+        case "start":
+            totalStorageLabel.isHidden = true
+            usedStorageLabel.isHidden = true
+            leftStorageLabel.isHidden = true
+            totalLabelActivityIndicator.startAnimating()
+            usageLabelActivityIndicator.startAnimating()
+            leftLabelActivityIndicator.startAnimating()
+        case "end":
+            totalStorageLabel.isHidden = false
+            usedStorageLabel.isHidden = false
+            leftStorageLabel.isHidden = false
+            totalLabelActivityIndicator.stopAnimating()
+            usageLabelActivityIndicator.stopAnimating()
+            leftLabelActivityIndicator.stopAnimating()
+        default:
+            break
         }
     }
     
@@ -180,7 +205,7 @@ private extension ProfileViewController {
         totalStorageLabel.layer.zPosition = 1
     }
     
-    func setupImages() {
+    func setupImages() { /*TODO: Change image to HD*/
         leftImageView.image = UIImage(resource: .leftEllipse)
         usedImageView.image = UIImage(resource: .usageEllipse)
         arrowImageView.image = UIImage(resource: .arrow)
@@ -210,14 +235,12 @@ private extension ProfileViewController {
         switch isOffline {
         case true:
             guard let offline = viewModel.fetchOfflineProfile() else { return }
-            _ = CGFloat(offline.totalSpace) / 1000000000
             let usedSpaceFraction = CGFloat(offline.usedSpace) / CGFloat(offline.totalSpace)
             
             animateLayer(layer: totalShapeLayer, toValue: 1)
             animateLayer(layer: usageShapeLayer, toValue: usedSpaceFraction)
         case false:
             guard let model = viewModel.dataSource else { return }
-            _ = CGFloat(model.totalSpace) / 1000000000
             let usedSpaceFraction = CGFloat(model.usedSpace) / CGFloat(model.totalSpace)
             
             animateLayer(layer: totalShapeLayer, toValue: 1)
@@ -268,6 +291,17 @@ private extension ProfileViewController {
     }
     
     func setupConstraints() {
+        totalLabelActivityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        usageLabelActivityIndicator.snp.makeConstraints { make in
+            make.top.equalTo(storageCircleView.snp.bottom).inset(-30)
+            make.left.equalTo(usedImageView.snp.right).offset(50)
+        }
+        leftLabelActivityIndicator.snp.makeConstraints { make in
+            make.top.equalTo(usedStorageLabel.snp.bottom).offset(24)
+            make.left.equalTo(leftImageView.snp.right).offset(50)
+        }
         storageCircleView.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
         storageCircleView.widthAnchor.constraint(equalToConstant: 210),

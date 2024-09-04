@@ -68,12 +68,14 @@ final class ProfileViewModel {
 extension ProfileViewModel: ProfileViewModelProtocol {
     
     func fetchData() {
+        isLoading.value = true
         networkManager.fetchAccountData { [weak self] result in
             DispatchQueue.main.async {
                 guard let self = self else { return }
                 switch result {
                 case .success(let profile):
                     self.dataSource = profile
+                    self.isLoading.value = false
                     self.onDataLoaded?()
                 case .failure(let error):
                     print("data viewmodel error: \(error)")
