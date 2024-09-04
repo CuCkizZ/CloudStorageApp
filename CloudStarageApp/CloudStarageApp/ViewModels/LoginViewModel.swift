@@ -2,7 +2,6 @@ import Foundation
 import YandexLoginSDK
 
 protocol LoginViewModelProtocol: AnyObject {
-    var isLoading: Observable<Bool> { get set }
     var loginResult: LoginResult? { get set }
     
     func login()
@@ -18,7 +17,6 @@ final class LoginViewModel {
     private let coordinator: LoginCoordinator
     private weak var yandex: YandexLoginSDK?
     
-    var isLoading: Observable<Bool> = Observable(false)
     var onLoginStateChanged: ((Bool) -> Void)?
     var loginResult: LoginResult? {
         didSet {
@@ -37,7 +35,7 @@ final class LoginViewModel {
     }
     
     private func cleareKeychain() {
-        try? keychain.delete(forKey: "token")
+        keychain.delete(forKey: "token")
     }
     
 }
@@ -62,16 +60,9 @@ extension LoginViewModel: LoginViewModelProtocol {
     }
     
     func login() {
-        if isLoading.value ?? true {
-            return
-        }
-        isLoading.value = true
-        DispatchQueue.global().asyncAfter(deadline: .now() + 2) { [weak self] in
-            DispatchQueue.main.async { [weak self] in
-                guard let self = self else { return }
-                self.isLoading.value = false
-                self.goToMainScreen()
-            }
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+            self.goToMainScreen()
         }
     }
 }
