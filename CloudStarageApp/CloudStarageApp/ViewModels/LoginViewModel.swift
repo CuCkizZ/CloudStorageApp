@@ -35,7 +35,7 @@ final class LoginViewModel {
     }
     
     private func cleareKeychain() {
-        keychain.delete(forKey: "token")
+        keychain.delete(forKey: PublickConstants.keycheinKey)
     }
     
 }
@@ -55,8 +55,7 @@ extension LoginViewModel: LoginViewModelProtocol {
     }
     
     func saveToken(token: String) {
-        try? keychain.save(token, forKey: "token")
-        print("token from viewmodel", token)
+        try? keychain.save(token, forKey: PublickConstants.keycheinKey)
     }
     
     func login() {
@@ -65,8 +64,4 @@ extension LoginViewModel: LoginViewModelProtocol {
             self.goToMainScreen()
         }
     }
-}
-
-extension LoginViewModel {
-    
 }

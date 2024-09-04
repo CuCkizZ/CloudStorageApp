@@ -50,7 +50,6 @@ private extension LoginViewController {
     func setupView() {
         view.backgroundColor = .white
         view.addSubview(yandexButton)
-        
     }
     
     func setupNavBar() {
