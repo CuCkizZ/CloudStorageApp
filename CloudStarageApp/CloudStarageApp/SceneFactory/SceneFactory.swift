@@ -100,7 +100,7 @@ struct SceneFactory {
     //    MARK: LoginCoordinator
     
     static func makeLoginScene(coordinator: LoginCoordinator) -> LoginViewController {
-        let viewModel: LoginViewOutput = LoginViewModel(coordinator: coordinator)
+        let viewModel: LoginViewModelProtocol = LoginViewModel(coordinator: coordinator)
         let loginVC = LoginViewController(viewModel: viewModel)
         return loginVC
     }
@@ -108,7 +108,8 @@ struct SceneFactory {
     //    MARK: HomeCoordinator
     
     static func makeHomeScene(coordinator: HomeCoordinator) -> HomeViewController {
-        let vm: HomeViewModelProtocol = HomeViewModel(coordinator: coordinator)
+        let nm: NetworkManagerProtocol = NetworkManager()
+        let vm: HomeViewModelProtocol = HomeViewModel(coordinator: coordinator, neworkManager: nm)
         let vc = HomeViewController(viewModel: vm)
         return vc
     }
@@ -126,7 +127,8 @@ struct SceneFactory {
     }
     
     static func makeImageScene(model: CellDataModel, coordinator: Coordinator) -> PresentImageViewController {
-        let vm = PresentImageViewModel(coordinator: coordinator)
+        let nm: NetworkManagerProtocol = NetworkManager()
+        let vm = PresentImageViewModel(coordinator: coordinator, networkManager: nm)
         let vc = PresentImageViewController(viewModel: vm)
         vc.configure(model: model)
         return vc
@@ -135,7 +137,8 @@ struct SceneFactory {
 //    MARK: StorageCoordinator
     
     static func makeStorageScene(fetchpath: String, navigationTitle: String, coordinator: StorageCoordinator) -> StorageViewController {
-        let vm: StorageViewModelProtocol = StorageViewModel(coordinator: coordinator)
+        let nm: NetworkManagerProtocol = NetworkManager()
+        let vm: StorageViewModelProtocol = StorageViewModel(coordinator: coordinator, networkManager: nm)
         let vc = StorageViewController(viewModel: vm, navigationTitle: navigationTitle, fetchpath: fetchpath)
         return vc
     }
@@ -143,18 +146,22 @@ struct SceneFactory {
     //    MARK: ProfileCoordinator
     
     static func makeProfileScene(coordinator: ProfileCoordinator) -> ProfileViewController {
-        let vm: ProfileViewModelProtocol = ProfileViewModel(coordinator: coordinator)
+        let nm: NetworkManagerProtocol = NetworkManager()
+        let vm: ProfileViewModelProtocol = ProfileViewModel(coordinator: coordinator, networkManager: nm)
         let vc = ProfileViewController(viewModel: vm)
         return vc
     }
     
+//    MARK: PublicStorageViewController
+    
     static func makePublicScene(navigationTitle: String, coordinator: ProfileCoordinator) -> PublicStorageViewController {
-        let vm: PublickStorageViewModelProtocol = PublicStorageViewModel(coordinator: coordinator)
+        let nm: NetworkManagerProtocol = NetworkManager()
+        let vm: PublickStorageViewModelProtocol = PublicStorageViewModel(coordinator: coordinator, networkManager: nm)
         let vc = PublicStorageViewController(viewModel: vm, navigationTitle: navigationTitle)
         return vc
     }
     
-    //    MARK: ShareViewController
+    //    MARK: UIActivityViewController
     
     static func makeActivityVc(item: String, coordinator: Coordinator) -> UIActivityViewController {
         let avc = UIActivityViewController(activityItems: [item], applicationActivities: nil)

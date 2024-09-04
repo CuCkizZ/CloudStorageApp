@@ -27,22 +27,26 @@ private enum NetworkConstants {
 final class NetworkService: NetworkServiceProtocol {
     
     private let keychain = KeychainManager.shared
-    private var headers: HTTPHeaders = [ "Accept" : "application/json"]
-    private var token = "" {
-            didSet {
-                headers["Authorization"] = "OAuth \(token)"
+    private var headers: HTTPHeaders = [ : ]
+    private var token: String? {
+        didSet {
+            if let token = token {
+                headers = ["Authorization" : "OAuth \(token)"]
             }
         }
-        
-    init() {
-        getOAuthToken()
-    }
-        
-    func getOAuthToken() {
-        guard let token = keychain.get(forKey: NetworkConstants.tokenKey) else { return }
-        self.token = token
     }
     
+    init() {
+        updateToken()
+    }
+   
+    private func updateToken() {
+        if let savedToken = self.keychain.get(forKey: NetworkConstants.tokenKey) {
+            self.token = savedToken
+            headers = ["Authorization" : "OAuth \(savedToken)"]
+        }
+    }
+
     func fetchDataWithAlamofire(completion: @escaping (Result<Data, NetworkErrors>) -> Void) {
         let urlParams = NetworkConstants.defaultParams
         let urlString = NetworkConstants.resoursesUrl
@@ -75,14 +79,15 @@ final class NetworkService: NetworkServiceProtocol {
     }
     
     func fetchLastData(completion: @escaping (Result<Data, Error>) -> Void) {
+        updateToken()
         let urlParams = NetworkConstants.defaultParams
         let urlString = NetworkConstants.lastUploadedUrl
         guard let url = URL(string: urlString) else { return }
         
-        AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
+        AF.request(url, method: .get, parameters: urlParams, headers: self.headers).validate().response { response in
             if let error = response.error {
                 completion(.failure(error))
-                print("Url error")
+                print("fetchLastData error:", error)
                 return
             }
             guard let data = response.data else { return }
@@ -120,22 +125,6 @@ final class NetworkService: NetworkServiceProtocol {
         }
     }
     
-    func searchFiles(keyword: String, completion: @escaping (Result<Data, Error>) -> Void) {
-        let urlParams = ["path": keyword]
-        let urlString = NetworkConstants.resoursesUrl
-        guard let url = URL(string: urlString) else { return }
-        
-        AF.request(url, method: .get, parameters: urlParams, headers: headers).validate().response {  response in
-            if let error = response.error {
-                completion(.failure(error))
-                print("Url error")
-                return
-            }
-            guard let data = response.data else { return }
-            completion(.success(data))
-        }
-    }
-    
     func createNewFolder(name: String) {
         let urlString = NetworkConstants.createUrl + name
         guard let url = URL(string: urlString) else { return }
@@ -145,7 +134,6 @@ final class NetworkService: NetworkServiceProtocol {
                 print("Error: no response")
                 return
             }
-            //completion(statusCode)
             print("status code: \(statusCode)")
             if let error = response.error {
                 print("Error: \(error)")
@@ -221,4 +209,3 @@ final class NetworkService: NetworkServiceProtocol {
         }
     }
 }
-                                              

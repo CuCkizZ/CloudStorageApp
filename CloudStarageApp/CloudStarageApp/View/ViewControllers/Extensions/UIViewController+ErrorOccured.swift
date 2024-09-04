@@ -7,6 +7,13 @@
 import YandexLoginSDK
 import UIKit.UIViewController
 
+private enum Errors {
+    static let loginSDKError = "A LoginSDK Error Occured"
+    static let loginError = "An Error Occured"
+    static let connectError = "No internet connection"
+    static let connectErrorMessage = "Please, try again later"
+}
+
 extension UIViewController {
     func errorOccured(_ error: Error) {
         let alertController: UIAlertController
@@ -30,4 +37,16 @@ extension UIViewController {
         alertController.addAction(okAction)
         self.present(alertController, animated: true)
     }
+    
+    func errorConnection() {
+        let alertController = UIAlertController(title: Errors.connectError, 
+                                                message: Errors.connectErrorMessage,
+                                                preferredStyle: .alert)
+        
+        let action = UIAlertAction(title: "OK", style: .cancel)
+        alertController.addAction(action)
+        
+        self.present(alertController, animated: true)
+    }
+    
 }

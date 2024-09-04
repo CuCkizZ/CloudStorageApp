@@ -33,12 +33,6 @@ final class KeychainManager: KeychainProtocol {
             kSecValueData as String: data
         ]
         _ = SecItemAdd(query as CFDictionary, nil)
-        //        guard status != errSecDuplicateItem else {
-        //            throw KeychainError.duplicated
-        //        }
-        //        guard status == errSecSuccess else {
-        //            throw KeychainError.unoknow(status)
-        //        }
     }
     
     func get(forKey key: String) -> String? {
@@ -48,7 +42,6 @@ final class KeychainManager: KeychainProtocol {
             kSecReturnData as String: kCFBooleanTrue!,
             kSecMatchLimit as String: kSecMatchLimitOne
         ]
-        
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
         
@@ -59,7 +52,7 @@ final class KeychainManager: KeychainProtocol {
         return String(data: data, encoding: .utf8)
     }
 
-    func delete(forKey key: String) throws {
+    func delete(forKey key: String) {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key
@@ -68,7 +61,7 @@ final class KeychainManager: KeychainProtocol {
         let status = SecItemDelete(query as CFDictionary)
         
         if status != errSecSuccess {
-            throw KeychainError.unknown(status)
+             print(KeychainError.unknown(status))
         }
     }
 }

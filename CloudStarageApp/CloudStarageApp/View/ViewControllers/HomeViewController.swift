@@ -11,13 +11,13 @@ final class HomeViewController: UIViewController {
     //   UI
     
     private lazy var selectedStyle: PresentationStyle = .table
-    var searchController = UISearchController(searchResultsController: nil)
     
     private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var uploadButton = CSUploadButton()
     private lazy var changeLayoutButton = CSChangeLayoutButton()
     private lazy var networkStatusView = UIView()
+    private lazy var whileGettingLinkView = UIView(frame: view.bounds)
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -46,6 +46,7 @@ final class HomeViewController: UIViewController {
         bindView()
         bindViewModel()
         bindNetworkMonitor()
+        bindShareing()
     }
     
 }
@@ -72,13 +73,14 @@ private extension HomeViewController {
                 } else {
                     self.activityIndicator.stopAnimating()
                     self.activityIndicator.isHidden = true
+                    self.collectionView.reloadData()
                 }
             }
         }
     }
     
     func bindNetworkMonitor() {
-        self.setupNetworkStatusView(networkStatusView)
+        setupNetworkStatusView(networkStatusView)
         viewModel.isConnected.bind { [weak self] isConndeted in
             guard let self = self, let isConndeted = isConndeted else { return }
             DispatchQueue.main.async {
@@ -89,6 +91,22 @@ private extension HomeViewController {
                     self.showNetworkStatusView(self.networkStatusView)
                     self.viewModel.FetchedResultsController()
                     self.isOffline = true
+                }
+            }
+        }
+    }
+    
+    func bindShareing() {
+        viewModel.isSharing.bind { [weak self] isSharing in
+            guard let self = self, let isSharing = isSharing else { return }
+            DispatchQueue.main.async {
+                if isSharing {
+                    self.whileGettingLinkView.isHidden = false
+                    self.activityIndicator.style = .medium
+                    self.activityIndicator.startAnimating()
+                } else {
+                    self.whileGettingLinkView.isHidden = true
+                    self.tabBarController?.tabBar.backgroundColor = .white
                 }
             }
         }
@@ -107,7 +125,6 @@ private extension HomeViewController {
         uploadButtonPressed()
         setupLogout()
         setupConstraints()
-        
     }
     
     func setupView() {
@@ -115,18 +132,16 @@ private extension HomeViewController {
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
         view.addSubview(changeLayoutButton)
+        view.addSubview(whileGettingLinkView)
         view.backgroundColor = .white
         activityIndicator.hidesWhenStopped = true
         setupCollectionView()
-        setupSearchController()
+        setupIsSharingView()
         setupLayoutButton()
     }
     
     func setupNavBar() {
         guard let navigationController = navigationController else { return }
-        navigationItem.rightBarButtonItem = navigationController.setRightButton()
-        navigationItem.searchController = searchController
-        navigationItem.rightBarButtonItem?.action = #selector((setupSearchController))
         navigationController.navigationBar.prefersLargeTitles = true
         title = "Latests"
     }
@@ -181,6 +196,13 @@ private extension HomeViewController {
                                                selector: #selector(showOfflineDeviceUI(notification:)),
                                                name: NSNotification.Name.connectivityStatus, 
                                                object: nil)
+    }
+    
+    
+    func setupIsSharingView() {
+        whileGettingLinkView.isHidden = true
+        whileGettingLinkView.backgroundColor = AppColors.customGray.withAlphaComponent(0.5)
+        whileGettingLinkView.addSubview(activityIndicator)
     }
     
     func setupConstraints() {
@@ -260,9 +282,10 @@ extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch isOffline {
         case true:
-            viewModel.numberOfRowInCoreDataSection()
+            errorConnection()
+            return viewModel.numberOfRowInCoreDataSection()
         case false:
-            viewModel.numbersOfRowInSection()
+            return viewModel.numbersOfRowInSection()
         }
     }
     
@@ -295,54 +318,45 @@ extension HomeViewController: UICollectionViewDataSource {
 extension HomeViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let model = cellDataSource[indexPath.row]
-        let name = model.name
-        let fileType = model.file
-        let mimeType = model.mimeType
+        switch isOffline {
+        case true:
+            print("offline")
+            errorConnection()
+        case false:
+            let model = cellDataSource[indexPath.row]
+            let name = model.name
+            let fileType = model.file
+            let mimeType = model.mimeType
+            
+            switch mimeType {
+            case mimeType where mimeType.contains(Constants.FileTypes.word) || mimeType.contains(Constants.FileTypes.doc):
+                viewModel.presentDocument(name: name, type: .web, fileType: fileType)
+            case mimeType where mimeType.contains(Constants.FileTypes.pdf):
+                viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
+            case mimeType where mimeType.contains(Constants.FileTypes.image):
+                viewModel.presentImage(model: model)
+            default:
+                break
+            }
+        }
+    }
         
-        switch mimeType {
-        case mimeType where mimeType.contains(Constants.FileTypes.word) || mimeType.contains(Constants.FileTypes.doc):
-            viewModel.presentDocument(name: name, type: .web, fileType: fileType)
-        case mimeType where mimeType.contains(Constants.FileTypes.pdf):
-            viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
-        case mimeType where mimeType.contains(Constants.FileTypes.image):
-            viewModel.presentImage(model: model)
-        default:
-            break
+    
+    func collectionView(_ collectionView: UICollectionView, 
+                        contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
+                        point: CGPoint) -> UIContextMenuConfiguration? {
+        switch isOffline {
+        case true:
+            return UIContextMenuConfiguration()
+        case false:
+            guard let indexPath = indexPaths.first else { return nil }
+            let model = cellDataSource[indexPath.row]
+            return UIContextMenuConfiguration.contextMenuConfiguration(for: .last,
+                                                                       viewModel: viewModel,
+                                                                       model: model,
+                                                                       indexPath: indexPath,
+                                                                       viewController: self)
         }
-    }
-    
-//    func collectionView(_ collectionView: UICollectionView, 
-//                        contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
-//                        point: CGPoint) -> UIContextMenuConfiguration? {
-//        guard let indexPath = indexPaths.first else { return nil }
-//        let model = cellDataSource[indexPath.row]
-//        return UIContextMenuConfiguration.contextMenuConfiguration(for: .last,
-//                                                                   viewModel: viewModel,
-//                                                                   model: model,
-//                                                                   viewController: self)
-//    }
-}
-
-
-extension HomeViewController: UISearchBarDelegate, UISearchResultsUpdating {
-    
-    @objc func setupSearchController() {
-        searchController.searchBar.placeholder = "Введите запрос"
-        searchController.searchBar.delegate = self
-        searchController.searchResultsUpdater = self
-    }
-    
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        viewModel.searchText = searchText
-        if searchText != "" {
-            viewModel.searchFiles()
-        }
-    }
-    
-    func updateSearchResults(for searchController: UISearchController) {
-        self.definesPresentationContext = true
-        self.navigationItem.searchController = searchController
     }
 }
 
@@ -351,7 +365,7 @@ extension HomeViewController: UISearchBarDelegate, UISearchResultsUpdating {
 extension HomeViewController {
     
     func setupLogout() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab, 
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .profileTab, 
                                                            style: .plain, 
                                                            target: self,
                                                            action: #selector(logoutTapped))

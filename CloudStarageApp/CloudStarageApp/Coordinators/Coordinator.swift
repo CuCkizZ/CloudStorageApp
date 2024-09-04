@@ -36,7 +36,6 @@ extension CoordinatorProtocol {
     
     func removeChildCoordinator(_ childCoordinator: CoordinatorProtocol) {
         childCoordinators = childCoordinators.filter { $0 !== childCoordinator }
-        print("filtred")
     }
 }
 
@@ -67,7 +66,6 @@ class Coordinator: CoordinatorProtocol {
     }
     
     deinit {
-        print("deinited \(type)")
         childCoordinators.forEach { $0.finishDelegate = nil }
         childCoordinators.removeAll()
     }
@@ -106,6 +104,12 @@ extension Coordinator {
         guard let navigationController = navigationController else { return }
         let vc = factory.makeImageScene(model: model, coordinator: self)
         navigationController.pushViewController(vc, animated: true)
+    }
+    
+    func configureImageView(model: CellDataModel) {
+        let vm = PresentImageViewModel(coordinator: self)
+        let vc = PresentImageViewController(viewModel: vm)
+        vc.configure(model: model)
     }
     
     func popTo() {

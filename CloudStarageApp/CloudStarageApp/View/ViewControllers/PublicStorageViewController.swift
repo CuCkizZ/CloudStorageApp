@@ -10,16 +10,35 @@ final class PublicStorageViewController: UIViewController {
     var isOffline: Bool = false
     
     private lazy var networkStatusView = UIView()
+    private lazy var whileGettingLinkView = UIView(frame: view.bounds)
     private lazy var selectedStyle: PresentationStyle = .table
     private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var uploadButton = CSUploadButton()
     private lazy var changeLayoutButton = CSChangeLayoutButton()
     
-    private lazy var nothingLabel: UILabel = {
+    private lazy var noDataImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.image = UIImage(resource: .noData)
+        return imageView
+    }()
+    
+    private lazy var noDataLabel: UILabel = {
         let label = UILabel()
-        label.text = "Nothing to show"
+        label.text = "У вас пока нет \n опубликованных файлов"
+        label.font = .Inter.light.size(of: 17)
+        label.textColor = .black
+        label.textAlignment = .center
+        label.numberOfLines = 0
         return label
+    }()
+    
+    private lazy var stackView: UIStackView = {
+        let stack = UIStackView(arrangedSubviews: [noDataImage, noDataLabel])
+        stack.axis = .vertical
+        stack.spacing = 20
+        stack.alignment = .center
+        return stack
     }()
     
     private lazy var collectionView: UICollectionView = {
@@ -53,12 +72,22 @@ final class PublicStorageViewController: UIViewController {
         bindViewModel()
         bindNetworkMonitor()
     }
-    
+}
+
+// MARK: Bind Extension
+
+private extension PublicStorageViewController {
+
     func bindView() {
         viewModel.cellDataSource.bind { [weak self] files in
             guard let self = self, let files = files else { return }
             self.cellDataSource = files
             collectionView.reloadData()
+            if cellDataSource.count == 0 {
+                stackView.isHidden = false
+            } else {
+                stackView.isHidden = true
+            }
         }
     }
     
@@ -105,10 +134,12 @@ private extension PublicStorageViewController {
         SetupNavBar()
         setupNetworkStatusView(networkStatusView)
         setupButtonUp()
-        setupLable()
+        setupStackView()
+        setupCollectionView()
         setupLogout()
         setupLayoutButton()
         uploadButtonPressed()
+        setupStackView()
         setupConstraints()
     }
     
@@ -117,13 +148,12 @@ private extension PublicStorageViewController {
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
         view.addSubview(changeLayoutButton)
+        view.addSubview(stackView)
         view.backgroundColor = .white
-        setupCollectionView()
     }
     
     func SetupNavBar() {
         guard let navigationController = navigationController else { return }
-        navigationItem.rightBarButtonItem = navigationController.setRightButton()
         navigationController.navigationBar.prefersLargeTitles = true
         title = navigationTitle
     }
@@ -163,14 +193,8 @@ private extension PublicStorageViewController {
         }
     }
     
-    func setupLable() {
-        //nothingLabel.isHidden = true
-        if cellDataSource.isEmpty == true {
-            nothingLabel.isHidden = false
-            view.addSubview(nothingLabel)
-        } else {
-            nothingLabel.isHidden = true
-        }
+    func setupStackView() {
+        stackView.isHidden = true
     }
     
     func uploadButtonPressed() {
@@ -205,7 +229,7 @@ private extension PublicStorageViewController {
         uploadButton.snp.makeConstraints { make in
             make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(Constants.defaultPadding)
         }
-        nothingLabel.snp.makeConstraints { make in
+        stackView.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
     }
@@ -215,7 +239,6 @@ private extension PublicStorageViewController {
     @objc func pullToRefresh() {
         viewModel.fetchData()
         refresher.endRefreshing()
-        setupLable()
     }
     
     @objc func tap() {
@@ -264,8 +287,31 @@ extension PublicStorageViewController: UICollectionViewDelegate {
         let model = modelReturn(indexPath: indexPath)
         return UIContextMenuConfiguration.contextMenuConfiguration(for: .publish,
                                                                    viewModel: viewModel,
-                                                                   model: model,
+                                                                   model: model, indexPath: indexPath,
                                                                    viewController: self)
+    }
+    
+    func bindShareing() {
+        viewModel.isSharing.bind { [weak self] isSharing in
+            guard let self = self, let isSharing = isSharing else { return }
+            DispatchQueue.main.async {
+                if isSharing {
+                    self.whileGettingLinkView.isHidden = false
+                    self.activityIndicator.style = .medium
+                    self.activityIndicator.startAnimating()
+                } else {
+                    self.whileGettingLinkView.isHidden = true
+                    self.tabBarController?.tabBar.backgroundColor = .white
+
+                }
+            }
+        }
+    }
+    
+    func setupIsSharingView() {
+        whileGettingLinkView.isHidden = true
+        whileGettingLinkView.backgroundColor = AppColors.customGray.withAlphaComponent(0.5)
+        whileGettingLinkView.addSubview(activityIndicator)
     }
 }
 
@@ -274,9 +320,10 @@ extension PublicStorageViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch isOffline {
         case true:
-            viewModel.numberOfRowInCoreDataSection()
+            errorConnection()
+            return viewModel.numberOfRowInCoreDataSection()
         case false:
-            viewModel.numbersOfRowInSection()
+            return viewModel.numbersOfRowInSection()
         }
     }
     
@@ -308,7 +355,7 @@ extension PublicStorageViewController: UICollectionViewDataSource {
 
 extension PublicStorageViewController {
     func setupLogout() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logoutTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logoutTapped))
     }
     
     @objc func logoutTapped() {

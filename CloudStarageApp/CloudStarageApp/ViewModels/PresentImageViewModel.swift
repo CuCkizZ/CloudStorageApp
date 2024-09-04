@@ -8,6 +8,7 @@
 import Foundation
 
 protocol PresentImageViewModelProtocol {
+    func fetchData(path: String)
     func sizeFormatter(bytes: Int) -> String
     func popToRoot()
     func publishFile(path: String)
@@ -16,28 +17,64 @@ protocol PresentImageViewModelProtocol {
     func shareFile(path: URL)
     
     var onButtonShareTapped: (() -> Void)? { get set }
+    var isDataLoading: Observable<Bool> { get set }
+    var OnButtonTapped: Observable<Bool> { get set }
+    var shareViewModel: Observable<Item> { get set }
     func hideShareView()
 }
 
 final class PresentImageViewModel {
     
     var onButtonShareTapped: (() -> Void)?
-    
+    var isDataLoading: Observable<Bool> = Observable(nil)
+    var OnButtonTapped: Observable<Bool> = Observable(nil)
+    var shareViewModel: Observable<Item> = Observable(nil)
+
+    private var model: Item?
     private let coordinator: Coordinator
-    private let networkService: NetworkServiceProtocol = NetworkService()
-  
+    private let networkManager: NetworkManagerProtocol?
     
-    init(coordinator: Coordinator) {
+    init(coordinator: Coordinator, networkManager: NetworkManagerProtocol? = nil) {
         self.coordinator = coordinator
+        self.networkManager = networkManager
     }
     
     func publishFile(path: String) {
-        NetworkManager.shared.toPublicFile(path: path)
+        if OnButtonTapped.value ?? true {
+            networkManager?.toPublicFile(path: path)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+                guard let self = self else { return }
+                self.isDataLoading.value = true
+                self.fetchData(path: path)
+            }
+        }
     }
-    
 }
 
 extension PresentImageViewModel: PresentImageViewModelProtocol {
+   
+    func fetchData(path: String) {
+        if isDataLoading.value == true {
+            networkManager?.fetchCurentItem(path: path) { [weak self] result in
+                guard let self = self else { return }
+                DispatchQueue.main.async {
+                    switch result {
+                    case .success(let item):
+                        self.model = item
+                        self.mapModel()
+                        print("parsed hohohoho")
+                        self.isDataLoading.value = false
+                    case .failure(let error):
+                        print(error.localizedDescription)
+                    }
+                }
+            }
+        }
+    }
+    
+    func mapModel() {
+        shareViewModel.value = model
+    }
     
     func hideShareView() {
         onButtonShareTapped?()
@@ -61,7 +98,7 @@ extension PresentImageViewModel: PresentImageViewModelProtocol {
     }
     
     func deleteFile(name: String) {
-        NetworkManager.shared.deleteReqest(name: name)
+        networkManager?.deleteReqest(name: name)
     }
     
     func shareLink(link: String) {
@@ -69,7 +106,7 @@ extension PresentImageViewModel: PresentImageViewModelProtocol {
     }
     
     func shareFile(path: URL) {
-        NetworkManager.shared.shareFile(with: path) { result in
+        networkManager?.shareFile(with: path) { result in
             switch result {
             case .success((let response, let data)):
                 do {

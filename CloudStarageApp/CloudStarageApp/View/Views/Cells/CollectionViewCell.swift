@@ -86,9 +86,9 @@ final class CollectionViewCell: UICollectionViewCell {
             }
         }
         if model.publickKey != nil {
-            animatedShareIcon()
+            publishIcon.isHidden = false
         } else {
-            animatedPublishIconTrue()
+            publishIcon.isHidden = true
         }
     }
     
@@ -125,9 +125,9 @@ private extension CollectionViewCell {
     func setupLayout() {
         contentView.backgroundColor = .white
         contentView.layer.masksToBounds = true
-        contentImageView.addSubview(activityIndicator)
         contentView.addSubview(stackView)
         contentView.addSubview(publishIcon)
+        contentImageView.addSubview(activityIndicator)
         stackView.backgroundColor = .white
         setupLabels()
         setupStackView()

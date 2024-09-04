@@ -1,18 +1,27 @@
 import UIKit
 import SnapKit
 
+private enum LocalConstants {
+    static let animationKey = "strokeEnd"
+}
+
 final class ProfileViewController: UIViewController {
     
     private let viewModel: ProfileViewModelProtocol
-//    private let dataSource: ProfileDataSource?
-    private let activityIndicator = UIActivityIndicatorView()
+   // private let dataSource: ProfileDataSource?
+    private var isOffline: Bool = false
+    private lazy var totalLabelActivityIndicator = UIActivityIndicatorView()
+    private lazy var usageLabelActivityIndicator = UIActivityIndicatorView()
+    private lazy var leftLabelActivityIndicator = UIActivityIndicatorView()
     
     private lazy var totalStorageLabel = UILabel()
     private lazy var usedStorageLabel = UILabel()
     private lazy var leftStorageLabel = UILabel()
+    private lazy var buttonTitleLabel = UILabel()
     private lazy var usedImageView = UIImageView()
     private lazy var leftImageView = UIImageView()
-    private lazy var storageCircleView = UIImageView()
+    private lazy var storageCircleView = UIView(frame: CGRect(x: 0, y: 0, width: 210, height: 210))
+    private lazy var arrowImageView = UIImageView()
     private lazy var goToPublicButton = UIButton()
     private lazy var totalShapeLayer = CAShapeLayer()
     private lazy var usageShapeLayer = CAShapeLayer()
@@ -40,7 +49,6 @@ final class ProfileViewController: UIViewController {
         setupNetworkStatusView(networkStatusView)
         
         setupLayout()
-        updateViewLayer()
         bindViewModel()
         bindView()
     }
@@ -48,8 +56,7 @@ final class ProfileViewController: UIViewController {
     private func bindView() {
         viewModel.onDataLoaded = { [weak self] in
             guard let self = self else { return }
-            offlineConfigure()
-
+           
         }
     }
     
@@ -58,9 +65,9 @@ final class ProfileViewController: UIViewController {
             guard let self = self, let isLoading = isLoading else { return }
             DispatchQueue.main.async {
                 if isLoading {
-                    self.activityIndicator.startAnimating()
+                    self.configureWhileIsLoading(state: "start")
                 } else {
-                    self.activityIndicator.stopAnimating()
+                    self.configureWhileIsLoading(state: "end")
                 }
             }
         }
@@ -73,10 +80,15 @@ final class ProfileViewController: UIViewController {
             DispatchQueue.main.async {
                 if isConndeted {
                     self.hideNetworkStatusView(self.networkStatusView)
+                    self.isOffline = false
+                    self.updateViewLayer()
+                    self.configure()
                 } else {
                     self.showNetworkStatusView(self.networkStatusView)
+                    self.isOffline = true
+                    self.updateViewLayer()
                     self.viewModel.FetchedResultsController()
-                    self.offlineConfigure()
+                    self.configure()
                 }
             }
         }
@@ -108,8 +120,10 @@ private extension ProfileViewController {
         SetupNavBar()
         setupLogout()
         setupLabel()
-        setupConstraints()
+        setupButton()
+        setupImages()
         setupShapeLayer()
+        setupConstraints()
     }
     
     func setupViews() {
@@ -120,9 +134,12 @@ private extension ProfileViewController {
         view.addSubview(usedImageView)
         view.addSubview(leftImageView)
         view.addSubview(goToPublicButton)
-        setupButton()
-        leftImageView.image = UIImage(resource: .playstore)
-        usedImageView.image = UIImage(resource: .playstore)
+        view.addSubview(storageCircleView)
+        view.addSubview(usageLabelActivityIndicator)
+        view.addSubview(leftLabelActivityIndicator)
+        storageCircleView.addSubview(totalLabelActivityIndicator)
+        goToPublicButton.addSubview(arrowImageView)
+        goToPublicButton.addSubview(buttonTitleLabel)
     }
     
     func SetupNavBar() {
@@ -132,41 +149,73 @@ private extension ProfileViewController {
     }
     
     func configure() {
-        guard let model = viewModel.dataSource else { return }
-        let intT = Int((model.totalSpace) / 1000000000)
-        let intL = Float(model.leftSpace) / 1000000000
-        let intU = Float(model.usedSpace) / 1000000000
-        totalStorageLabel.text = String(describing: intT) + "гб"
-        leftStorageLabel.text = "\(intL) гб - свободно"
-        usedStorageLabel.text = "\(intU) гб - занято"
+        switch isOffline {
+        case false:
+            guard let model = viewModel.dataSource else { return }
+            let intT = Int((model.totalSpace) / 1000000000)
+            let intL = Float(model.leftSpace) / 1000000000
+            let intU = Float(model.usedSpace) / 1000000000
+            totalStorageLabel.text = String(describing: intT) + " гб"
+            leftStorageLabel.text = String(format: "%.2f гб - свободно", intL)
+            usedStorageLabel.text = String(format: "%.2f гб - занято", intU)
+        case true:
+            guard let model = viewModel.fetchOfflineProfile() else { return }
+            let intT = Int((model.totalSpace) / 1000000000)
+            let intL = Float(model.leftSpace) / 1000000000
+            let intU = Float(model.usedSpace) / 1000000000
+            totalStorageLabel.text = String(describing: intT) + "гб"
+            leftStorageLabel.text = "\(intL) гб - свободно"
+            usedStorageLabel.text = "\(intU) гб - занято"
+            print("model stace:", model.totalSpace)
+
+        }
     }
     
-    func offlineConfigure() {
-        guard let model = viewModel.fetchOfflineProfile() else { return }
-        let intT = Int((model.totalSpace) / 1000000000)
-        let intL = Float(model.leftSpace) / 1000000000
-        let intU = Float(model.usedSpace) / 1000000000
-        totalStorageLabel.text = String(describing: intT) + "гб"
-        leftStorageLabel.text = "\(intL) гб - свободно"
-        usedStorageLabel.text = "\(intU) гб - занято"
+    func configureWhileIsLoading(state: String) {
+        switch state {
+        case "start":
+            totalStorageLabel.isHidden = true
+            usedStorageLabel.isHidden = true
+            leftStorageLabel.isHidden = true
+            totalLabelActivityIndicator.startAnimating()
+            usageLabelActivityIndicator.startAnimating()
+            leftLabelActivityIndicator.startAnimating()
+        case "end":
+            totalStorageLabel.isHidden = false
+            usedStorageLabel.isHidden = false
+            leftStorageLabel.isHidden = false
+            totalLabelActivityIndicator.stopAnimating()
+            usageLabelActivityIndicator.stopAnimating()
+            leftLabelActivityIndicator.stopAnimating()
+        default:
+            break
+        }
     }
     
     func setupLabel() {
         totalStorageLabel.textColor = .black
         leftStorageLabel.textColor = .black
         usedStorageLabel.textColor = .black
+        buttonTitleLabel.textColor = .black
         
-        totalStorageLabel.font = .Inter.regular.size(of: 50)
-        leftStorageLabel.font = .Inter.regular.size(of: 12)
-        usedStorageLabel.font = .Inter.regular.size(of: 12)
+        totalStorageLabel.font = .Inter.medium.size(of: 19)
+        leftStorageLabel.font = .Inter.regular.size(of: 15)
+        usedStorageLabel.font = .Inter.regular.size(of: 15)
+        buttonTitleLabel.font = .Inter.regular.size(of: 17)
         totalStorageLabel.layer.zPosition = 1
     }
     
+    func setupImages() { /*TODO: Change image to HD*/
+        leftImageView.image = UIImage(resource: .leftEllipse)
+        usedImageView.image = UIImage(resource: .usageEllipse)
+        arrowImageView.image = UIImage(resource: .arrow)
+    }
+    
     func setupButton() {
-        goToPublicButton.setTitle("Public Files", for: .normal)
+        buttonTitleLabel.text = "Published files"
         goToPublicButton.setTitleColor(.black, for: .normal)
         goToPublicButton.backgroundColor = .white
-        goToPublicButton.layer.cornerRadius = 12
+        goToPublicButton.layer.cornerRadius = 10
         goToPublicButton.layer.shadowColor = UIColor.black.cgColor
         goToPublicButton.layer.shadowOffset = CGSize(width: 1, height: 2)
         goToPublicButton.layer.shadowRadius = 4
@@ -183,39 +232,44 @@ private extension ProfileViewController {
     }
     
     func updateViewLayer() {
-        guard let model = viewModel.dataSource else { return }
-        guard let offline = viewModel.fetchOfflineProfile() else { return }
-        
-        // let totalSpaceInGB = CGFloat(model.totalSpace) / 1000000000
-        let usedSpaceFraction = CGFloat(offline.usedSpace) / CGFloat(offline.totalSpace)
-        
-        animateLayer(layer: totalShapeLayer, toValue: 1)
-        animateLayer(layer: usageShapeLayer, toValue: usedSpaceFraction)
+        switch isOffline {
+        case true:
+            guard let offline = viewModel.fetchOfflineProfile() else { return }
+            let usedSpaceFraction = CGFloat(offline.usedSpace) / CGFloat(offline.totalSpace)
+            
+            animateLayer(layer: totalShapeLayer, toValue: 1)
+            animateLayer(layer: usageShapeLayer, toValue: usedSpaceFraction)
+        case false:
+            guard let model = viewModel.dataSource else { return }
+            let usedSpaceFraction = CGFloat(model.usedSpace) / CGFloat(model.totalSpace)
+            
+            animateLayer(layer: totalShapeLayer, toValue: 1)
+            animateLayer(layer: usageShapeLayer, toValue: usedSpaceFraction)
+        }
     }
     
     private func animateLayer(layer: CAShapeLayer, toValue: CGFloat) {
-        let animation = CABasicAnimation(keyPath: "strokeEnd")
+        let animation = CABasicAnimation(keyPath: LocalConstants.animationKey)
         animation.fromValue = layer.strokeEnd
         animation.toValue = toValue
         animation.duration = 1
         animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
         
         layer.strokeEnd = toValue
-        layer.add(animation, forKey: "strokeEnd")
+        layer.add(animation, forKey: LocalConstants.animationKey)
     }
     
     
     func setupShapeLayer() {
-        let center = CGPoint(x: view.bounds.midX, y: view.bounds.midY - 150)
-        let radius = min(view.bounds.width, view.bounds.height) / 4
+        let center = CGPoint(x: storageCircleView.bounds.midX, y: storageCircleView.bounds.midY)
+        let radius = min(storageCircleView.bounds.width, storageCircleView.bounds.height) / 3 + 10
         let startAngle = -CGFloat.pi / 2
         let endAngle = 2 * CGFloat.pi - CGFloat.pi / 2
         
         configureShapeLayer(shapeLayer: totalShapeLayer, center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, strokeColor: AppColors.customGray.cgColor)
         configureShapeLayer(shapeLayer: usageShapeLayer, center: center, radius: radius, startAngle: startAngle, endAngle: endAngle, strokeColor: AppColors.storagePink.cgColor, lineCap: .round)
-        
-        view.layer.addSublayer(totalShapeLayer)
-        view.layer.addSublayer(usageShapeLayer)
+        storageCircleView.layer.addSublayer(totalShapeLayer)
+        storageCircleView.layer.addSublayer(usageShapeLayer)
     }
     
     private func configureShapeLayer(shapeLayer: CAShapeLayer, 
@@ -237,38 +291,64 @@ private extension ProfileViewController {
     }
     
     func setupConstraints() {
+        totalLabelActivityIndicator.snp.makeConstraints { make in
+            make.center.equalToSuperview()
+        }
+        usageLabelActivityIndicator.snp.makeConstraints { make in
+            make.top.equalTo(storageCircleView.snp.bottom).inset(-30)
+            make.left.equalTo(usedImageView.snp.right).offset(50)
+        }
+        leftLabelActivityIndicator.snp.makeConstraints { make in
+            make.top.equalTo(usedStorageLabel.snp.bottom).offset(24)
+            make.left.equalTo(leftImageView.snp.right).offset(50)
+        }
+        storageCircleView.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+        storageCircleView.widthAnchor.constraint(equalToConstant: 210),
+        storageCircleView.heightAnchor.constraint(equalToConstant: 210),
+        storageCircleView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+        storageCircleView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+    ])
         totalStorageLabel.snp.makeConstraints { make in
-            make.centerX.equalTo(view.safeAreaLayoutGuide)
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(110)
+            make.center.equalTo(storageCircleView.snp.center)
         }
         usedImageView.snp.makeConstraints { make in
-            make.left.equalToSuperview().inset(20)
-            make.centerY.equalToSuperview()
-            make.size.equalTo(30)
+            make.left.equalToSuperview().inset(35)
+            make.top.equalTo(storageCircleView.snp.bottom).inset(-30)
+            make.size.equalTo(21)
         }
         leftImageView.snp.makeConstraints { make in
-            make.left.equalToSuperview().inset(20)
-            make.top.equalTo(usedImageView.snp.bottom).offset(10)
-            make.size.equalTo(30)
+            make.left.equalToSuperview().inset(35)
+            make.top.equalTo(usedImageView.snp.bottom).offset(21)
+            make.size.equalTo(21)
         }
         usedStorageLabel.snp.makeConstraints { make in
-            make.left.equalTo(usedImageView.snp.right).offset(10)
-            make.centerY.equalToSuperview()
+            make.top.equalTo(storageCircleView.snp.bottom).inset(-30)
+            make.left.equalTo(usedImageView.snp.right).offset(8)
         }
         leftStorageLabel.snp.makeConstraints { make in
-            make.left.equalTo(leftImageView.snp.right).offset(10)
-            make.top.equalTo(usedStorageLabel.snp.bottom).offset(20)
+            make.left.equalTo(leftImageView.snp.right).offset(8)
+            make.top.equalTo(usedStorageLabel.snp.bottom).offset(24)
         }
         goToPublicButton.snp.makeConstraints { make in
             make.horizontalEdges.equalToSuperview().inset(16)
             make.top.equalTo(leftStorageLabel.snp.bottom).offset(50)
+            make.height.equalTo(45)
+        }
+        arrowImageView.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.right.equalTo(goToPublicButton.snp.right).inset(18)
+        }
+        buttonTitleLabel.snp.makeConstraints { make in
+            make.centerY.equalToSuperview()
+            make.left.equalTo(goToPublicButton.snp.left).inset(18)
         }
     }
 }
 
 extension ProfileViewController {
     func setupLogout() {
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logoutTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logoutTapped))
     }
     
     @objc func logoutTapped() {

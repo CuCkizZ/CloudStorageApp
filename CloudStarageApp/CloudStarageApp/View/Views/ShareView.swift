@@ -5,20 +5,24 @@ final class ShareView: UIView {
     
     private let viewModel: PresentImageViewModelProtocol
     
+    private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var stackView = UIStackView(arrangedSubviews: [linkView, fileView])
     private lazy var linkView = UIView()
     private lazy var fileView = UIView()
     private lazy var shareLinkButton = UIButton()
     private lazy var shareFileButton = UIButton()
+    private var shareViewModel: Item?
     
-    var link: String?
-    var file: String?
-    var path: String?
+    private var link: String?
+    private var file: String?
+    private var path: String?
     
     init(viewModel: PresentImageViewModelProtocol, frame: CGRect) {
         self.viewModel = viewModel
         super.init(frame: .zero)
         setupLayout()
+        bindView()
+        bindShareView()
     }
     
     required init?(coder: NSCoder) {
@@ -30,24 +34,55 @@ final class ShareView: UIView {
         self.file = file
         self.path = path
     }
+    
+    func bindView() {
+        viewModel.shareViewModel.bind { [weak self] item in
+            guard let self = self else { return }
+            self.shareViewModel = item
+        }
+    }
+    
+    func bindShareView() {
+        viewModel.isDataLoading.bind { [weak self] isDataLoading in
+            guard let self = self, let isDataLoading = isDataLoading else { return }
+            DispatchQueue.main.async {
+                if isDataLoading {
+                    self.activityIndicator.startAnimating()
+                    self.shareLinkButton.titleLabel?.text = "Getting link"
+                  
+                } else {
+                    self.activityIndicator.stopAnimating()
+                    self.activityIndicator.isHidden = true
+                    self.viewModel.shareLink(link: self.shareViewModel?.publicUrl ?? "Dont have a link, try again")
+                    self.viewModel.hideShareView()
+                    self.setupButtons()
+                }
+            }
+        }
+    }
 }
 
 private extension ShareView {
     
     func setupLayout() {
         setupView()
+        setupButtons()
+        setupShareViews()
+        setupStackView()
         addGesture()
         setupConstraints()
     }
     
     func setupView() {
-        self.layer.cornerRadius = 20
-        self.addSubview(stackView)
+        layer.cornerRadius = 20
+        layer.borderWidth = 0.5
+        layer.borderColor = CGColor(gray: 0.5, alpha: 1)
+        addSubview(stackView)
         linkView.addSubview(shareLinkButton)
         fileView.addSubview(shareFileButton)
-        setupButtons()
-        setupShareViews()
-        setupStackView()
+        activityIndicator.isHidden = true
+        activityIndicator.color = .white
+        addSubview(activityIndicator)
     }
     
     func addGesture() {
@@ -64,7 +99,7 @@ private extension ShareView {
             outgoing.font = UIFont.Inter.light.size(of: 16)
             return outgoing
         }
-        
+
         linkConfig.title = "Share a link"
         linkConfig.image = UIImage(systemName: "link.badge.plus")
         linkConfig.baseBackgroundColor = AppColors.standartBlue
@@ -90,29 +125,6 @@ private extension ShareView {
         shareFileButton.addTarget(self, action: #selector(shareFile), for: .touchUpInside)
     }
     
-//    TODO: close after tap
-    
-    @objc func swipeToHide(_ gestureRecgnizer: UISwipeGestureRecognizer) {
-        if gestureRecgnizer.state == .ended {
-            viewModel.hideShareView()
-        }
-    }
-    
-    @objc func shareLink() {
-        guard let link = link, let path = path else { return }
-        viewModel.publishFile(path: path)
-        viewModel.hideShareView()
-        viewModel.shareLink(link: link)
-    }
-    
-    @objc func shareFile() {
-        guard let file = file, let path = path else { return }
-        viewModel.publishFile(path: path)
-        viewModel.hideShareView()
-        if let file = URL(string: file) {
-            viewModel.shareFile(path: file)
-        }
-    }
     
     func setupShareViews() {
         linkView.backgroundColor = .white
@@ -123,17 +135,21 @@ private extension ShareView {
     }
     
     func setupStackView() {
+        stackView.layer.cornerRadius = 20
         stackView.backgroundColor = .systemGray6
         stackView.axis = .vertical
         stackView.alignment = .center
         stackView.spacing = 8
         stackView.layer.cornerRadius = 20
     }
-    
     func setupConstraints() {
+        activityIndicator.snp.makeConstraints { make in
+            make.centerY.equalTo(shareLinkButton.snp.centerY)
+            make.right.equalTo(shareLinkButton.snp.right).inset(90)
+        }
         stackView.snp.makeConstraints { make in
             make.left.right.equalToSuperview()
-            make.top.equalToSuperview().inset(10)
+            make.top.equalToSuperview()
             make.bottom.equalToSuperview()
         }
         linkView.snp.makeConstraints { make in
@@ -154,6 +170,29 @@ private extension ShareView {
             make.top.equalToSuperview().inset(10)
             make.centerX.equalToSuperview()
             make.height.equalTo(50)
+        }
+    }
+    
+    //    MARK: @ObjcFunc
+    
+    @objc func swipeToHide(_ gestureRecgnizer: UISwipeGestureRecognizer) {
+        if gestureRecgnizer.state == .ended {
+            viewModel.hideShareView()
+        }
+    }
+    
+    @objc func shareLink() {
+        viewModel.OnButtonTapped.value = true
+        guard let path = path else { return }
+        viewModel.publishFile(path: path)
+    }
+    
+    @objc func shareFile() {
+        guard let file = file, let path = path else { return }
+        viewModel.publishFile(path: path)
+        viewModel.hideShareView()
+        if let file = URL(string: file) {
+            viewModel.shareFile(path: file)
         }
     }
 }

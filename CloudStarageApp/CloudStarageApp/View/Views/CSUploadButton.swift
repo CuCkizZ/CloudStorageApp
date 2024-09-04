@@ -8,7 +8,7 @@
 import UIKit
 import SnapKit
 
-class CSUploadButton: UIButton {
+final class CSUploadButton: UIButton {
     
     var action: (() -> Void)?
     
@@ -33,7 +33,6 @@ class CSUploadButton: UIButton {
             self.widthAnchor.constraint(equalToConstant: 50),
             self.heightAnchor.constraint(equalToConstant: 50)
         ])
-        
     }
     
     @objc func buttonPressed() {

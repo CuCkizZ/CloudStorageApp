@@ -16,7 +16,6 @@ final class HomeCoordinator: Coordinator {
     }
     override func finish() {
         finishDelegate?.coordinatorDidFinish(childCoordinator: self)
-        print("Im done")
     }
 }
 

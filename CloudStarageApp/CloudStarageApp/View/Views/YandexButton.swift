@@ -12,10 +12,6 @@ final class YandexButton: UIButton {
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
-    
-    func setTitle(_ title: String?) {
-        self.setTitle(title, for: .normal)
-    }
 }
 
 // MARK: Private Setup Methods
@@ -23,11 +19,23 @@ final class YandexButton: UIButton {
 private extension YandexButton {
     
     func setupButton() {
-        self.setTitle("ЯндекID", for: .normal)
-        self.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
-        self.titleLabel?.font = .Inter.light.size(of: 16)
-        self.backgroundColor = .black
-        self.layer.cornerRadius = 12
+        var yandexConfig = UIButton.Configuration.filled()
+        let font = UIConfigurationTextAttributesTransformer { incoming in
+            var outgoing = incoming
+            outgoing.font = UIFont.Inter.bold.size(of: 16)
+            return outgoing
+        }
+        
+        yandexConfig.title = "Войти с Яндекс ID"
+        yandexConfig.image = UIImage(resource: .yandexId)
+        yandexConfig.baseBackgroundColor = .black
+        yandexConfig.baseForegroundColor = .white
+        yandexConfig.titleTextAttributesTransformer = font
+        yandexConfig.imagePlacement = .leading
+        yandexConfig.imagePadding = 8
+        yandexConfig.background.cornerRadius = 12
+        configuration = yandexConfig
+        addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
     }
     
     @objc func buttonPressed() {

@@ -10,6 +10,8 @@ import UIKit
 final class AppCoordinator: Coordinator {
     
     private let userStorage = UserStorage.shared
+    private let coreManager = CoreManager.shared
+    private let keychainManager = KeychainManager.shared
     private let factory = SceneFactory.self
     private var tabBarController: UITabBarController?
     
@@ -62,18 +64,10 @@ private extension AppCoordinator {
     }
 }
 
-extension AppCoordinator {
+private extension AppCoordinator {
     
     func showMainFlow() {
         showMainScene()
-    }
-    
-    func showAuthScene() {
-        showAuthFlow()
-    }
-    
-    func showPublicFlow() {
-        showPublicScene()
     }
     
     func logout() {
@@ -90,12 +84,18 @@ extension AppCoordinator {
         navigationController?.viewControllers.forEach { $0.removeFromParent() }
         navigationController?.view.removeFromSuperview()
         navigationController = nil
+            
+        coreManager.clearData(entityName: "OfflineProfile")
+        coreManager.clearData(entityName: "OfflineItems")
+        coreManager.clearData(entityName: "OfflineStorage")
+        coreManager.clearData(entityName: "OfflinePublished")
         
-        // userStorage.clearUserData()
+        keychainManager.delete(forKey: "token")
+        
+        userStorage.isLoginIn = false
+        
         
         let authNavigationController = UINavigationController()
-        
-       
         let loginCoordinator = factory.makeLoginFlow(coordinator: self,
                                                      navigationController: authNavigationController,
                                                      finisDelegate: self)
@@ -108,7 +108,6 @@ extension AppCoordinator {
         window?.layer.add(transition, forKey: kCATransition)
         window?.rootViewController = authNavigationController
         window?.makeKeyAndVisible()
-        print("User logged out, and authentication screen presented.")
     }
 }
 

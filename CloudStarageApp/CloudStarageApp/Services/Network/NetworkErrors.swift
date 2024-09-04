@@ -20,8 +20,6 @@ protocol LocalizedError: Error {
     var helpAnchor: String? { get }
 }
 
-
-
 extension NetworkErrors: LocalizedError {
     var errorDescription: String? {
         switch self {

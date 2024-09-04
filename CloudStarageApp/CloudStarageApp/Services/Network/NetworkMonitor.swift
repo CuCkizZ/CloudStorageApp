@@ -8,11 +8,13 @@
 import Foundation
 import Network
 
+private let labelMonitor = "NetworkConnectivityMonitor"
+private let statusChandeg = "connectivityStatusChanged"
+
 final class NetworkMonitor {
     
     static let shared = NetworkMonitor()
-    
-    private let queue = DispatchQueue(label: "NetworkConnectivityMonitor")
+    private let queue = DispatchQueue(label: labelMonitor)
     private let monitor: NWPathMonitor
     
     private(set) var isConnected = false
@@ -40,7 +42,7 @@ final class NetworkMonitor {
 }
 
 extension Notification.Name {
-    static let connectivityStatus = Notification.Name(rawValue: "connectivityStatusChanged")
+    static let connectivityStatus = Notification.Name(rawValue: statusChandeg)
 }
 
 extension NWInterface.InterfaceType: CaseIterable {

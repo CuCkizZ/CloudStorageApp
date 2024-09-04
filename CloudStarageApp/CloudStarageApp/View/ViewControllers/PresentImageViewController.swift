@@ -13,7 +13,6 @@ protocol PresentImageViewControllerProtocol {
     func hideShareView()
 }
 
-
 final class PresentImageViewController: UIViewController {
     
     private var viewModel: PresentImageViewModelProtocol
@@ -35,7 +34,6 @@ final class PresentImageViewController: UIViewController {
         imageView.clipsToBounds = true
         return imageView
     }()
-    
 
     init(viewModel: PresentImageViewModelProtocol) {
         self.viewModel = viewModel
@@ -44,6 +42,11 @@ final class PresentImageViewController: UIViewController {
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        tabBarController?.tabBar.isHidden = false
     }
     
     override func viewDidLoad() {
@@ -57,7 +60,6 @@ final class PresentImageViewController: UIViewController {
         self.activityIndicator.startAnimating()
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
-//            if let originalUrlString = model.sizes.first(where: { $0.name == "XS" })?.url,
             if let url = URL(string: model.file) {
                 self.imageView.sd_setImage(with: url) { [weak self] _,_,_,_ in
                     guard let self = self else { return }
@@ -70,6 +72,12 @@ final class PresentImageViewController: UIViewController {
         deleteButtonTapped(name: model.name)
         shareButtonTapped(link: model.publicUrl ?? "no url", file: model.file, path: model.path)
     }
+    
+    func path(name: String) {
+        viewModel.fetchData(path: name)
+        print(path)
+    }
+    
 }
 
 private extension PresentImageViewController {
@@ -95,8 +103,6 @@ private extension PresentImageViewController {
         view.addSubview(deleteButton)
         view.addSubview(shareView)
     }
-    
-    
     
     func setupButtons() {
         let imageConfig = UIImage.SymbolConfiguration(pointSize: 20)
@@ -257,7 +263,7 @@ private extension PresentImageViewController {
         if isHidden == true {
             switch gestureRecognizer.state {
             case .ended:
-                tapToRoot()
+                swipeToRoot()
             default:
                 break
             }
@@ -311,7 +317,7 @@ private extension PresentImageViewController {
                         .translatedBy(x: -(locationInView.x - self.imageView.bounds.midX),
                                       y: -(locationInView.y - self.imageView.bounds.midY))
                     self.imageView.transform = newSize
-
+                    
                 }
             }
         }
@@ -344,16 +350,14 @@ private extension PresentImageViewController {
         }
     }
     
-    func tapToRoot() {
-        tabBarController?.tabBar.isHidden = false
-        if let navigationController = navigationController {
-            let transition = CATransition()
-            transition.duration = 0.5
-            transition.type = .push
-            transition.subtype = .fromBottom
-            navigationController.view.layer.add(transition, forKey: kCATransition)
-            viewModel.popToRoot()
-        }
+    func swipeToRoot() {
+        guard let navigationController = navigationController else { return }
+        let transition = CATransition()
+        transition.duration = 0.5
+        transition.type = .push
+        transition.subtype = .fromBottom
+        navigationController.view.layer.add(transition, forKey: kCATransition)
+        viewModel.popToRoot()
     }
 }
 

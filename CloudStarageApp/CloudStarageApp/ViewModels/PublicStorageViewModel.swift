@@ -17,21 +17,22 @@ protocol PublickStorageViewModelProtocol: BaseCollectionViewModelProtocol, AnyOb
 final class PublicStorageViewModel {
     
     private let coordinator: ProfileCoordinator
+    private let networkManager: NetworkManagerProtocol
     private let keychain = KeychainManager.shared
     private let dataManager = CoreManager.shared
     private let networkMonitor = NWPathMonitor()
     var fetchedResultController: NSFetchedResultsController<OfflinePublished>?
 
     private var model: [Item] = []
-    var searchKeyword: String = ""
     
     var isLoading: Observable<Bool> = Observable(false)
     var isConnected: Observable<Bool> = Observable(nil)
+    var isSharing: Observable<Bool> = Observable(nil)
     var cellDataSource: Observable<[CellDataModel]> = Observable(nil)
-    var gettingUrl: (()->Void)?
     
-    init(coordinator: ProfileCoordinator) {
+    init(coordinator: ProfileCoordinator, networkManager: NetworkManagerProtocol) {
         self.coordinator = coordinator
+        self.networkManager = networkManager
         startMonitoringNetwork()
     }
     
@@ -41,23 +42,28 @@ final class PublicStorageViewModel {
 }
 
 extension PublicStorageViewModel: PublickStorageViewModelProtocol {
-    
-    func publishResource2(_ path: String, completion: @escaping (URL?) -> Void) {
-        
-    }
-    
-    
     func loadFile(from path: String, completion: @escaping (URL?) -> Void) {
         
     }
+    
     
 //    DataSource
     func numbersOfRowInSection() -> Int {
         model.count
     }
 //    Network
-    func publishResource(_ path: String) {
-        NetworkManager.shared.toPublicFile(path: path)
+    func publishResource(_ path: String, indexPath: IndexPath) {
+        networkManager.toPublicFile(path: path)
+        isSharing.value = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            self.fetchData()
+            if isSharing.value == true {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+                    self.presentAvc(indexPath: indexPath)
+                }
+            }
+        }
     }
     
     func startMonitoringNetwork() {
@@ -83,7 +89,7 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
             return
         }
         isLoading.value = true
-        NetworkManager.shared.fetchPublicData() { [weak self] result in
+        networkManager.fetchPublicData() { [weak self] result in
             guard let self = self else { return }
             DispatchQueue.main.async {
                 switch result {
@@ -99,22 +105,22 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     }
     
     func deleteFile(_ name: String) {
-        NetworkManager.shared.deleteReqest(name: name)
+        networkManager.deleteReqest(name: name)
     }
     
     
     func unpublishResource(_ path: String) {
-        NetworkManager.shared.unpublishFile(path)
+        networkManager.unpublishFile(path)
     }
     
     func renameFile(oldName: String, newName: String) {
-        NetworkManager.shared.renameFile(oldName: oldName, newName: newName)
+        networkManager.renameFile(oldName: oldName, newName: newName)
         fetchData()
     }
     
     func createNewFolder(_ name: String) {
         if name.isEmpty == true {
-            NetworkManager.shared.createNewFolder("New Folder")
+            networkManager.createNewFolder("New Folder")
             DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
                 guard let self = self else { return }
                 self.fetchData()
@@ -130,12 +136,14 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
         coordinator.presentDocument(name: name, type: type, fileType: fileType)
     }
     
-    func presentAvc(item: String) {
+    func presentAvc(indexPath: IndexPath) {
+        guard let item = model[indexPath.row].publicUrl else { return }
         coordinator.presentAtivityVc(item: item)
+        isSharing.value = false
     }
     
     func presentAvcFiles(path: URL) {
-        NetworkManager.shared.shareFile(with: path) { result in
+        networkManager.shareFile(with: path) { result in
             switch result {
             case .success((let response, let data)):
                 do {

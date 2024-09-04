@@ -46,22 +46,6 @@ final class CoreManager {
         }
     }
     
-    func getCount() {
-        
-    }
-    
-    //    private func setupFetchResultController() -> NSFetchedResultsController<OfflineItems> {
-    //        let fetchRequest = OfflineItems.fetchRequest()
-    //        let context = persistentContainer.viewContext
-    //        let sortDescription = NSSortDescriptor(key: "name", ascending: true)
-    //        fetchRequest.sortDescriptors = [sortDescription]
-    //        let resultController = NSFetchedResultsController(fetchRequest: fetchRequest,
-    //                                                          managedObjectContext: context,
-    //                                                          sectionNameKeyPath: nil,
-    //                                                          cacheName: nil)
-    //        return resultController
-    //    }
-    
     func fetchOfflineData(with type: TypeOfEntity) {
         switch type {
         case .last:
@@ -90,13 +74,10 @@ final class CoreManager {
         do {
             try context.execute(deleteRequest)
             try context.save()
-            print("deleted data")
         } catch {
             print("Error clearing Core Data: \(error.localizedDescription)")
         }
     }
-    
-    
     
     func addItemsTo(to type: TypeOfEntity, name: String, date: String, size: String) {
         let context = persistentContainer.viewContext
@@ -160,12 +141,11 @@ final class CoreManager {
         let context = persistentContainer.viewContext
         var entityName: String
         entityName = "OfflineProfile"
+        clearData(entityName: entityName)
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
-//        fetchRequest.predicate = NSPredicate(format: "totalSpace == %@ AND usedSpace == %@", totalSpace, usedSpace)
         do {
             let existingItems = try context.fetch(fetchRequest)
             if existingItems.isEmpty {
-                clearData(entityName: entityName)
                 let profile = OfflineProfile(context: context)
                 profile.totalSpace = Float(totalSpace)
                 profile.usedSpace = Float(usedSpace)
@@ -177,65 +157,3 @@ final class CoreManager {
         saveContext()
     }
 }
-    
-//    func addLastItem(with type: TypeOfEntity, name: String, date: String, size: String) {
-//        let fetchRequest = OfflineItems.fetchRequest()
-//        let context = persistentContainer.viewContext
-//        fetchRequest.predicate = NSPredicate(format: "name == %@ AND date == %@", name, date)
-//        
-//        do {
-//            let existingItems = try context.fetch(fetchRequest)
-//            if existingItems.isEmpty {
-//                let items = OfflineItems(context: context)
-//                items.name = name
-//                items.date = date
-//                items.size = size
-//            }
-//        } catch {
-//            print("I cant")
-//        }
-//        
-//        saveContext()
-//    }
-//    
-//    func addStorageItem(name: String, date: String, size: String) {
-//        let fetchRequest = OfflineStorage.fetchRequest()
-//        let context = persistentContainer.viewContext
-//        fetchRequest.predicate = NSPredicate(format: "name == %@ AND date == %@", name, date)
-//        
-//        do {
-//            let existingItems = try context.fetch(fetchRequest)
-//            if existingItems.isEmpty {
-//                let items = OfflineItems(context: context)
-//                items.name = name
-//                items.date = date
-//                items.size = size
-//            }
-//        } catch {
-//            print("I cant")
-//        }
-//       
-//        saveContext()
-//    }
-//    
-//    func addPublishedItem(name: String, date: String, size: String) {
-//        let fetchRequest = OfflinePublished.fetchRequest()
-//        let context = persistentContainer.viewContext
-//        fetchRequest.predicate = NSPredicate(format: "name == %@ AND date == %@", name, date)
-//        
-//        do {
-//            let existingItems = try context.fetch(fetchRequest)
-//            if existingItems.isEmpty {
-//                let items = OfflineItems(context: context)
-//                items.name = name
-//                items.date = date
-//                items.size = size
-//            }
-//        } catch {
-//            print("I cant")
-//        }
-//       
-//        saveContext()
-//    }
-//    
-//}
