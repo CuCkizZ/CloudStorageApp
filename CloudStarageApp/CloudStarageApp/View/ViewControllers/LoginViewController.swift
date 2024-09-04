@@ -3,10 +3,6 @@ import SnapKit
 import YandexLoginSDK
 import Alamofire
 
-private enum LoginConstants {
-    static let title: String = String(localized: "Welcome")
-}
-
 protocol LoginViewControllerProtocol: AnyObject {}
 
 final class LoginViewController: UIViewController {
@@ -57,7 +53,7 @@ private extension LoginViewController {
     }
     
     func setupNavBar() {
-        title = LoginConstants.title
+        title = StrGlobalConstants.loginTitle
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab,
                                                            style: .plain,

@@ -1,6 +1,12 @@
 import UIKit
 import SnapKit
 
+private let linkImage = "link.badge.plus"
+private let fileImage = "arrow.up.doc"
+private let linkButtonTitle = String(localized: "Share a link", table: "ButtonsLocalizable")
+private let gettinButtonTitle = String(localized: "Getting link", table: "ButtonsLocalizable")
+private let fileButtonTitle = String(localized: "Share file", table: "ButtonsLocalizable")
+
 final class ShareView: UIView {
     
     private let viewModel: PresentImageViewModelProtocol
@@ -48,12 +54,12 @@ final class ShareView: UIView {
             DispatchQueue.main.async {
                 if isDataLoading {
                     self.activityIndicator.startAnimating()
-                    self.shareLinkButton.titleLabel?.text = "Getting link"
+                    self.shareLinkButton.titleLabel?.text = gettinButtonTitle
                   
                 } else {
                     self.activityIndicator.stopAnimating()
                     self.activityIndicator.isHidden = true
-                    self.viewModel.shareLink(link: self.shareViewModel?.publicUrl ?? "Dont have a link, try again")
+                    self.viewModel.shareLink(link: self.shareViewModel?.publicUrl ?? StrGlobalConstants.linkGettingError)
                     self.viewModel.hideShareView()
                     self.setupButtons()
                 }
@@ -100,8 +106,8 @@ private extension ShareView {
             return outgoing
         }
 
-        linkConfig.title = "Share a link"
-        linkConfig.image = UIImage(systemName: "link.badge.plus")
+        linkConfig.title = linkButtonTitle
+        linkConfig.image = UIImage(systemName: linkImage)
         linkConfig.baseBackgroundColor = AppColors.standartBlue
         linkConfig.baseForegroundColor = .white
         linkConfig.titleTextAttributesTransformer = font
@@ -109,8 +115,8 @@ private extension ShareView {
         linkConfig.imagePadding = 8
         linkConfig.background.cornerRadius = 12
 //        another button
-        fileConfig.title = "Share file"
-        fileConfig.image = UIImage(systemName: "arrow.up.doc")
+        fileConfig.title = fileButtonTitle
+        fileConfig.image = UIImage(systemName: fileImage)
         fileConfig.baseBackgroundColor = .systemGray6
         fileConfig.baseForegroundColor = .black
         fileConfig.titleTextAttributesTransformer = font

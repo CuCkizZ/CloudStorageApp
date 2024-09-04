@@ -1,11 +1,12 @@
 import UIKit
 import SnapKit
 
+private let noDataText = String(localized: "You don't have any published files yet", table: "Messages+alertsLocalizable")
+
 final class PublicStorageViewController: UIViewController {
     
     private let viewModel: PublickStorageViewModelProtocol
     private var cellDataSource: [CellDataModel] = []
-    private var navigationTitle: String
     //    UI
     var isOffline: Bool = false
     
@@ -25,7 +26,7 @@ final class PublicStorageViewController: UIViewController {
     
     private lazy var noDataLabel: UILabel = {
         let label = UILabel()
-        label.text = "У вас пока нет \n опубликованных файлов"
+        label.text = noDataText
         label.font = .Inter.light.size(of: 17)
         label.textColor = .black
         label.textAlignment = .center
@@ -50,9 +51,8 @@ final class PublicStorageViewController: UIViewController {
         return collection
     }()
     
-    init(viewModel: PublickStorageViewModelProtocol, navigationTitle: String) {
+    init(viewModel: PublickStorageViewModelProtocol) {
         self.viewModel = viewModel
-        self.navigationTitle = navigationTitle
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -155,7 +155,7 @@ private extension PublicStorageViewController {
     func SetupNavBar() {
         guard let navigationController = navigationController else { return }
         navigationController.navigationBar.prefersLargeTitles = true
-        title = navigationTitle
+        title = StrGlobalConstants.publicTitle
     }
     
     func setupLayoutButton() {

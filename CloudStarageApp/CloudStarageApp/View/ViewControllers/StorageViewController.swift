@@ -122,23 +122,23 @@ private extension StorageViewController {
         setupCollectionView()
     }
     
-    func setupNavBar() {
-        guard let navigationController = navigationController else { return }
-        navigationController.navigationBar.prefersLargeTitles = true
-        navigationItem.title = navigationTitle
-    }
-    
-    func setupNavBar2() {
+    func setupNavBarBeforePaggination() {
         guard let navigationController = navigationController else { return }
         navigationController.navigationBar.prefersLargeTitles = true
         navigationItem.title = navigationTitle
     }
     
     func setupNavBarAfterPaggination() {
+        guard let navigationController = navigationController else { return }
+        navigationController.navigationBar.prefersLargeTitles = true
+        navigationItem.title = navigationTitle
+    }
+    
+    func setupNavBar() {
         if fetchPath == "disk:/" {
-            setupNavBar()
+            setupNavBarBeforePaggination()
         } else {
-            setupNavBar2()
+            setupNavBarAfterPaggination()
         }
     }
     

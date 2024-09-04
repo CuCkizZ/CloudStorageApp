@@ -2,10 +2,6 @@ import UIKit
 import SnapKit
 import YandexLoginSDK
 
-private enum HomeConstants {
-    static let title = String(localized: "Latest", table: "NavigationLocalizable")
-}
-
 final class HomeViewController: UIViewController {
     private let viewModel: HomeViewModelProtocol
     private lazy var cellDataSource: [CellDataModel] = []
@@ -146,7 +142,7 @@ private extension HomeViewController {
     func setupNavBar() {
         guard let navigationController = navigationController else { return }
         navigationController.navigationBar.prefersLargeTitles = true
-        title = HomeConstants.title
+        title = StrGlobalConstants.homeTitle
     }
     
     func setupLayoutButton() {
@@ -359,13 +355,13 @@ extension HomeViewController {
     }
     
     @objc func logoutTapped() {
-        let alert = UIAlertController(title: PublickConstants.logoutTitle,
-                                      message: PublickConstants.logoutMessage,
+        let alert = UIAlertController(title: StrGlobalConstants.logoutTitle,
+                                      message: StrGlobalConstants.logoutMessage,
                                       preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: PublickConstants.cancleButton, style: .cancel, handler: { action in
+        alert.addAction(UIAlertAction(title: StrGlobalConstants.cancleButton, style: .cancel, handler: { action in
             return
         }))
-        alert.addAction(UIAlertAction(title: PublickConstants.logoutTitle, style: .destructive, handler: { [weak self] action in
+        alert.addAction(UIAlertAction(title: StrGlobalConstants.logoutTitle, style: .destructive, handler: { [weak self] action in
             guard let self = self else { return }
             self.viewModel.logout()
         }))

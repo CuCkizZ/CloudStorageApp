@@ -1,11 +1,13 @@
 import UIKit
 import SnapKit
 
+private let buttonTitle = String(localized: "Next", table: "ButtonsLocalizable")
+private let buttonNewTitle = String(localized: "Log in", table: "ButtonsLocalizable")
+
 final class OnboardingViewController: UIViewController {
     
     private let viewModel: OnboardingViewModelProtocol
     private var pages: [OnboardingPageViewController]
-    
     private var pageViewController = UIPageViewController(transitionStyle: .scroll, navigationOrientation: .horizontal)
     private var pageControl = UIPageControl()
     private lazy var onboardingButton = CSBlueButton()
@@ -79,7 +81,7 @@ private extension OnboardingViewController {
         case 1:
             pageControl.currentPage = 2
             pageViewController.setViewControllers([pages[2]], direction: .forward, animated: true)
-            onboardingButton.setTitle("Войти")
+            onboardingButton.setTitle(buttonTitle)
         case 2:
             viewModel.onbordingFinish()
         default:
@@ -115,9 +117,10 @@ extension OnboardingViewController: UIPageViewControllerDelegate {
         if let firstVC = pendingViewControllers.first as? OnboardingPageViewController {
             if let index = pages.firstIndex(of: firstVC) {
                 pageControl.currentPage = index
-                if index == 2 { onboardingButton.setTitle("Войти")
+                if index == 2 { 
+                    onboardingButton.setTitle(buttonNewTitle)
                 } else {
-                    onboardingButton.setTitle("Далее")
+                    onboardingButton.setTitle(buttonTitle)
                 }
             }
         }

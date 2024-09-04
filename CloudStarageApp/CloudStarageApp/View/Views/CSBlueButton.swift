@@ -2,6 +2,7 @@ import UIKit.UIButton
 
 final class CSBlueButton: UIButton {
     
+    private let title = String(localized: "Next", table: "ButtonsLocalizable")
     var action: (() -> Void)?
     
     init() {
@@ -29,7 +30,7 @@ private extension CSBlueButton {
             outgoing.font = UIFont.Inter.light.size(of: 16)
             return outgoing
         }
-        config.title = "Далее"
+        config.title = title
         config.baseBackgroundColor = AppColors.standartBlue
         config.baseForegroundColor = .white
         config.titleTextAttributesTransformer = font

@@ -145,7 +145,7 @@ private extension ProfileViewController {
     func SetupNavBar() {
         guard let navigationController = navigationController else { return }
         navigationController.navigationBar.prefersLargeTitles = true
-        title = "Profile"
+        title = StrGlobalConstants.profileTitle
     }
     
     func configure() {
@@ -155,19 +155,17 @@ private extension ProfileViewController {
             let intT = Int((model.totalSpace) / 1000000000)
             let intL = Float(model.leftSpace) / 1000000000
             let intU = Float(model.usedSpace) / 1000000000
-            totalStorageLabel.text = String(describing: intT) + " гб"
-            leftStorageLabel.text = String(format: "%.2f гб - свободно", intL)
-            usedStorageLabel.text = String(format: "%.2f гб - занято", intU)
+            totalStorageLabel.text = String(localized: "\(intT) GB")
+            leftStorageLabel.text = String(format: String(localized: "%.2f GB - left", table: "ProfileLocalizable"), intL)
+            usedStorageLabel.text = String(format: String(localized: "%.2f GB - used", table: "ProfileLocalizable"), intU)
         case true:
             guard let model = viewModel.fetchOfflineProfile() else { return }
             let intT = Int((model.totalSpace) / 1000000000)
             let intL = Float(model.leftSpace) / 1000000000
             let intU = Float(model.usedSpace) / 1000000000
-            totalStorageLabel.text = String(describing: intT) + "гб"
-            leftStorageLabel.text = "\(intL) гб - свободно"
-            usedStorageLabel.text = "\(intU) гб - занято"
-            print("model stace:", model.totalSpace)
-
+            totalStorageLabel.text = String(localized: "\(intT) GB")
+            leftStorageLabel.text = String(format: String(localized: "%.2f GB - left", table: "ProfileLocalizable"), intL)
+            usedStorageLabel.text = String(format: String(localized: "%.2f GB - used", table: "ProfileLocalizable"), intU)
         }
     }
     
@@ -212,7 +210,7 @@ private extension ProfileViewController {
     }
     
     func setupButton() {
-        buttonTitleLabel.text = "Published files"
+        buttonTitleLabel.text = String(localized: "Published files", table: "ButtonsLocalizable")
         goToPublicButton.setTitleColor(.black, for: .normal)
         goToPublicButton.backgroundColor = .white
         goToPublicButton.layer.cornerRadius = 10
@@ -361,5 +359,11 @@ extension ProfileViewController {
             self.viewModel.logout()
         }))
         present(alert, animated: true)
+    }
+}
+
+extension String {
+    func formatter(text: String, _ int: Float) -> String {
+        return String(format: "%.2f \(text)", int)
     }
 }

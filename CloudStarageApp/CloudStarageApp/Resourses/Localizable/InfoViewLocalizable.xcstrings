@@ -1,53 +1,57 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "textOne" : {
+    "File information" : {
       "extractionState" : "manual",
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Now all your documents are in one place"
-          }
-        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Теперь все ваши документы находятся в одном месте"
+            "value" : "Информация"
           }
         }
       }
     },
-    "textThree" : {
+    "Size" : {
       "extractionState" : "manual",
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Share your files with others"
-          }
-        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Делитесь вашими файлами с другими"
+            "value" : "Размер"
           }
         }
       }
     },
-    "textTwo" : {
+    "Size %@ GB" : {
       "extractionState" : "manual",
       "localizations" : {
-        "en" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Access to files without the Internet"
-          }
-        },
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Доступ к файлам без интернета"
+            "value" : "Размер %@ гб"
+          }
+        }
+      }
+    },
+    "Size %@ KB" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Размер %@ кб"
+          }
+        }
+      }
+    },
+    "Size %@ MB" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Размер %@ мб"
           }
         }
       }

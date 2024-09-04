@@ -8,6 +8,17 @@
 import UIKit
 import SnapKit
 
+private enum InfoViewConstants {
+    
+    static let infoTitel = String(localized: "File information", table: "InfoViewLocalizable")
+    
+    enum image {
+        static let nameIcon = "doc.richtext"
+        static let dateIcon = "calendar.badge.plus"
+        static let sizeIcon = "externaldrive"
+    }
+}
+
 final class InfoView: UIView {
     
     private let viewModel: PresentImageViewModelProtocol
@@ -16,9 +27,9 @@ final class InfoView: UIView {
     private lazy var nameLabel = UILabel()
     private lazy var dateLabel = UILabel()
     private lazy var sizeLabel = UILabel()
-    private lazy var nameIcon = UIImageView(image: UIImage(systemName: "doc.richtext"))
-    private lazy var dateIcon = UIImageView(image: UIImage(systemName: "calendar.badge.plus"))
-    private lazy var sizeIcon = UIImageView(image: UIImage(systemName: "externaldrive"))
+    private lazy var nameIcon = UIImageView(image: UIImage(systemName: InfoViewConstants.image.nameIcon))
+    private lazy var dateIcon = UIImageView(image: UIImage(systemName: InfoViewConstants.image.dateIcon))
+    private lazy var sizeIcon = UIImageView(image: UIImage(systemName: InfoViewConstants.image.sizeIcon))
     private lazy var iconStacView: UIStackView = {
         let stack = UIStackView(arrangedSubviews: [nameIcon, dateIcon, sizeIcon])
         stack.axis = .vertical
@@ -79,7 +90,7 @@ private extension InfoView {
     }
     
     func setupLabels() {
-        headerLabel.text = "File information"
+        headerLabel.text = InfoViewConstants.infoTitel
         headerLabel.font = .Inter.regular.size(of: 17)
         nameLabel.font = .Inter.light.size(of: 16)
         dateLabel.font = .Inter.light.size(of: 16)

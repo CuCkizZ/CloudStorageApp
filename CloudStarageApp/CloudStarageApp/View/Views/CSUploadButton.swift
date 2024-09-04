@@ -10,6 +10,7 @@ import SnapKit
 
 final class CSUploadButton: UIButton {
     
+    private let uploadImage = "folder.badge.plus"
     var action: (() -> Void)?
     
     init() {
@@ -22,7 +23,7 @@ final class CSUploadButton: UIButton {
     }
     
     private func setupButton() {
-        setImage(UIImage(systemName: "folder.badge.plus"), for: .normal)
+        setImage(UIImage(systemName: uploadImage), for: .normal)
         backgroundColor = .systemGray6.withAlphaComponent(0.9)
         clipsToBounds = true
         layer.cornerRadius = 20

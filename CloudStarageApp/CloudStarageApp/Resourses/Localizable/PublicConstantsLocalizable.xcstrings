@@ -1,6 +1,17 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "\"Dont have a link, try again\"" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Невозможно получить ссылку, попробуйте ещё раз"
+          }
+        }
+      }
+    },
     "Are you sure?" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -22,6 +33,9 @@
           }
         }
       }
+    },
+    "Dont have a link, try again" : {
+
     },
     "Log out" : {
       "extractionState" : "manual",

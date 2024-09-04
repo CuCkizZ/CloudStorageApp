@@ -1,67 +1,78 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
-    "All files" : {
+    "Getting link" : {
       "extractionState" : "manual",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Все файлы"
+            "value" : "Получаю ссылку"
           }
         }
       }
     },
-    "Latest" : {
-      "extractionState" : "manual",
+    "Log in" : {
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Последние"
+            "value" : "Войти"
           }
         }
       }
     },
-    "Profile" : {
+    "Login with Yandex ID" : {
       "extractionState" : "manual",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Профиль"
+            "value" : "Войти с Яндекс ID"
           }
         }
       }
     },
-    "Published" : {
+    "Next" : {
       "extractionState" : "manual",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Опубликованные"
+            "value" : "Далее"
           }
         }
       }
     },
     "Published files" : {
-      "localizations" : {
-        "ru" : {
-          "stringUnit" : {
-            "state" : "translated",
-            "value" : "Опубликованные "
-          }
-        }
-      }
-    },
-    "Welcome" : {
       "extractionState" : "manual",
       "localizations" : {
         "ru" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Добро пожаловать"
+            "value" : "Опубликованные файлы"
+          }
+        }
+      }
+    },
+    "Share a link" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поделиться ссылкой"
+          }
+        }
+      }
+    },
+    "Share file" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Поделиться файлом"
           }
         }
       }

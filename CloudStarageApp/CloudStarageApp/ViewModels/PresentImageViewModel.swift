@@ -62,7 +62,6 @@ extension PresentImageViewModel: PresentImageViewModelProtocol {
                     case .success(let item):
                         self.model = item
                         self.mapModel()
-                        print("parsed hohohoho")
                         self.isDataLoading.value = false
                     case .failure(let error):
                         print(error.localizedDescription)
@@ -87,13 +86,12 @@ extension PresentImageViewModel: PresentImageViewModelProtocol {
     func sizeFormatter(bytes: Int) -> String {
         let kilobytes = Double(bytes) / 1024
         let megabytes = kilobytes / 1024
-        
         if megabytes >= 1 {
             let roundedMegabytes = String(format: "%.2f", megabytes)
-            return "Размер \(roundedMegabytes) МБ"
+            return String(localized: "Size \(roundedMegabytes) MB", table: "InfoViewLocalizable")
         } else {
             let roundedKilobytes = String(format: "%.2f", kilobytes)
-            return "Размер \(roundedKilobytes) КБ"
+            return String(localized: "Size \(roundedKilobytes) KB", table: "InfoViewLocalizable")
         }
     }
     
@@ -119,7 +117,8 @@ extension PresentImageViewModel: PresentImageViewModelProtocol {
                         coordinator.presentAtivityVcFiles(item: tempFileURL)
                     }
                 } catch {
-                    print ("viewModel error")
+                    let error = error
+                    print(error.localizedDescription)
                 }
             case .failure(_):
                 break

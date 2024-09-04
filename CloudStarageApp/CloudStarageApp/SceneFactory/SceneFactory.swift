@@ -72,19 +72,19 @@ struct SceneFactory {
         
         let homeNavigationController = UINavigationController()
         let homeCoordinator: Coordinator = HomeCoordinator(type: .home, navigationController: homeNavigationController)
-        homeNavigationController.tabBarItem = UITabBarItem(title: "Latest", image: UIImage(resource: .homeTab), tag: 0)
+        homeNavigationController.tabBarItem = UITabBarItem(title: StrGlobalConstants.homeTitle, image: UIImage(resource: .homeTab), tag: 0)
         homeCoordinator.finishDelegate = finishDelegate
         homeCoordinator.start()
         
         let storageNavigationController = UINavigationController()
         let storageCoordinator: Coordinator = StorageCoordinator(type: .storage, navigationController: storageNavigationController)
-        storageNavigationController.tabBarItem = UITabBarItem(title: "Storage", image: UIImage(resource: .storageTab), tag: 1)
+        storageNavigationController.tabBarItem = UITabBarItem(title: StrGlobalConstants.storageTitle, image: UIImage(resource: .storageTab), tag: 1)
         storageCoordinator.finishDelegate = finishDelegate
         storageCoordinator.start()
         
         let profileNavigationController = UINavigationController()
         let profileCoordinator: Coordinator = ProfileCoordinator(type: .profile, navigationController: profileNavigationController)
-        profileNavigationController.tabBarItem = UITabBarItem(title: "Profile", image: UIImage(resource: .profileTab), tag: 2)
+        profileNavigationController.tabBarItem = UITabBarItem(title: StrGlobalConstants.profileTitle, image: UIImage(resource: .profileTab), tag: 2)
         profileCoordinator.finishDelegate = finishDelegate
         profileCoordinator.start()
         
@@ -157,7 +157,7 @@ struct SceneFactory {
     static func makePublicScene(navigationTitle: String, coordinator: ProfileCoordinator) -> PublicStorageViewController {
         let nm: NetworkManagerProtocol = NetworkManager()
         let vm: PublickStorageViewModelProtocol = PublicStorageViewModel(coordinator: coordinator, networkManager: nm)
-        let vc = PublicStorageViewController(viewModel: vm, navigationTitle: navigationTitle)
+        let vc = PublicStorageViewController(viewModel: vm)
         return vc
     }
     
