@@ -26,7 +26,7 @@ private extension YandexButton {
             return outgoing
         }
         
-        yandexConfig.title = "Войти с Яндекс ID"
+        yandexConfig.title = String(localized:  "Login with Yandex ID")
         yandexConfig.image = UIImage(resource: .yandexId)
         yandexConfig.baseBackgroundColor = .black
         yandexConfig.baseForegroundColor = .white

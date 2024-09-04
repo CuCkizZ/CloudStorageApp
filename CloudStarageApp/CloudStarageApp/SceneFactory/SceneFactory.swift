@@ -3,9 +3,9 @@ import UIKit
 
 private enum Constants {
     enum Onboarding {
-        static let text1 = "Теперь все ваши документы в одном месте"
-        static let text2 = "Доступ к файлам без интернета"
-        static let text3 = "Делитесь вашими файлами с другими"
+        static let text1 = String(localized: "textOne", table: "OnboardingLocalizable")
+        static let text2 = String(localized: "textTwo", table: "OnboardingLocalizable")
+        static let text3 = String(localized: "textThree", table: "OnboardingLocalizable")
     }
 }
 

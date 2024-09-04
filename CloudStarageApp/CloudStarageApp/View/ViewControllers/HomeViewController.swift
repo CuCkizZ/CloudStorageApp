@@ -2,8 +2,11 @@ import UIKit
 import SnapKit
 import YandexLoginSDK
 
+private enum HomeConstants {
+    static let title = String(localized: "Latest", table: "NavigationLocalizable")
+}
+
 final class HomeViewController: UIViewController {
-    
     private let viewModel: HomeViewModelProtocol
     private lazy var cellDataSource: [CellDataModel] = []
 
@@ -143,7 +146,7 @@ private extension HomeViewController {
     func setupNavBar() {
         guard let navigationController = navigationController else { return }
         navigationController.navigationBar.prefersLargeTitles = true
-        title = "Latests"
+        title = HomeConstants.title
     }
     
     func setupLayoutButton() {
@@ -264,21 +267,6 @@ private extension HomeViewController {
 
 extension HomeViewController: UICollectionViewDataSource {
     
-//    TODO: PubksheIconSharedAnimation
-    
-//    func shareButtonTapped(for indexPath: IndexPath) {
-//        let model = modelReturn(indexPath: indexPath)
-//        if model.publicUrl?.isEmpty == false {
-//            updateCell(at: indexPath)
-//        }
-//    }
-//    
-//    func updateCell(at indexPath: IndexPath) {
-//        guard let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCell else { return }
-//        let model = modelReturn(indexPath: indexPath)
-//        cell.configure(model)
-//    }
-    
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch isOffline {
         case true:
@@ -320,7 +308,6 @@ extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch isOffline {
         case true:
-            print("offline")
             errorConnection()
         case false:
             let model = cellDataSource[indexPath.row]
@@ -372,11 +359,13 @@ extension HomeViewController {
     }
     
     @objc func logoutTapped() {
-        let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+        let alert = UIAlertController(title: PublickConstants.logoutTitle,
+                                      message: PublickConstants.logoutMessage,
+                                      preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: PublickConstants.cancleButton, style: .cancel, handler: { action in
             return
         }))
-        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
+        alert.addAction(UIAlertAction(title: PublickConstants.logoutTitle, style: .destructive, handler: { [weak self] action in
             guard let self = self else { return }
             self.viewModel.logout()
         }))

@@ -16,6 +16,7 @@ enum ModelType {
 private enum Constants {
     
     static let defaultType = "file"
+    static let dirType = "dir"
     
     enum Images {
         static let trash = "trash"
@@ -27,23 +28,19 @@ private enum Constants {
     }
     
     enum Titles {
-        static let delete = "Delete"
-        static let shareLink = "Share a link"
-        static let shareFile = "Share a file"
-        static let unpublish = "Unpublish"
-        static let rename = "Rename"
-        static let shareMenu = "Share"
-        static let newName = "New name"
-        static let enterTheName = "Enter the name"
-        static let submit = "Submite"
+        static let delete = String(localized: "Delete", table: "ContextMenuLocalizable")
+        static let shareLink = String(localized: "Share a link", table: "ContextMenuLocalizable")
+        static let shareFile = String(localized: "Share a file", table: "ContextMenuLocalizable")
+        static let unpublish = String(localized: "Unpublish", table: "ContextMenuLocalizable")
+        static let rename = String(localized: "Rename", table: "ContextMenuLocalizable")
+        static let shareMenu = String(localized: "Share", table: "ContextMenuLocalizable")
+        static let newName = String(localized: "New name", table: "ContextMenuLocalizable")
+        static let enterTheName = String(localized: "Enter the name", table: "ContextMenuLocalizable")
+        static let submit = String(localized: "Submite", table: "ContextMenuLocalizable")
     }
-    
 }
 
 extension UIContextMenuConfiguration {
-    
-    //    TODO: PublicUrl accses
-    //    TODO: Передать модель а не кучу свойств
     
     static func contextMenuConfiguration(for modelType: ModelType,
                                          viewModel: BaseCollectionViewModelProtocol,
@@ -65,7 +62,7 @@ extension UIContextMenuConfiguration {
                                             attributes: .destructive) { _ in
                     viewModel.deleteFile(name)
                 }
-                let shareLinkAction = UIAction(title: Constants.Titles.shareFile,
+                let shareLinkAction = UIAction(title: Constants.Titles.shareLink,
                                                image: UIImage(systemName: Constants.Images.plusLink)) { _ in
                     viewModel.publishResource(path, indexPath: indexPath)
                 }
@@ -152,9 +149,9 @@ extension UIContextMenuConfiguration {
                 
                 if type == Constants.defaultType && publicUrl != nil {
                     menu = UIMenu(title: "", children: [deleteAction, shareMenu, unpublishAction, renameAction])
-                } else if type == "dir" && publicUrl != nil {
+                } else if type == Constants.dirType && publicUrl != nil {
                     menu = UIMenu(title: "", children: [deleteAction, shareLinkAction, unpublishAction, renameAction])
-                } else if type == "dir"  {
+                } else if type == Constants.dirType  {
                     menu = UIMenu(title: "", children: [deleteAction, shareLinkAction, renameAction])
                 } else {
                     menu = UIMenu(title: "", children: [deleteAction, shareMenu, renameAction])
