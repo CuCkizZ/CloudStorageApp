@@ -19,12 +19,13 @@ final class PublicStorageViewController: UIViewController {
     
     private lazy var noDataImage: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(resource: .)
+        imageView.image = UIImage(resource: .noData)
         return imageView
     }()
     
     private lazy var noDataLabel: UILabel = {
         let label = UILabel()
+        label.text = "У вас пока нет \n опубликованных файлов"
         label.font = .Inter.light.size(of: 17)
         label.textColor = .black
         label.textAlignment = .center
@@ -82,6 +83,11 @@ private extension PublicStorageViewController {
             guard let self = self, let files = files else { return }
             self.cellDataSource = files
             collectionView.reloadData()
+            if cellDataSource.count == 0 {
+                stackView.isHidden = false
+            } else {
+                stackView.isHidden = true
+            }
         }
     }
     
@@ -133,6 +139,7 @@ private extension PublicStorageViewController {
         setupLogout()
         setupLayoutButton()
         uploadButtonPressed()
+        setupStackView()
         setupConstraints()
     }
     
@@ -187,6 +194,7 @@ private extension PublicStorageViewController {
     }
     
     func setupStackView() {
+        stackView.isHidden = true
     }
     
     func uploadButtonPressed() {
