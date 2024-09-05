@@ -21,7 +21,7 @@ final class HomeViewController: UIViewController {
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: view.bounds.width, height: IntConstants.DefaultHeight)
-        layout.minimumLineSpacing = IntConstants.minimumLineSpacing
+        layout.minimumLineSpacing = 15
         layout.minimumInteritemSpacing = IntConstants.minimumInteritemSpacing
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
@@ -210,8 +210,8 @@ private extension HomeViewController {
         collectionView.snp.makeConstraints { make in
             make.top.equalTo(view.safeAreaLayoutGuide).inset(IntConstants.defaultPadding + 4)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.left.equalToSuperview().inset(IntConstants.defaultPadding)
-            make.right.equalToSuperview()
+            make.left.equalToSuperview()
+            make.right.equalToSuperview().inset(IntConstants.defaultPadding)
         }
         changeLayoutButton.snp.makeConstraints { make in
             make.top.equalTo(collectionView).inset(IntConstants.defaultPadding / -2)

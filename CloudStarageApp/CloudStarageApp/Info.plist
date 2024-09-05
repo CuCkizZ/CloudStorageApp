@@ -33,6 +33,10 @@
 	<dict>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>yadisk:disk</key>
+			<true/>
+			<key>cloud_api:disk.info</key>
+			<true/>
 			<key>New Exception Domain</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>

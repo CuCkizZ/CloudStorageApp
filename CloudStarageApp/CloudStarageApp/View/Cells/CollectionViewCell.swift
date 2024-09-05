@@ -1,6 +1,6 @@
 import UIKit
 import SnapKit
-import Kingfisher
+import Alamofire
 import SDWebImage
 
 enum OfflineConfiguration {
@@ -19,18 +19,16 @@ final class CollectionViewCell: UICollectionViewCell {
         imageView.image = UIImage(systemName: "link")
         imageView.tintColor = AppColors.customGray
         imageView.layer.cornerRadius = 15
-        imageView.contentMode = .center
         return imageView
     }()
     
     private lazy var contentImageView: UIImageView = {
-        let imageView = UIImageView()
+        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
         activityIndicator.startAnimating()
         activityIndicator.isHidden = false
         activityIndicator.color = .red
-        imageView.contentMode = .scaleAspectFit
+        imageView.contentMode = .center
         imageView.clipsToBounds = true
-        imageView.backgroundColor = .gray
         return imageView
     }()
     
@@ -76,13 +74,17 @@ final class CollectionViewCell: UICollectionViewCell {
             dateLabel.text = model.date
         }
         
-        DispatchQueue.main.async {
-            if let previewImage = model.previewImage, let url = URL(string: previewImage) {
-                self.contentImageView.load(url: url)
+        if model.previewImage == nil {
+            contentImageView.image = UIImage(resource: .file)
+            self.activityIndicator.stopAnimating()
+            self.activityIndicator.isHidden = true
+        } else {
+                DispatchQueue.main.async {
+                guard let previewImage = URL(string: model.previewImage ?? "") else { return }
+                self.contentImageView.afload(url: previewImage)
+                
                 self.activityIndicator.stopAnimating()
                 self.activityIndicator.isHidden = true
-            } else {
-                self.contentImageView.image = nil
             }
         }
         if model.publickKey != nil {
@@ -161,7 +163,8 @@ private extension CollectionViewCell {
             make.center.equalToSuperview()
         }
         stackView.snp.makeConstraints { make in
-            make.left.top.equalTo(contentView)
+            make.left.equalTo(contentView).inset(30)
+            make.top.equalTo(contentView)
         }
         contentImageView.snp.makeConstraints { make in
             make.height.width.equalTo(38)
@@ -170,7 +173,7 @@ private extension CollectionViewCell {
             make.height.equalTo(20)
         }
         publishIcon.snp.makeConstraints { make in
-            make.right.centerY.equalTo(contentView).inset(30)
+            make.centerY.right.equalTo(contentView).inset(30)
         }
     }
     
@@ -204,8 +207,15 @@ extension CollectionViewCell {
         let imageSize: CGSize
         if isHorizontalStyle {
             imageSize = CGSize(width: 38, height: 38)
+            stackView.snp.updateConstraints() { make in
+                make.left.equalTo(contentView).inset(30)
+            }
         } else {
-            imageSize = CGSize(width: 78, height: 75)
+            imageSize = CGSize(width: 100, height: 78)
+            stackView.snp.updateConstraints() { make in
+                make.left.equalTo(contentView)
+            }
+            stackLabel.frame = CGRect(x: 0, y: 0, width: 100, height: 30)
         }
         self.contentImageView.snp.remakeConstraints { make in
             make.size.equalTo(imageSize)
@@ -243,21 +253,37 @@ private extension CollectionViewCell {
 }
 
 extension UIImageView {
-    func load(url: URL) {
-        DispatchQueue.global().async { [weak self] in
-            if let data = try? Data(contentsOf: url) {
+    
+    func afload(url: URL) {
+        let headers: HTTPHeaders = [
+            "Authorization": "OAuth y0_AgAAAAB3PvZkAAxUoQAAAAEO-FBgAAB0x_TZCulFM4Zs4rm-e5ARFQ28vg"
+        ]
+        
+        if let cachedResponse = URLCache.shared.cachedResponse(for: URLRequest(url: url)) {
+            if let image = UIImage(data: cachedResponse.data) {
+                DispatchQueue.main.async {
+                    self.image = image
+                    print("from cahse")
+                }
+                return
+            }
+        }
+        
+        AF.request(url, headers: headers).responseData { response in
+            switch response.result {
+            case .success(let data):
                 if let image = UIImage(data: data) {
                     DispatchQueue.main.async {
-                        self?.image = image
+                        self.image = image
+                        print("downloaded")
                     }
+                } else {
+                    print("Failed to convert data to image")
                 }
+            case .failure(let error):
+                print("Failed to load image with error: \(error.localizedDescription)")
             }
         }
     }
 }
 
-extension UIImageView {
-    func setImage(urlString: String) {
-        self.kf.setImage(with: URL(string: urlString))
-    }
-}
