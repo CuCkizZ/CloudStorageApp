@@ -11,6 +11,7 @@ enum OfflineConfiguration {
 
 final class CollectionViewCell: UICollectionViewCell {
     
+    private let viewModel: CellViewModelProtocol = CellViewModel()
     static let reuseID = String(describing: CollectionViewCell.self)
     
     private let activityIndicator = UIActivityIndicatorView()
@@ -66,10 +67,10 @@ final class CollectionViewCell: UICollectionViewCell {
     }
     
     func configure(_ model: CellDataModel) {
-        nameLabel.attributedText = setMaxCharacters(text: model.name)
+        nameLabel.attributedText = viewModel.setMaxCharacters(text: model.name)
         
         if let size = model.size {
-            dateLabel.text = model.date + sizeFormatter(bytes:size)
+            dateLabel.text = model.date + viewModel.sizeFormatter(bytes:size)
         } else {
             dateLabel.text = model.date
         }
@@ -79,12 +80,12 @@ final class CollectionViewCell: UICollectionViewCell {
             self.activityIndicator.stopAnimating()
             self.activityIndicator.isHidden = true
         } else {
-                DispatchQueue.main.async {
-                guard let previewImage = URL(string: model.previewImage ?? "") else { return }
-                self.contentImageView.afload(url: previewImage)
-                
-                self.activityIndicator.stopAnimating()
-                self.activityIndicator.isHidden = true
+            DispatchQueue.main.async {
+                if let urlString = model.previewImage {
+                    self.contentImageView.afload(urlString: urlString)
+                    self.activityIndicator.stopAnimating()
+                    self.activityIndicator.isHidden = true
+                }
             }
         }
         if model.publickKey != nil {
@@ -111,13 +112,6 @@ final class CollectionViewCell: UICollectionViewCell {
         dateLabel.text = model.date
         sizeLabel.text = model.size
     }
-    
-    func animatedShareIcon() {
-        UIView.transition(with: publishIcon, duration: 0.3, options: .transitionCrossDissolve, animations: {
-            self.publishIcon.isHidden = false
-        })
-    }
-    
 }
 
 // MARK: PrivateLayoutSetup
@@ -148,14 +142,10 @@ private extension CollectionViewCell {
         sizeLabel.backgroundColor = .clear
     }
     
-    func setMaxCharacters(text: String) -> NSMutableAttributedString {
-        let maxCharacters = 25
-        let truncatedText = String(text.prefix(maxCharacters))
-        let attributedText = NSMutableAttributedString(string: truncatedText)
-        if text.count > maxCharacters {
-            attributedText.append(NSAttributedString(string: "..."))
-        }
-        return attributedText
+    func animatedShareIcon() {
+        UIView.transition(with: publishIcon, duration: 0.3, options: .transitionCrossDissolve, animations: {
+            self.publishIcon.isHidden = false
+        })
     }
     
     func setupStackView() {
@@ -176,20 +166,6 @@ private extension CollectionViewCell {
             make.centerY.right.equalTo(contentView).inset(30)
         }
     }
-    
-    func sizeFormatter(bytes: Int) -> String {
-        let kilobytes = Double(bytes) / 1024
-        let megabytes = kilobytes / 1024
-        
-        if megabytes >= 1 {
-            let roundedMegabytes = String(format: "%.2f", megabytes)
-            return ", \(roundedMegabytes) МБ"
-        } else {
-            let roundedKilobytes = String(format: "%.2f", kilobytes)
-            return ", \(roundedKilobytes) КБ"
-        }
-    }
-    
 }
     
 extension CollectionViewCell {
@@ -251,37 +227,3 @@ private extension CollectionViewCell {
         }
     }
 }
-
-extension UIImageView {
-    
-    func afload(url: URL) {
-        let headers: HTTPHeaders = [
-            "Authorization": "OAuth y0_AgAAAAB3PvZkAAxUoQAAAAEO-FBgAAB0x_TZCulFM4Zs4rm-e5ARFQ28vg"
-        ]
-        
-        if let cachedResponse = URLCache.shared.cachedResponse(for: URLRequest(url: url)) {
-            if let image = UIImage(data: cachedResponse.data) {
-                DispatchQueue.main.async {
-                    self.image = image
-                }
-                return
-            }
-        }
-        
-        AF.request(url, headers: headers).responseData { response in
-            switch response.result {
-            case .success(let data):
-                if let image = UIImage(data: data) {
-                    DispatchQueue.main.async {
-                        self.image = image
-                    }
-                } else {
-                    print("Failed to convert data to image")
-                }
-            case .failure(let error):
-                print("Failed to load image with error: \(error.localizedDescription)")
-            }
-        }
-    }
-}
-

@@ -9,7 +9,6 @@ import Foundation
 import Alamofire
 
 private enum NetworkConstants {
-    static let tokenKey = "token"
     static let path = "path"
     static let defaultParams = ["path": "disk:/"]
     
@@ -22,7 +21,6 @@ private enum NetworkConstants {
     static let publishUrl = "https://cloud-api.yandex.net/v1/disk/resources/publish?path="
     static let unpublishUrl = "https://cloud-api.yandex.net/v1/disk/resources/unpublish?path="
 }
-
 
 final class NetworkService: NetworkServiceProtocol {
     
@@ -41,7 +39,7 @@ final class NetworkService: NetworkServiceProtocol {
     }
    
     private func updateToken() {
-        if let savedToken = self.keychain.get(forKey: NetworkConstants.tokenKey) {
+        if let savedToken = self.keychain.get(forKey: StrGlobalConstants.keycheinKey) {
             self.token = savedToken
             headers = ["Authorization" : "OAuth \(savedToken)"]
         }
@@ -207,5 +205,5 @@ final class NetworkService: NetworkServiceProtocol {
                 print("Data: \(String(describing: str))")
             }
         }
-    }
+    }       
 }
