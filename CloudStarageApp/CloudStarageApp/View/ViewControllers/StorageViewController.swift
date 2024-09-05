@@ -350,14 +350,24 @@ extension StorageViewController {
     }
     
     @objc func logoutTapped() {
-        let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+        let alert = UIAlertController(title: StrGlobalConstants.logoutSheetTitle,
+                                      message: nil,
+                                      preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: StrGlobalConstants.cancleButton, style: .cancel, handler: { action in
             return
         }))
-        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
+        alert.addAction(UIAlertAction(title: StrGlobalConstants.logoutTitle, style: .destructive, handler: { [weak self] action in
             guard let self = self else { return }
-            self.viewModel.logout()
+            let confirmAlert = UIAlertController(title: StrGlobalConstants.logoutTitle,
+                                                 message: StrGlobalConstants.AlertsAndActions.logOutAlertTitle,
+                                                 preferredStyle: .alert)
+            confirmAlert.addAction(UIAlertAction(title: StrGlobalConstants.yes, style: .default, handler: { action in
+                self.viewModel.logout()
+            }))
+            confirmAlert.addAction(UIAlertAction(title: StrGlobalConstants.no, style: .destructive))
+            present(confirmAlert, animated: true)
         }))
         present(alert, animated: true)
     }
 }
+
