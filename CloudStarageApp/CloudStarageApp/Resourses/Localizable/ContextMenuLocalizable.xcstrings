@@ -32,6 +32,16 @@
         }
       }
     },
+    "Do you really want to log out? All local data will be deleted" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вы действительно хотите выйти? Все локальные данные будут удалены"
+          }
+        }
+      }
+    },
     "Enter the name" : {
       "localizations" : {
         "ru" : {

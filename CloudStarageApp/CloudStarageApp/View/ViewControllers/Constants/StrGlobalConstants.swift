@@ -15,8 +15,11 @@ enum StrGlobalConstants {
     static let profileTitle = String(localized: "Profile", table: "NavigationLocalizable")
     
     static let keycheinKey = "token"
+    static let yes = String(localized: "Yes", table: "PublicConstantsLocalizable")
+    static let no = String(localized: "No", table: "PublicConstantsLocalizable")
     static let linkGettingError = String(localized: "Dont have a link, try again", table: "PublicConstantsLocalizable")
     static let logoutTitle = String(localized: "Log out", table: "PublicConstantsLocalizable")
+    static let logoutSheetTitle = String(localized: "Profile", table: "PublicConstantsLocalizable")
     static let logoutMessage = String(localized: "Are you sure?", table: "PublicConstantsLocalizable")
     static let cancleButton = String(localized: "Cancle", table: "PublicConstantsLocalizable")
     
@@ -32,6 +35,8 @@ enum StrGlobalConstants {
         static let submit = String(localized: "Submite", table: "ContextMenuLocalizable")
         static let newFolderSheetTitle = String(localized: "Create new folder", table: "ContextMenuLocalizable")
         static let deleteConfirm = String(localized: "Are you sure delete ", table: "ContextMenuLocalizable")
+        static let logOutAlertTitle = String(localized: "Do you really want to log out? All local data will be deleted",
+                                             table: "ContextMenuLocalizable")
     }
     
 }
