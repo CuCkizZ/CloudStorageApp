@@ -53,7 +53,7 @@ private extension LoginViewController {
     }
     
     func setupNavBar() {
-        title = "Drive In"
+        title = StrGlobalConstants.loginTitle
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab,
                                                            style: .plain,

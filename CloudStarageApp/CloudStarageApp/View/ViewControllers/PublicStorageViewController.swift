@@ -1,11 +1,12 @@
 import UIKit
 import SnapKit
 
+private let noDataText = String(localized: "You don't have any published files yet", table: "Messages+alertsLocalizable")
+
 final class PublicStorageViewController: UIViewController {
     
     private let viewModel: PublickStorageViewModelProtocol
     private var cellDataSource: [CellDataModel] = []
-    private var navigationTitle: String
     //    UI
     var isOffline: Bool = false
     
@@ -25,7 +26,7 @@ final class PublicStorageViewController: UIViewController {
     
     private lazy var noDataLabel: UILabel = {
         let label = UILabel()
-        label.text = "У вас пока нет \n опубликованных файлов"
+        label.text = noDataText
         label.font = .Inter.light.size(of: 17)
         label.textColor = .black
         label.textAlignment = .center
@@ -43,16 +44,15 @@ final class PublicStorageViewController: UIViewController {
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: view.bounds.width, height: Constants.DefaultHeight)
-        layout.minimumLineSpacing = Constants.minimumLineSpacing
-        layout.minimumInteritemSpacing = Constants.minimumInteritemSpacing
+        layout.itemSize = CGSize(width: view.bounds.width, height: IntConstants.DefaultHeight)
+        layout.minimumLineSpacing = IntConstants.minimumLineSpacing
+        layout.minimumInteritemSpacing = IntConstants.minimumInteritemSpacing
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
     
-    init(viewModel: PublickStorageViewModelProtocol, navigationTitle: String) {
+    init(viewModel: PublickStorageViewModelProtocol) {
         self.viewModel = viewModel
-        self.navigationTitle = navigationTitle
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -155,7 +155,7 @@ private extension PublicStorageViewController {
     func SetupNavBar() {
         guard let navigationController = navigationController else { return }
         navigationController.navigationBar.prefersLargeTitles = true
-        title = navigationTitle
+        title = StrGlobalConstants.publicTitle
     }
     
     func setupLayoutButton() {
@@ -217,17 +217,17 @@ private extension PublicStorageViewController {
             make.center.equalToSuperview()
         }
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(Constants.defaultPadding - 4)
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(IntConstants.defaultPadding - 4)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.left.equalToSuperview().inset(Constants.defaultPadding)
+            make.left.equalToSuperview().inset(IntConstants.defaultPadding)
             make.right.equalToSuperview()
         }
         changeLayoutButton.snp.makeConstraints { make in
-            make.top.equalTo(collectionView).inset(-Constants.defaultPadding / 2)
-            make.right.equalTo(collectionView).inset(Constants.defaultPadding)
+            make.top.equalTo(collectionView).inset(-IntConstants.defaultPadding / 2)
+            make.right.equalTo(collectionView).inset(IntConstants.defaultPadding)
         }
         uploadButton.snp.makeConstraints { make in
-            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(Constants.defaultPadding)
+            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(IntConstants.defaultPadding)
         }
         stackView.snp.makeConstraints { make in
             make.center.equalToSuperview()
@@ -247,11 +247,11 @@ private extension PublicStorageViewController {
     
     @objc private func changeContentLayout() {
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-            if layout.itemSize == CGSize(width: view.bounds.width, height: Constants.DefaultHeight) {
-                layout.itemSize = Constants.itemSizeDefault
+            if layout.itemSize == CGSize(width: view.bounds.width, height: IntConstants.DefaultHeight) {
+                layout.itemSize = IntConstants.itemSizeDefault
                 navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "file")
             } else {
-                layout.itemSize = CGSize(width: view.bounds.width, height: Constants.DefaultHeight)
+                layout.itemSize = CGSize(width: view.bounds.width, height: IntConstants.DefaultHeight)
                 navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "profileTab")
             }
             collectionView.collectionViewLayout.invalidateLayout()
@@ -269,13 +269,13 @@ extension PublicStorageViewController: UICollectionViewDelegate {
         let fileType = model.file
         
         switch mimeType {
-        case mimeType where mimeType.contains(Constants.FileTypes.word) || mimeType.contains(Constants.FileTypes.doc):
+        case mimeType where mimeType.contains(FileTypes.word) || mimeType.contains(FileTypes.doc):
             viewModel.presentDocument(name: name, type: .web, fileType: fileType)
-        case mimeType where mimeType.contains(Constants.FileTypes.pdf):
+        case mimeType where mimeType.contains(FileTypes.pdf):
             viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
-        case mimeType where mimeType.contains(Constants.FileTypes.image):
+        case mimeType where mimeType.contains(FileTypes.image):
             viewModel.presentImage(model: model)
-        case mimeType where mimeType.contains(Constants.FileTypes.video):
+        case mimeType where mimeType.contains(FileTypes.video):
            print("video")
         default:
             break
@@ -359,13 +359,22 @@ extension PublicStorageViewController {
     }
     
     @objc func logoutTapped() {
-        let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+        let alert = UIAlertController(title: StrGlobalConstants.logoutSheetTitle,
+                                      message: nil,
+                                      preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: StrGlobalConstants.cancleButton, style: .cancel, handler: { action in
             return
         }))
-        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
+        alert.addAction(UIAlertAction(title: StrGlobalConstants.logoutTitle, style: .destructive, handler: { [weak self] action in
             guard let self = self else { return }
-            self.viewModel.logout()
+            let confirmAlert = UIAlertController(title: StrGlobalConstants.logoutTitle,
+                                                 message: StrGlobalConstants.AlertsAndActions.logOutAlertTitle,
+                                                 preferredStyle: .alert)
+            confirmAlert.addAction(UIAlertAction(title: StrGlobalConstants.yes, style: .default, handler: { action in
+                self.viewModel.logout()
+            }))
+            confirmAlert.addAction(UIAlertAction(title: StrGlobalConstants.no, style: .destructive))
+            present(confirmAlert, animated: true)
         }))
         present(alert, animated: true)
     }

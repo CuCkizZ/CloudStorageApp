@@ -3,7 +3,6 @@ import SnapKit
 import YandexLoginSDK
 
 final class HomeViewController: UIViewController {
-    
     private let viewModel: HomeViewModelProtocol
     private lazy var cellDataSource: [CellDataModel] = []
 
@@ -21,9 +20,9 @@ final class HomeViewController: UIViewController {
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: view.bounds.width, height: Constants.DefaultHeight)
-        layout.minimumLineSpacing = Constants.minimumLineSpacing
-        layout.minimumInteritemSpacing = Constants.minimumInteritemSpacing
+        layout.itemSize = CGSize(width: view.bounds.width, height: IntConstants.DefaultHeight)
+        layout.minimumLineSpacing = IntConstants.minimumLineSpacing
+        layout.minimumInteritemSpacing = IntConstants.minimumInteritemSpacing
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
@@ -106,7 +105,6 @@ private extension HomeViewController {
                     self.activityIndicator.startAnimating()
                 } else {
                     self.whileGettingLinkView.isHidden = true
-                    self.tabBarController?.tabBar.backgroundColor = .white
                 }
             }
         }
@@ -143,7 +141,7 @@ private extension HomeViewController {
     func setupNavBar() {
         guard let navigationController = navigationController else { return }
         navigationController.navigationBar.prefersLargeTitles = true
-        title = "Latests"
+        title = StrGlobalConstants.homeTitle
     }
     
     func setupLayoutButton() {
@@ -210,17 +208,17 @@ private extension HomeViewController {
             make.center.equalToSuperview()
         }
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(Constants.defaultPadding + 4)
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(IntConstants.defaultPadding + 4)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.left.equalToSuperview().inset(Constants.defaultPadding)
+            make.left.equalToSuperview().inset(IntConstants.defaultPadding)
             make.right.equalToSuperview()
         }
         changeLayoutButton.snp.makeConstraints { make in
-            make.top.equalTo(collectionView).inset(Constants.defaultPadding / -2)
-            make.right.equalTo(collectionView).inset(Constants.defaultPadding)
+            make.top.equalTo(collectionView).inset(IntConstants.defaultPadding / -2)
+            make.right.equalTo(collectionView).inset(IntConstants.defaultPadding)
         }
         uploadButton.snp.makeConstraints { make in
-            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(Constants.defaultPadding)
+            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(IntConstants.defaultPadding)
         }
     }
     
@@ -238,12 +236,12 @@ private extension HomeViewController {
     
     @objc func changeContentLayout() {
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-            if layout.itemSize == CGSize(width: view.bounds.width, height: Constants.DefaultHeight) {
-                layout.itemSize = Constants.itemSizeDefault
+            if layout.itemSize == CGSize(width: view.bounds.width, height: IntConstants.DefaultHeight) {
+                layout.itemSize = IntConstants.itemSizeDefault
                 selectedStyle = .table
                 changeLayoutButton.setImage(selectedStyle.buttonImage, for: .normal)
             } else {
-                layout.itemSize = CGSize(width: view.bounds.width, height: Constants.DefaultHeight)
+                layout.itemSize = CGSize(width: view.bounds.width, height: IntConstants.DefaultHeight)
                 selectedStyle = .defaultGrid
                 changeLayoutButton.setImage(selectedStyle.buttonImage, for: .normal)
             }
@@ -263,21 +261,6 @@ private extension HomeViewController {
 //    MARK: CollectionViewDataSource + Delegate
 
 extension HomeViewController: UICollectionViewDataSource {
-    
-//    TODO: PubksheIconSharedAnimation
-    
-//    func shareButtonTapped(for indexPath: IndexPath) {
-//        let model = modelReturn(indexPath: indexPath)
-//        if model.publicUrl?.isEmpty == false {
-//            updateCell(at: indexPath)
-//        }
-//    }
-//    
-//    func updateCell(at indexPath: IndexPath) {
-//        guard let cell = collectionView.cellForItem(at: indexPath) as? CollectionViewCell else { return }
-//        let model = modelReturn(indexPath: indexPath)
-//        cell.configure(model)
-//    }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch isOffline {
@@ -320,7 +303,6 @@ extension HomeViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         switch isOffline {
         case true:
-            print("offline")
             errorConnection()
         case false:
             let model = cellDataSource[indexPath.row]
@@ -329,11 +311,11 @@ extension HomeViewController: UICollectionViewDelegate {
             let mimeType = model.mimeType
             
             switch mimeType {
-            case mimeType where mimeType.contains(Constants.FileTypes.word) || mimeType.contains(Constants.FileTypes.doc):
+            case mimeType where mimeType.contains(FileTypes.word) || mimeType.contains(FileTypes.doc):
                 viewModel.presentDocument(name: name, type: .web, fileType: fileType)
-            case mimeType where mimeType.contains(Constants.FileTypes.pdf):
+            case mimeType where mimeType.contains(FileTypes.pdf):
                 viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
-            case mimeType where mimeType.contains(Constants.FileTypes.image):
+            case mimeType where mimeType.contains(FileTypes.image):
                 viewModel.presentImage(model: model)
             default:
                 break
@@ -365,20 +347,29 @@ extension HomeViewController: UICollectionViewDelegate {
 extension HomeViewController {
     
     func setupLogout() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .profileTab, 
-                                                           style: .plain, 
-                                                           target: self,
-                                                           action: #selector(logoutTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .profileTab,
+                                                            style: .plain,
+                                                            target: self,
+                                                            action: #selector(logoutTapped))
     }
     
     @objc func logoutTapped() {
-        let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
+        let alert = UIAlertController(title: StrGlobalConstants.logoutSheetTitle,
+                                      message: nil,
+                                      preferredStyle: .actionSheet)
+        alert.addAction(UIAlertAction(title: StrGlobalConstants.cancleButton, style: .cancel, handler: { action in
             return
         }))
-        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
+        alert.addAction(UIAlertAction(title: StrGlobalConstants.logoutTitle, style: .destructive, handler: { [weak self] action in
             guard let self = self else { return }
-            self.viewModel.logout()
+            let confirmAlert = UIAlertController(title: StrGlobalConstants.logoutTitle,
+                                                 message: StrGlobalConstants.AlertsAndActions.logOutAlertTitle,
+                                                 preferredStyle: .alert)
+            confirmAlert.addAction(UIAlertAction(title: StrGlobalConstants.yes, style: .default, handler: { action in
+                self.viewModel.logout()
+            }))
+            confirmAlert.addAction(UIAlertAction(title: StrGlobalConstants.no, style: .destructive))
+            present(confirmAlert, animated: true)
         }))
         present(alert, animated: true)
     }

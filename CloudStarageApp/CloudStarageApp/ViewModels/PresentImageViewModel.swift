@@ -14,7 +14,7 @@ protocol PresentImageViewModelProtocol {
     func publishFile(path: String)
     func deleteFile(name: String)
     func shareLink(link: String)
-    func shareFile(path: URL)
+    func shareFile(path: URL, name: String)
     
     var onButtonShareTapped: (() -> Void)? { get set }
     var isDataLoading: Observable<Bool> { get set }
@@ -62,7 +62,6 @@ extension PresentImageViewModel: PresentImageViewModelProtocol {
                     case .success(let item):
                         self.model = item
                         self.mapModel()
-                        print("parsed hohohoho")
                         self.isDataLoading.value = false
                     case .failure(let error):
                         print(error.localizedDescription)
@@ -87,13 +86,12 @@ extension PresentImageViewModel: PresentImageViewModelProtocol {
     func sizeFormatter(bytes: Int) -> String {
         let kilobytes = Double(bytes) / 1024
         let megabytes = kilobytes / 1024
-        
         if megabytes >= 1 {
             let roundedMegabytes = String(format: "%.2f", megabytes)
-            return "Размер \(roundedMegabytes) МБ"
+            return String(localized: "Size \(roundedMegabytes) MB", table: "InfoViewLocalizable")
         } else {
             let roundedKilobytes = String(format: "%.2f", kilobytes)
-            return "Размер \(roundedKilobytes) КБ"
+            return String(localized: "Size \(roundedKilobytes) KB", table: "InfoViewLocalizable")
         }
     }
     
@@ -104,22 +102,24 @@ extension PresentImageViewModel: PresentImageViewModelProtocol {
     func shareLink(link: String) {
         coordinator.presentAtivityVc(item: link)
     }
-    
-    func shareFile(path: URL) {
+//     TODO: NameFile
+    func shareFile(path: URL, name: String) {
         networkManager?.shareFile(with: path) { result in
+            print("file name", name)
             switch result {
             case .success((let response, let data)):
                 do {
                     let tempDirectory = FileManager.default.temporaryDirectory
                     let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? path.pathExtension
-                    let tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension(fileExtension)
+                    let tempFileURL = tempDirectory.appendingPathComponent(name).appendingPathExtension(fileExtension)
                     try data.write(to: tempFileURL)
                     DispatchQueue.main.async { [weak self] in
                         guard let self = self else { return }
                         coordinator.presentAtivityVcFiles(item: tempFileURL)
                     }
                 } catch {
-                    print ("viewModel error")
+                    let error = error
+                    print(error.localizedDescription)
                 }
             case .failure(_):
                 break

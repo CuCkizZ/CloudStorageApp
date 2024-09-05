@@ -2,6 +2,7 @@ import UIKit.UIButton
 
 final class YandexButton: UIButton {
     
+    private let title = String(localized:  "Login with Yandex ID", table: "ButtonsLocalizable")
     var action: (() -> Void)?
     
     init() {
@@ -26,7 +27,7 @@ private extension YandexButton {
             return outgoing
         }
         
-        yandexConfig.title = "Войти с Яндекс ID"
+        yandexConfig.title = title
         yandexConfig.image = UIImage(resource: .yandexId)
         yandexConfig.baseBackgroundColor = .black
         yandexConfig.baseForegroundColor = .white

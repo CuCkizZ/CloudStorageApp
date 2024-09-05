@@ -1,0 +1,38 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%.2f GB - left" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.2f гб - свободно"
+          }
+        }
+      }
+    },
+    "%.2f GB - used" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%.2f гб - занято"
+          }
+        }
+      }
+    },
+    "%f GB" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%f гб"
+          }
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

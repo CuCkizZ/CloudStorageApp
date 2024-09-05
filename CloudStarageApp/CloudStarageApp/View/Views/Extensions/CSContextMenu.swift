@@ -16,6 +16,7 @@ enum ModelType {
 private enum Constants {
     
     static let defaultType = "file"
+    static let dirType = "dir"
     
     enum Images {
         static let trash = "trash"
@@ -25,25 +26,9 @@ private enum Constants {
         static let rename = "pencil.circle"
         static let share = "square.and.arrow.up"
     }
-    
-    enum Titles {
-        static let delete = "Delete"
-        static let shareLink = "Share a link"
-        static let shareFile = "Share a file"
-        static let unpublish = "Unpublish"
-        static let rename = "Rename"
-        static let shareMenu = "Share"
-        static let newName = "New name"
-        static let enterTheName = "Enter the name"
-        static let submit = "Submite"
-    }
-    
 }
 
 extension UIContextMenuConfiguration {
-    
-    //    TODO: PublicUrl accses
-    //    TODO: Передать модель а не кучу свойств
     
     static func contextMenuConfiguration(for modelType: ModelType,
                                          viewModel: BaseCollectionViewModelProtocol,
@@ -56,39 +41,39 @@ extension UIContextMenuConfiguration {
         let file = model.file
         let publicUrl = model.publicUrl
         let type = model.type
-        var viewModel = viewModel
         switch modelType {
         case .last:
-            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
-                let deleteAction = UIAction(title: Constants.Titles.delete,
+            return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { [weak viewModel] _ in
+                guard let viewModel = viewModel else { return UIMenu() }
+                let deleteAction = UIAction(title: StrGlobalConstants.AlertsAndActions.delete,
                                             image: UIImage(systemName: Constants.Images.trash),
                                             attributes: .destructive) { _ in
                     viewModel.deleteFile(name)
                 }
-                let shareLinkAction = UIAction(title: Constants.Titles.shareFile,
+                let shareLinkAction = UIAction(title: StrGlobalConstants.AlertsAndActions.shareLink,
                                                image: UIImage(systemName: Constants.Images.plusLink)) { _ in
                     viewModel.publishResource(path, indexPath: indexPath)
                 }
-                let shareFileAction = UIAction(title: Constants.Titles.shareFile,
+                let shareFileAction = UIAction(title: StrGlobalConstants.AlertsAndActions.shareFile,
                                                image: UIImage(systemName: Constants.Images.doc)) { _ in
                     viewModel.publishResource(path, indexPath: indexPath)
                     guard let file = URL(string: file) else { return }
-                    viewModel.presentAvcFiles(path: file)
+                    viewModel.presentAvcFiles(path: file, name: name)
                 }
-                let unpublishAction = UIAction(title: Constants.Titles.unpublish,
+                let unpublishAction = UIAction(title: StrGlobalConstants.AlertsAndActions.unpublish,
                                                image: UIImage(systemName: Constants.Images.link)) { _ in
                     viewModel.unpublishResource(path)
                 }
-                let renameAction = UIAction(title: Constants.Titles.rename,
+                let renameAction = UIAction(title: StrGlobalConstants.AlertsAndActions.rename,
                                             image: UIImage(systemName: Constants.Images.rename)) { _ in
-                    let enterNameAlert = UIAlertController(title: Constants.Titles.newName,
+                    let enterNameAlert = UIAlertController(title: StrGlobalConstants.AlertsAndActions.newName,
                                                            message: nil,
                                                            preferredStyle: .alert)
                     
                     enterNameAlert.addTextField { textField in
-                        textField.placeholder = Constants.Titles.enterTheName
+                        textField.placeholder = StrGlobalConstants.AlertsAndActions.enterTheName
                     }
-                    let submitAction = UIAlertAction(title: Constants.Titles.submit, 
+                    let submitAction = UIAlertAction(title: StrGlobalConstants.AlertsAndActions.submit, 
                                                      style: .default) { [unowned enterNameAlert] _ in
                         if let answer = enterNameAlert.textFields?[0], let newName = answer.text {
                             viewModel.renameFile(oldName: name, newName: newName)
@@ -97,46 +82,46 @@ extension UIContextMenuConfiguration {
                     enterNameAlert.addAction(submitAction)
                     viewController.present(enterNameAlert, animated: true)
                 }
-                let shareMenu = UIMenu(title: Constants.Titles.shareMenu, 
+                let shareMenu = UIMenu(title: StrGlobalConstants.AlertsAndActions.shareMenu, 
                                        image: UIImage(systemName: Constants.Images.share),
                                        children: [shareLinkAction, shareFileAction])
                 if publicUrl != nil {
-                    return UIMenu(title: "", children: [deleteAction, shareMenu, unpublishAction, renameAction])
+                    return UIMenu(title: "", children: [shareMenu, unpublishAction, renameAction, deleteAction])
                 } else {
-                    return UIMenu(title: "", children: [deleteAction, shareMenu, renameAction])
+                    return UIMenu(title: "", children: [shareMenu, renameAction, deleteAction,])
                 }
             }
         case .full:
             return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
-                let deleteAction = UIAction(title: Constants.Titles.delete,
+                let deleteAction = UIAction(title: StrGlobalConstants.AlertsAndActions.delete,
                                             image: UIImage(systemName: Constants.Images.trash),
                                             attributes: .destructive) { _ in
                     viewModel.deleteFile(name)
                 }
-                let shareLinkAction = UIAction(title: Constants.Titles.shareLink,
+                let shareLinkAction = UIAction(title: StrGlobalConstants.AlertsAndActions.shareLink,
                                                image: UIImage(systemName: Constants.Images.plusLink)) { _ in
                     viewModel.publishResource(path, indexPath: indexPath)
 
                 }
-                let shareFileAction = UIAction(title: Constants.Titles.shareFile,
+                let shareFileAction = UIAction(title: StrGlobalConstants.AlertsAndActions.shareFile,
                                                image: UIImage(systemName: Constants.Images.doc)) { _ in
                     viewModel.publishResource(path, indexPath: indexPath)
                     guard let file = URL(string: file) else { return }
-                    viewModel.presentAvcFiles(path: file)
+                    viewModel.presentAvcFiles(path: file, name: name)
                 }
-                let unpublishAction = UIAction(title: Constants.Titles.unpublish,
+                let unpublishAction = UIAction(title: StrGlobalConstants.AlertsAndActions.unpublish,
                                                image: UIImage(systemName: Constants.Images.link)) { _ in
                     viewModel.unpublishResource(path)
                 }
-                let renameAction = UIAction(title: Constants.Titles.rename,
+                let renameAction = UIAction(title: StrGlobalConstants.AlertsAndActions.rename,
                                             image: UIImage(systemName: Constants.Images.rename)) { _ in
-                    let enterNameAlert = UIAlertController(title: Constants.Titles.newName, 
+                    let enterNameAlert = UIAlertController(title: StrGlobalConstants.AlertsAndActions.newName, 
                                                            message: nil,
                                                            preferredStyle: .alert)
                     enterNameAlert.addTextField { textField in
-                        textField.placeholder = Constants.Titles.enterTheName
+                        textField.placeholder = StrGlobalConstants.AlertsAndActions.enterTheName
                     }
-                    let submitAction = UIAlertAction(title: Constants.Titles.submit, 
+                    let submitAction = UIAlertAction(title: StrGlobalConstants.AlertsAndActions.submit, 
                                                      style: .default) { [unowned enterNameAlert] _ in
                         if let answer = enterNameAlert.textFields?[0], let newName = answer.text {
                             viewModel.renameFile(oldName: name, newName: newName)
@@ -146,69 +131,68 @@ extension UIContextMenuConfiguration {
                     enterNameAlert.addAction(submitAction)
                     viewController.present(enterNameAlert, animated: true)
                 }
-                let shareMenu = UIMenu(title: Constants.Titles.shareMenu,
+                let shareMenu = UIMenu(title: StrGlobalConstants.AlertsAndActions.shareMenu,
                                        image: UIImage(systemName: Constants.Images.share),
                                        children: [shareLinkAction, shareFileAction])
                 
                 if type == Constants.defaultType && publicUrl != nil {
-                    menu = UIMenu(title: "", children: [deleteAction, shareMenu, unpublishAction, renameAction])
-                } else if type == "dir" && publicUrl != nil {
-                    menu = UIMenu(title: "", children: [deleteAction, shareLinkAction, unpublishAction, renameAction])
-                } else if type == "dir"  {
-                    menu = UIMenu(title: "", children: [deleteAction, shareLinkAction, renameAction])
+                    menu = UIMenu(title: "", children: [shareMenu, unpublishAction, renameAction, deleteAction])
+                } else if type == Constants.dirType && publicUrl != nil {
+                    menu = UIMenu(title: "", children: [shareLinkAction, unpublishAction, renameAction, deleteAction])
+                } else if type == Constants.dirType  {
+                    menu = UIMenu(title: "", children: [shareLinkAction, renameAction, deleteAction])
                 } else {
-                    menu = UIMenu(title: "", children: [deleteAction, shareMenu, renameAction])
+                    menu = UIMenu(title: "", children: [shareMenu, renameAction, deleteAction])
                 }
                 return menu
             }
         case .publish:
             return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
-                let deleteAction = UIAction(title: Constants.Titles.delete,
+                let deleteAction = UIAction(title: StrGlobalConstants.AlertsAndActions.delete,
                                             image: UIImage(systemName: Constants.Images.trash),
                                             attributes: .destructive) { _ in
                     viewModel.deleteFile(name)
                 }
-                let shareLinkAction = UIAction(title: Constants.Titles.shareLink,
+                let shareLinkAction = UIAction(title: StrGlobalConstants.AlertsAndActions.shareLink,
                                                image: UIImage(systemName: Constants.Images.plusLink)) { _ in
                     viewModel.publishResource(path, indexPath: indexPath)
 
                 }
-                let shareFileAction = UIAction(title: Constants.Titles.shareFile,
+                let shareFileAction = UIAction(title: StrGlobalConstants.AlertsAndActions.shareFile,
                                                image: UIImage(systemName: Constants.Images.doc)) { _ in
                     viewModel.publishResource(path, indexPath: indexPath)
                     guard let file = URL(string: file) else { return }
-                    viewModel.presentAvcFiles(path: file)
+                    viewModel.presentAvcFiles(path: file, name: name)
                 }
-                let unpublishAction = UIAction(title: Constants.Titles.unpublish,
+                let unpublishAction = UIAction(title: StrGlobalConstants.AlertsAndActions.unpublish,
                                                image: UIImage(systemName: Constants.Images.link)) { _ in
                     viewModel.unpublishResource(path)
                 }
-                let renameAction = UIAction(title: Constants.Titles.rename,
+                let renameAction = UIAction(title: StrGlobalConstants.AlertsAndActions.rename,
                                             image: UIImage(systemName: Constants.Images.rename)) { _ in
-                    let enterNameAlert = UIAlertController(title: Constants.Titles.newName,
+                    let enterNameAlert = UIAlertController(title: StrGlobalConstants.AlertsAndActions.newName,
                                                            message: nil, preferredStyle: .alert)
                     enterNameAlert.addTextField { textField in
-                        textField.placeholder = Constants.Titles.enterTheName
+                        textField.placeholder = StrGlobalConstants.AlertsAndActions.enterTheName
                     }
-                    let submitAction = UIAlertAction(title: Constants.Titles.submit,
+                    let submitAction = UIAlertAction(title: StrGlobalConstants.AlertsAndActions.submit,
                                                      style: .default) { [unowned enterNameAlert] _ in
                         if let answer = enterNameAlert.textFields?[0], let newName = answer.text {
                             viewModel.renameFile(oldName: name, newName: newName)
                         }
                     }
-                    
                     enterNameAlert.addAction(submitAction)
                     viewController.present(enterNameAlert, animated: true)
                 }
                 
                 if type == Constants.defaultType {
-                    let shareMenu = UIMenu(title: Constants.Titles.shareMenu,
+                    let shareMenu = UIMenu(title: StrGlobalConstants.AlertsAndActions.shareMenu,
                                            image: UIImage(systemName: Constants.Images.share),
                                            children: [shareLinkAction, shareFileAction])
                     
-                    return UIMenu(title: "", children: [deleteAction, unpublishAction, shareMenu, renameAction])
+                    return UIMenu(title: "", children: [shareMenu, unpublishAction, renameAction, deleteAction])
                 } else {
-                    return UIMenu(title: "", children: [deleteAction, unpublishAction, shareLinkAction, renameAction])
+                    return UIMenu(title: "", children: [shareLinkAction, unpublishAction, renameAction, deleteAction])
                 }
             }
         }

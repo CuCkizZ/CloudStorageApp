@@ -13,7 +13,6 @@ final class CSChangeLayoutButton: UIButton {
     
     init() {
         super .init(frame: .zero)
-        setupButton()
     }
     
     required init?(coder: NSCoder) {
@@ -24,14 +23,6 @@ final class CSChangeLayoutButton: UIButton {
 // MARK: Private Setup Methods
 
 private extension CSChangeLayoutButton {
-    
-    func setupButton() {
-        //self.addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
-        //self.titleLabel?.font = .Inter.light.size(of: 16)
-        //self.setTitleColor(.white, for: .application)
-        //self.backgroundColor = AppColors.standartBlue
-        //self.layer.cornerRadius = 12
-    }
     
     @objc func buttonPressed() {
         guard let action = self.action else { return }

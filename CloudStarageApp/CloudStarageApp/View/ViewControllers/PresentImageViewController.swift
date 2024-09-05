@@ -70,7 +70,10 @@ final class PresentImageViewController: UIViewController {
         }
         infoView.configure(model: model)
         deleteButtonTapped(name: model.name)
-        shareButtonTapped(link: model.publicUrl ?? "no url", file: model.file, path: model.path)
+        shareButtonTapped(link: model.publicUrl ?? "no url", 
+                          file: model.file, 
+                          path: model.path,
+                          name: model.name)
     }
     
     func path(name: String) {
@@ -117,8 +120,8 @@ private extension PresentImageViewController {
         
     }
     
-    func shareButtonTapped(link: String, file: String, path: String) {
-        shareView.configure(link: link, file: file, path: path)
+    func shareButtonTapped(link: String, file: String, path: String, name: String) {
+        shareView.configure(link: link, file: file, path: path, name: name)
     }
     
     func deleteButtonTapped(name: String) {
@@ -152,7 +155,7 @@ private extension PresentImageViewController {
             imageView.snp.remakeConstraints { make in
                 make.left.right.equalToSuperview()
                 make.top.equalToSuperview().inset(-200)
-                make.bottom.equalTo(self.infoView.snp.top).inset(-Constants.defaultPadding)
+                make.bottom.equalTo(self.infoView.snp.top).inset(-IntConstants.defaultPadding)
             }
             navigationController?.navigationBar.alpha = 0
             shareButton.alpha = 0
@@ -222,14 +225,14 @@ private extension PresentImageViewController {
             make.width.equalToSuperview()
         }
         shareButton.snp.makeConstraints { make in
-            make.left.bottom.equalTo(view.safeAreaLayoutGuide).inset(Constants.defaultPadding)
+            make.left.bottom.equalTo(view.safeAreaLayoutGuide).inset(IntConstants.defaultPadding)
         }
         deleteButton.snp.makeConstraints { make in
-            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(Constants.defaultPadding)
+            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(IntConstants.defaultPadding)
         }
         infoButton.snp.makeConstraints { make in
             make.centerX.equalToSuperview()
-            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(Constants.defaultPadding)
+            make.bottom.equalTo(view.safeAreaLayoutGuide).inset(IntConstants.defaultPadding)
         }
     }
 }

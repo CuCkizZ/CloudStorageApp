@@ -42,11 +42,6 @@ final class PublicStorageViewModel {
 }
 
 extension PublicStorageViewModel: PublickStorageViewModelProtocol {
-    func loadFile(from path: String, completion: @escaping (URL?) -> Void) {
-        
-    }
-    
-    
 //    DataSource
     func numbersOfRowInSection() -> Int {
         model.count
@@ -142,16 +137,15 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
         isSharing.value = false
     }
     
-    func presentAvcFiles(path: URL) {
+    func presentAvcFiles(path: URL, name: String) {
         networkManager.shareFile(with: path) { result in
             switch result {
             case .success((let response, let data)):
                 do {
                     let tempDirectory = FileManager.default.temporaryDirectory
                     let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? path.pathExtension
-                    let tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString)
-                        .appendingPathExtension(fileExtension)
-                    
+                    let tempFileURL = tempDirectory.appendingPathComponent(name).appendingPathExtension(fileExtension)
+
                     try data.write(to: tempFileURL)
                     DispatchQueue.main.async { [weak self] in
                         guard let self = self else { return }
@@ -167,8 +161,7 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     }
     
     func logout() {
-        try? keychain.delete(forKey: "token")
-        print("delted")
+        keychain.delete(forKey: "token")
         coordinator.finish()
     }
 }
