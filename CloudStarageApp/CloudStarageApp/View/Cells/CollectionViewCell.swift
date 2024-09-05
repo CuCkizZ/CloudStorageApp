@@ -263,7 +263,6 @@ extension UIImageView {
             if let image = UIImage(data: cachedResponse.data) {
                 DispatchQueue.main.async {
                     self.image = image
-                    print("from cahse")
                 }
                 return
             }
@@ -275,7 +274,6 @@ extension UIImageView {
                 if let image = UIImage(data: data) {
                     DispatchQueue.main.async {
                         self.image = image
-                        print("downloaded")
                     }
                 } else {
                     print("Failed to convert data to image")
