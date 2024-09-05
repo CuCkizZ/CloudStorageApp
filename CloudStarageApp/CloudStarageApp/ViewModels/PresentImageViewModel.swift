@@ -14,7 +14,7 @@ protocol PresentImageViewModelProtocol {
     func publishFile(path: String)
     func deleteFile(name: String)
     func shareLink(link: String)
-    func shareFile(path: URL)
+    func shareFile(path: URL, name: String)
     
     var onButtonShareTapped: (() -> Void)? { get set }
     var isDataLoading: Observable<Bool> { get set }
@@ -102,15 +102,16 @@ extension PresentImageViewModel: PresentImageViewModelProtocol {
     func shareLink(link: String) {
         coordinator.presentAtivityVc(item: link)
     }
-    
-    func shareFile(path: URL) {
+//     TODO: NameFile
+    func shareFile(path: URL, name: String) {
         networkManager?.shareFile(with: path) { result in
+            print("file name", name)
             switch result {
             case .success((let response, let data)):
                 do {
                     let tempDirectory = FileManager.default.temporaryDirectory
                     let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? path.pathExtension
-                    let tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension(fileExtension)
+                    let tempFileURL = tempDirectory.appendingPathComponent(name).appendingPathExtension(fileExtension)
                     try data.write(to: tempFileURL)
                     DispatchQueue.main.async { [weak self] in
                         guard let self = self else { return }
