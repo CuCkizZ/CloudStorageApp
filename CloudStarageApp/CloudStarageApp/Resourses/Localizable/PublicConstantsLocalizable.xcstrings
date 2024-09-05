@@ -35,7 +35,14 @@
       }
     },
     "Dont have a link, try again" : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Невозможно получить ссылку, попробуйте ещё раз"
+          }
+        }
+      }
     },
     "Log out" : {
       "extractionState" : "manual",
@@ -44,6 +51,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Выйти"
+          }
+        }
+      }
+    },
+    "New folder" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Новая папка"
           }
         }
       }

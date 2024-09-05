@@ -20,9 +20,9 @@ final class StorageViewController: UIViewController {
     private lazy var whileGettingLinkView = UIView(frame: view.bounds)
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
-        layout.itemSize = CGSize(width: view.bounds.width, height: Constants.DefaultHeight)
-        layout.minimumLineSpacing = Constants.minimumLineSpacing
-        layout.minimumInteritemSpacing = Constants.minimumInteritemSpacing
+        layout.itemSize = CGSize(width: view.bounds.width, height: IntConstants.DefaultHeight)
+        layout.minimumLineSpacing = IntConstants.minimumLineSpacing
+        layout.minimumInteritemSpacing = IntConstants.minimumInteritemSpacing
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
     }()
@@ -192,17 +192,17 @@ private extension StorageViewController {
             make.center.equalToSuperview()
         }
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(Constants.defaultPadding - 4)
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(IntConstants.defaultPadding - 4)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.left.equalToSuperview().inset(Constants.defaultPadding)
+            make.left.equalToSuperview().inset(IntConstants.defaultPadding)
             make.right.equalToSuperview()
         }
         changeLayoutButton.snp.makeConstraints { make in
-            make.top.equalTo(collectionView).inset(-Constants.defaultPadding / 2 )
-            make.right.equalTo(collectionView).inset(Constants.defaultPadding)
+            make.top.equalTo(collectionView).inset(-IntConstants.defaultPadding / 2 )
+            make.right.equalTo(collectionView).inset(IntConstants.defaultPadding)
         }
         uploadButton.snp.makeConstraints { make in
-            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(Constants.defaultPadding)
+            make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(IntConstants.defaultPadding)
         }
     }
     
@@ -215,11 +215,11 @@ private extension StorageViewController {
     
     @objc func changeContentLayout() {
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
-            if layout.itemSize == CGSize(width: view.bounds.width, height: Constants.DefaultHeight) {
-                layout.itemSize = Constants.itemSizeDefault
+            if layout.itemSize == CGSize(width: view.bounds.width, height: IntConstants.DefaultHeight) {
+                layout.itemSize = IntConstants.itemSizeDefault
                 navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "file")
             } else {
-                layout.itemSize = CGSize(width: view.bounds.width, height: Constants.DefaultHeight)
+                layout.itemSize = CGSize(width: view.bounds.width, height: IntConstants.DefaultHeight)
                 navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "profileTab")
             }
             collectionView.collectionViewLayout.invalidateLayout()
@@ -240,13 +240,13 @@ extension StorageViewController: UICollectionViewDelegate {
         let mimeType = model.mimeType
         
         switch mimeType {
-        case mimeType where mimeType.contains(Constants.FileTypes.word) || mimeType.contains(Constants.FileTypes.doc):
+        case mimeType where mimeType.contains(FileTypes.word) || mimeType.contains(FileTypes.doc):
             viewModel.presentDocument(name: name, type: .web, fileType: fileType)
-        case mimeType where mimeType.contains(Constants.FileTypes.pdf):
+        case mimeType where mimeType.contains(FileTypes.pdf):
             viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
-        case mimeType where mimeType.contains(Constants.FileTypes.image):
+        case mimeType where mimeType.contains(FileTypes.image):
             viewModel.presentImage(model: model)
-        case fileType where fileType.contains(Constants.FileTypes.video):
+        case fileType where fileType.contains(FileTypes.video):
             print("video")
         case "":
             viewModel.paggination(title: name, path: path)

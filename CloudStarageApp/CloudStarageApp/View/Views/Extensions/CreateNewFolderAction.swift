@@ -8,29 +8,31 @@
 import UIKit
 
 extension UIAction {
-    static func createNewFolder(view: UIViewController, 
+    
+    static func createNewFolder(view: UIViewController,
                                 viewModel: BaseCollectionViewModelProtocol) -> UIAction {
         return UIAction { [weak view] action in
             guard let view = view else { return }
-            let actionSheet = UIAlertController(title: "What to do", message: nil, preferredStyle: .actionSheet)
-            let newFolder = UIAlertAction(title: "New Folder", style: .default) { _ in
+            let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+            let newFolder = UIAlertAction(title: StrGlobalConstants.AlertsAndActions.newFolderSheetTitle,
+                                          style: .default) { _ in
                 
-                let enterNameAlert = UIAlertController(title: "New folder", message: nil, preferredStyle: .alert)
+                let enterNameAlert = UIAlertController(title: StrGlobalConstants.AlertsAndActions.enterTheName, 
+                                                       message: nil, preferredStyle: .alert)
                 enterNameAlert.addTextField { textField in
-                    textField.placeholder = "Enter the name"
+                    textField.placeholder = StrGlobalConstants.AlertsAndActions.enterTheName
                 }
-                let submitAction = UIAlertAction(title: "Submit", style: .default) { [unowned enterNameAlert] _ in
+                let submitAction = UIAlertAction(title: StrGlobalConstants.AlertsAndActions.submit,
+                                                 style: .default) { [unowned enterNameAlert] _ in
                     let answer = enterNameAlert.textFields?[0]
                     viewModel.createNewFolder(answer?.text ?? "")
                 }
                 enterNameAlert.addAction(submitAction)
                 view.present(enterNameAlert, animated: true)
             }
-            let newFile = UIAlertAction(title: "New File", style: .default)
-            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+            let cancelAction = UIAlertAction(title: StrGlobalConstants.cancleButton, style: .cancel)
             
             actionSheet.addAction(newFolder)
-            actionSheet.addAction(newFile)
             actionSheet.addAction(cancelAction)
             view.present(actionSheet, animated: true)
         }
@@ -41,29 +43,19 @@ extension UIAction {
                            name: String) -> UIAction {
         return UIAction { [weak view] action in
             guard let view = view else { return }
-            let actionSheet = UIAlertController(title: "Are you sure delete \(name)?",
+            let actionSheet = UIAlertController(title: StrGlobalConstants.AlertsAndActions.deleteConfirm + name,
                                                 message: nil,
                                                 preferredStyle: .actionSheet)
             
-            let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { _ in
+            let deleteAction = UIAlertAction(title: StrGlobalConstants.AlertsAndActions.delete, style: .destructive) { _ in
                 viewModel.deleteFile(name: name)
                 viewModel.popToRoot()
             }
-            let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
-                
+            let cancelAction = UIAlertAction(title: StrGlobalConstants.cancleButton, style: .cancel)
+            
             actionSheet.addAction(deleteAction)
             actionSheet.addAction(cancelAction)
             view.present(actionSheet, animated: true)
         }
     }
-    
-//    static func shareFile() -> UIAction {
-//        return UIAction { action in
-//            let actionSheet = UIAlertController(title: "What you want to share?", 
-//                                                message: nil,
-//                                                preferredStyle: .actionSheet)
-//            
-//            let linkAction = UIAlertAction(title: "Share a link", style: .default)
-//        }
-//    }
 }

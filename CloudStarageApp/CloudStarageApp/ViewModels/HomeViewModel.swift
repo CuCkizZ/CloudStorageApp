@@ -149,15 +149,14 @@ extension HomeViewModel: HomeViewModelProtocol {
         isSharing.value = false
     }
     
-    func presentAvcFiles(path: URL) {
+    func presentAvcFiles(path: URL, name: String) {
         neworkManager.shareFile(with: path) { result in
             switch result {
             case .success((let response, let data)):
                 do {
                     let tempDirectory = FileManager.default.temporaryDirectory
                     let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? path.pathExtension
-                    let tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString)
-                        .appendingPathExtension(fileExtension)
+                    let tempFileURL = tempDirectory.appendingPathComponent(name).appendingPathExtension(fileExtension)
                     
                     try data.write(to: tempFileURL)
                     DispatchQueue.main.async { [weak self] in
@@ -165,7 +164,7 @@ extension HomeViewModel: HomeViewModelProtocol {
                         self.coordinator.presentAtivityVcFiles(item: tempFileURL)
                     }
                 } catch {
-                    print ("viewModel error")
+                    let error = error.localizedDescription
                 }
             case .failure(_):
                 break

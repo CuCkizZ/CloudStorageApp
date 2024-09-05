@@ -136,7 +136,7 @@ extension StorageViewModel: StorageViewModelProtocol {
     
     func createNewFolder(_ name: String) {
         if name.isEmpty == true {
-            networkManager.createNewFolder("New Folder")
+            networkManager.createNewFolder(StrGlobalConstants.publicTitle)
             DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
                 guard let self = self else { return }
                 self.fetchData()
@@ -157,14 +157,14 @@ extension StorageViewModel: StorageViewModelProtocol {
         isSharing.value = false
     }
     
-    func presentAvcFiles(path: URL) {
+    func presentAvcFiles(path: URL, name: String) {
         networkManager.shareFile(with: path) { result in
             switch result {
             case .success((let response, let data)):
                 do {
                     let tempDirectory = FileManager.default.temporaryDirectory
                     let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? path.pathExtension
-                    let tempFileURL = tempDirectory.appendingPathComponent(UUID().uuidString).appendingPathExtension(fileExtension)
+                    let tempFileURL = tempDirectory.appendingPathComponent(name).appendingPathExtension(fileExtension)
                     try data.write(to: tempFileURL)
                     DispatchQueue.main.async { [weak self] in
                         guard let self = self else { return }

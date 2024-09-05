@@ -8,7 +8,7 @@
 import Foundation
 import CoreData
 
-protocol BaseCollectionViewModelProtocol {
+protocol BaseCollectionViewModelProtocol: AnyObject {
     //    Observable
     var isLoading: Observable<Bool> { get set }
     var isConnected: Observable<Bool> { get set }
@@ -27,7 +27,7 @@ protocol BaseCollectionViewModelProtocol {
     func presentImage(model: CellDataModel)
     func presentDocument(name: String, type: TypeOfConfigDocumentVC, fileType: String)
     func presentAvc(indexPath: IndexPath)
-    func presentAvcFiles(path: URL)
+    func presentAvcFiles(path: URL, name: String)
     func logout()
 //    CoreData
     func FetchedResultsController()

@@ -19,4 +19,19 @@ enum StrGlobalConstants {
     static let logoutTitle = String(localized: "Log out", table: "PublicConstantsLocalizable")
     static let logoutMessage = String(localized: "Are you sure?", table: "PublicConstantsLocalizable")
     static let cancleButton = String(localized: "Cancle", table: "PublicConstantsLocalizable")
+    
+    enum AlertsAndActions {
+        static let delete = String(localized: "Delete", table: "ContextMenuLocalizable")
+        static let shareLink = String(localized: "Share a link", table: "ContextMenuLocalizable")
+        static let shareFile = String(localized: "Share a file", table: "ContextMenuLocalizable")
+        static let unpublish = String(localized: "Unpublish", table: "ContextMenuLocalizable")
+        static let rename = String(localized: "Rename", table: "ContextMenuLocalizable")
+        static let shareMenu = String(localized: "Share", table: "ContextMenuLocalizable")
+        static let newName = String(localized: "New name", table: "ContextMenuLocalizable")
+        static let enterTheName = String(localized: "Enter the name", table: "ContextMenuLocalizable")
+        static let submit = String(localized: "Submite", table: "ContextMenuLocalizable")
+        static let newFolderSheetTitle = String(localized: "Create new folder", table: "ContextMenuLocalizable")
+        static let deleteConfirm = String(localized: "Are you sure delete ", table: "ContextMenuLocalizable")
+    }
+    
 }

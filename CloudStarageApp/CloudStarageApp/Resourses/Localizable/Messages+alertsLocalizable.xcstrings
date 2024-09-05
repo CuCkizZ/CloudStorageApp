@@ -1,6 +1,17 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Cancle" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отмена"
+          }
+        }
+      }
+    },
     "noData" : {
       "extractionState" : "manual",
       "localizations" : {
@@ -19,7 +30,14 @@
       }
     },
     "You don't have any published files yet" : {
-
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "У вас пока нет \\n опубликованных файлов"
+          }
+        }
+      }
     }
   },
   "version" : "1.0"

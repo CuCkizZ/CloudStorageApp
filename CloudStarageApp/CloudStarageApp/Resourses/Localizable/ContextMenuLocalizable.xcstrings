@@ -1,6 +1,26 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    "Are you sure delete " : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Вы действительно хотите удалить "
+          }
+        }
+      }
+    },
+    "Create new folder" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Создать новую папку"
+          }
+        }
+      }
+    },
     "Delete" : {
       "extractionState" : "manual",
       "localizations" : {
