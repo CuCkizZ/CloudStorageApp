@@ -50,8 +50,14 @@ extension UIViewController {
         
         var buttonImage: UIImage {
             switch self {
-            case .table: return UIImage(systemName: "square.fill.text.grid.1x2")!
-            case .defaultGrid: return UIImage(systemName: "square.grid.3x3")!
+            case .table:
+                return UIImage(systemName: "square.fill.text.grid.1x2")?
+                    .withTintColor(AppColors.standartBlue,
+                                   renderingMode: .alwaysOriginal) ?? UIImage()
+            case .defaultGrid:
+                return UIImage(systemName: "square.grid.3x3")?
+                    .withTintColor(AppColors.standartBlue,
+                                   renderingMode: .alwaysOriginal) ?? UIImage()
             }
         }
     }

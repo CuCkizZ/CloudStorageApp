@@ -23,16 +23,17 @@ final class CSUploadButton: UIButton {
     }
     
     private func setupButton() {
-        setImage(UIImage(systemName: uploadImage), for: .normal)
+        setImage(UIImage(systemName: uploadImage)?.withTintColor(AppColors.standartBlue, 
+                                                                 renderingMode: .alwaysOriginal), for: .normal)
         backgroundColor = .systemGray6.withAlphaComponent(0.9)
         clipsToBounds = true
         layer.cornerRadius = 20
         addTarget(self, action: #selector(buttonPressed), for: .touchUpInside)
     
-        self.translatesAutoresizingMaskIntoConstraints = false
+        translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            self.widthAnchor.constraint(equalToConstant: 50),
-            self.heightAnchor.constraint(equalToConstant: 50)
+            widthAnchor.constraint(equalToConstant: 50),
+            heightAnchor.constraint(equalToConstant: 50)
         ])
     }
     
