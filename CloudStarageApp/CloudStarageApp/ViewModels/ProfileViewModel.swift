@@ -14,6 +14,7 @@ protocol ProfileViewModelProtocol: AnyObject {
     func logout()
     func FetchedResultsController()
     func fetchOfflineProfile() -> OfflineProfile?
+    func labelsFormatter() -> [String]
 }
 
 final class ProfileViewModel {
@@ -63,6 +64,9 @@ final class ProfileViewModel {
 extension ProfileViewModel: ProfileViewModelProtocol {
     
     func fetchData() {
+        if isLoading.value ?? true {
+            return
+        }
         isLoading.value = true
         networkManager.fetchAccountData { [weak self] result in
             DispatchQueue.main.async {
@@ -70,10 +74,10 @@ extension ProfileViewModel: ProfileViewModelProtocol {
                 switch result {
                 case .success(let profile):
                     self.dataSource = profile
-                    self.isLoading.value = false
                     self.onDataLoaded?()
+                    self.isLoading.value = false
                 case .failure(let error):
-                    print("data viewmodel error: \(error)")
+                    self.isLoading.value = false
                 }
                 
             }
@@ -87,6 +91,36 @@ extension ProfileViewModel: ProfileViewModelProtocol {
     func logout() {
         try? YandexLoginSDK.shared.logout()
         coordinator.finish()
+    }
+    
+    func labelsFormatter() -> [String] {
+        if isConnected.value == true {
+            guard let dataSource = dataSource else { return [] }
+            var memory: [String] = []
+            let intT = Int((dataSource.totalSpace) / 1000000000)
+            let intL = Float(dataSource.leftSpace) / 1000000000
+            let intU = Float(dataSource.usedSpace) / 1000000000
+            let totalStorageText = String(localized: "\(intT) GB", table: "ProfileLocalizable")
+            let leftStorageText = String(format: String(localized: "%.2f GB - left", table: "ProfileLocalizable"), intL)
+            let usedStorageText = String(format: String(localized: "%.2f GB - used", table: "ProfileLocalizable"), intU)
+            memory.append(totalStorageText)
+            memory.append(leftStorageText)
+            memory.append(usedStorageText)
+            return memory
+        } else {
+            guard let dataSource = fetchOfflineProfile() else { return [] }
+            var memory: [String] = []
+            let intT = Int((dataSource.totalSpace) / 1000000000)
+            let intL = Float(dataSource.leftSpace) / 1000000000
+            let intU = Float(dataSource.usedSpace) / 1000000000
+            let totalStorageText = String(localized: "\(intT) GB", table: "ProfileLocalizable")
+            let leftStorageText = String(format: String(localized: "%.2f GB - left", table: "ProfileLocalizable"), intL)
+            let usedStorageText = String(format: String(localized: "%.2f GB - used", table: "ProfileLocalizable"), intU)
+            memory.append(totalStorageText)
+            memory.append(leftStorageText)
+            memory.append(usedStorageText)
+            return memory
+        }
     }
 }
 

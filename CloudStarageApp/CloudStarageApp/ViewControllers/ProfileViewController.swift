@@ -8,7 +8,7 @@ private enum LocalConstants {
 final class ProfileViewController: UIViewController {
     
     private let viewModel: ProfileViewModelProtocol
-   // private let dataSource: ProfileDataSource?
+    private var dataSource: ProfileDataSource? = nil
     private var isOffline: Bool = false
     private lazy var totalLabelActivityIndicator = UIActivityIndicatorView()
     private lazy var usageLabelActivityIndicator = UIActivityIndicatorView()
@@ -56,7 +56,7 @@ final class ProfileViewController: UIViewController {
     private func bindView() {
         viewModel.onDataLoaded = { [weak self] in
             guard let self = self else { return }
-           
+            self.dataSource = viewModel.dataSource
         }
     }
     
@@ -151,21 +151,15 @@ private extension ProfileViewController {
     func configure() {
         switch isOffline {
         case false:
-            guard let model = viewModel.dataSource else { return }
-            let intT = Int((model.totalSpace) / 1000000000)
-            let intL = Float(model.leftSpace) / 1000000000
-            let intU = Float(model.usedSpace) / 1000000000
-            totalStorageLabel.text = String(localized: "\(intT) GB")
-            leftStorageLabel.text = String(format: String(localized: "%.2f GB - left", table: "ProfileLocalizable"), intL)
-            usedStorageLabel.text = String(format: String(localized: "%.2f GB - used", table: "ProfileLocalizable"), intU)
+            let formatter = viewModel.labelsFormatter()
+            totalStorageLabel.text = formatter[0]
+            leftStorageLabel.text = formatter[1]
+            usedStorageLabel.text =  formatter[2]
         case true:
-            guard let model = viewModel.fetchOfflineProfile() else { return }
-            let intT = Int((model.totalSpace) / 1000000000)
-            let intL = Float(model.leftSpace) / 1000000000
-            let intU = Float(model.usedSpace) / 1000000000
-            totalStorageLabel.text = String(localized: "\(intT) GB")
-            leftStorageLabel.text = String(format: String(localized: "%.2f GB - left", table: "ProfileLocalizable"), intL)
-            usedStorageLabel.text = String(format: String(localized: "%.2f GB - used", table: "ProfileLocalizable"), intU)
+            let formatter = viewModel.labelsFormatter()
+            totalStorageLabel.text = formatter[0]
+            leftStorageLabel.text = formatter[1]
+            usedStorageLabel.text =  formatter[2]
         }
     }
     
@@ -179,12 +173,15 @@ private extension ProfileViewController {
             usageLabelActivityIndicator.startAnimating()
             leftLabelActivityIndicator.startAnimating()
         case "end":
-            totalStorageLabel.isHidden = false
-            usedStorageLabel.isHidden = false
-            leftStorageLabel.isHidden = false
+            totalLabelActivityIndicator.isHidden = true
+            usageLabelActivityIndicator.isHidden = true
+            leftLabelActivityIndicator.isHidden = true
             totalLabelActivityIndicator.stopAnimating()
             usageLabelActivityIndicator.stopAnimating()
             leftLabelActivityIndicator.stopAnimating()
+            totalStorageLabel.isHidden = false
+            usedStorageLabel.isHidden = false
+            leftStorageLabel.isHidden = false
         default:
             break
         }

@@ -1,6 +1,17 @@
 {
   "sourceLanguage" : "en",
   "strings" : {
+    " %@ GB" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%@ гб"
+          }
+        }
+      }
+    },
     "%.2f GB - left" : {
       "localizations" : {
         "ru" : {
@@ -29,6 +40,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "%f гб"
+          }
+        }
+      }
+    },
+    "%lld GB" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "%lld гб"
           }
         }
       }
