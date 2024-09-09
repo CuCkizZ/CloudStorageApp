@@ -50,8 +50,8 @@ extension UIViewController {
         
         var buttonImage: UIImage {
             switch self {
-            case .table: return #imageLiteral(resourceName: "file")
-            case .defaultGrid: return #imageLiteral(resourceName: "profileTab")
+            case .table: return UIImage(systemName: "square.fill.text.grid.1x2")!
+            case .defaultGrid: return UIImage(systemName: "square.grid.3x3")!
             }
         }
     }

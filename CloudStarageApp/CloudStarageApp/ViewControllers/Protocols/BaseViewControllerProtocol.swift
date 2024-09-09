@@ -7,10 +7,7 @@
 
 import UIKit.UICollectionView
 
-protocol BaseViewControllerProtocol {
-    func logout()
-    func reloadCollectionView(collectionView: UICollectionView)
-}
+protocol BaseViewControllerProtocol {}
 
 protocol HomeViewControllerProtocol: BaseViewControllerProtocol {}
 protocol StorageViewControllerProtocol: BaseViewControllerProtocol {}
