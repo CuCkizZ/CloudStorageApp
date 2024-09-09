@@ -335,7 +335,7 @@ extension HomeViewController: UICollectionViewDelegate {
             case mimeType where mimeType.contains(FileTypes.image):
                 viewModel.presentImage(model: model)
             default:
-                break
+                UIAlertController.formatError(view: self)
             }
         }
     }

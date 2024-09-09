@@ -372,14 +372,3 @@ extension StorageViewController {
         present(alert, animated: true)
     }
 }
-
-
-extension UIAlertController {
-    
-    static func formatError(view: UIViewController) {
-        let alert = UIAlertController(title: "Sorry", message: "This format is not supported at the moment", preferredStyle: .alert)
-        let action = UIAlertAction(title: "OK", style: .destructive)
-        alert.addAction(action)
-        view.present(alert, animated: true)
-    }
-}

@@ -284,10 +284,8 @@ extension PublicStorageViewController: UICollectionViewDelegate {
             viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
         case mimeType where mimeType.contains(FileTypes.image):
             viewModel.presentImage(model: model)
-        case mimeType where mimeType.contains(FileTypes.video):
-           print("video")
         default:
-            break
+            UIAlertController.formatError(view: self)
         }
     }
     
