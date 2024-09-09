@@ -6,22 +6,20 @@ final class HomeViewController: UIViewController {
     private let viewModel: HomeViewModelProtocol
     private lazy var cellDataSource: [CellDataModel] = []
 
-    var isOffline: Bool = false
-    //   UI
-    
-    private lazy var selectedStyle: PresentationStyle = .table
-    
+    private var isOffline: Bool = false
+    private var selectedStyle: PresentationStyle = .defaultGrid
     private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var uploadButton = CSUploadButton()
     private lazy var changeLayoutButton = CSChangeLayoutButton()
     private lazy var networkStatusView = UIView()
-    private lazy var whileGettingLinkView = UIView(frame: view.bounds)
+    private lazy var whileGettingLinkView = GettinLinkView()
+    private lazy var noDataView = NoDataView()
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: view.bounds.width, height: IntConstants.DefaultHeight)
-        layout.minimumLineSpacing = 15
+        layout.minimumLineSpacing = IntConstants.minimumLineSpacing
         layout.minimumInteritemSpacing = IntConstants.minimumInteritemSpacing
         let collection = UICollectionView(frame: .zero, collectionViewLayout: layout)
         return collection
@@ -40,7 +38,6 @@ final class HomeViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupLayout()
         bindView()
         bindViewModel()
@@ -59,6 +56,11 @@ private extension HomeViewController {
             guard let self = self, let files = files else { return }
             self.cellDataSource = files
             collectionView.reloadData()
+            if cellDataSource.count == 0 {
+                noDataView.isHidden = false
+            } else {
+                noDataView.isHidden = true
+            }
         }
     }
     
@@ -67,6 +69,7 @@ private extension HomeViewController {
             guard let self = self, let isLoading = isLoading else { return }
             DispatchQueue.main.async {
                 if isLoading {
+                    self.activityIndicator.isHidden = false
                     self.activityIndicator.startAnimating()
                     self.collectionView.reloadData()
                 } else {
@@ -100,9 +103,8 @@ private extension HomeViewController {
             guard let self = self, let isSharing = isSharing else { return }
             DispatchQueue.main.async {
                 if isSharing {
+                    self.showGettingLinkView()
                     self.whileGettingLinkView.isHidden = false
-                    self.activityIndicator.style = .medium
-                    self.activityIndicator.startAnimating()
                 } else {
                     self.whileGettingLinkView.isHidden = true
                 }
@@ -123,18 +125,18 @@ private extension HomeViewController {
         uploadButtonPressed()
         setupLogout()
         setupConstraints()
+        changeLayoutAction()
     }
     
     func setupView() {
-        view.addSubview(activityIndicator)
+        view.addSubview(noDataView)
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
         view.addSubview(changeLayoutButton)
-        view.addSubview(whileGettingLinkView)
+        view.addSubview(activityIndicator)
         view.backgroundColor = .white
-        activityIndicator.hidesWhenStopped = true
         setupCollectionView()
-        setupIsSharingView()
+        showGettingLinkView()
         setupLayoutButton()
     }
     
@@ -153,6 +155,25 @@ private extension HomeViewController {
         changeLayoutButton.action = { [weak self] in
             guard let self = self else { return }
             self.changeContentLayout()
+        }
+    }
+    
+    func showGettingLinkView() {
+        if #available(iOS 15.0, *) {
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow }) {
+                keyWindow.addSubview(whileGettingLinkView)
+                whileGettingLinkView.snp.makeConstraints { make in
+                    make.edges.equalToSuperview()
+                }
+            }
+        } else {
+            if let keyWindow = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) {
+                keyWindow.addSubview(whileGettingLinkView)
+                whileGettingLinkView.snp.makeConstraints { make in
+                    make.edges.equalToSuperview()
+                }
+            }
         }
     }
     
@@ -196,13 +217,6 @@ private extension HomeViewController {
                                                object: nil)
     }
     
-    
-    func setupIsSharingView() {
-        whileGettingLinkView.isHidden = true
-        whileGettingLinkView.backgroundColor = AppColors.customGray.withAlphaComponent(0.5)
-        whileGettingLinkView.addSubview(activityIndicator)
-    }
-    
     func setupConstraints() {
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
@@ -214,11 +228,14 @@ private extension HomeViewController {
             make.right.equalToSuperview().inset(IntConstants.defaultPadding)
         }
         changeLayoutButton.snp.makeConstraints { make in
-            make.top.equalTo(collectionView).inset(IntConstants.defaultPadding / -2)
-            make.right.equalTo(collectionView).inset(IntConstants.defaultPadding)
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.right.equalTo(view.safeAreaLayoutGuide).inset(19)
         }
         uploadButton.snp.makeConstraints { make in
             make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(IntConstants.defaultPadding)
+        }
+        noDataView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
         }
     }
     
@@ -251,9 +268,9 @@ private extension HomeViewController {
     
     @objc func showOfflineDeviceUI(notification: Notification) {
         if NetworkMonitor.shared.isConnected {
-            print("Connected")
+            return
         } else {
-            print("Not connected")
+           return
         }
     }
 }
@@ -275,7 +292,7 @@ extension HomeViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch isOffline {
         case false:
-            let model = cellDataSource[indexPath.row]
+            let model = cellDataSource[indexPath.item]
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
                                                                 for: indexPath) as? CollectionViewCell else {
                 fatalError(FatalError.wrongCell)
@@ -305,7 +322,7 @@ extension HomeViewController: UICollectionViewDelegate {
         case true:
             errorConnection()
         case false:
-            let model = cellDataSource[indexPath.row]
+            let model = cellDataSource[indexPath.item]
             let name = model.name
             let fileType = model.file
             let mimeType = model.mimeType

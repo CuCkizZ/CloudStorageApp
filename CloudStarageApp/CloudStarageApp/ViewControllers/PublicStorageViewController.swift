@@ -8,39 +8,16 @@ final class PublicStorageViewController: UIViewController {
     private let viewModel: PublickStorageViewModelProtocol
     private var cellDataSource: [CellDataModel] = []
     //    UI
-    var isOffline: Bool = false
+    private var isOffline: Bool = false
     
     private lazy var networkStatusView = UIView()
-    private lazy var whileGettingLinkView = UIView(frame: view.bounds)
-    private lazy var selectedStyle: PresentationStyle = .table
+    private lazy var whileGettingLinkView = GettinLinkView()
+    private lazy var selectedStyle: PresentationStyle = .defaultGrid
     private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var uploadButton = CSUploadButton()
     private lazy var changeLayoutButton = CSChangeLayoutButton()
-    
-    private lazy var noDataImage: UIImageView = {
-        let imageView = UIImageView()
-        imageView.image = UIImage(resource: .noData)
-        return imageView
-    }()
-    
-    private lazy var noDataLabel: UILabel = {
-        let label = UILabel()
-        label.text = noDataText
-        label.font = .Inter.light.size(of: 17)
-        label.textColor = .black
-        label.textAlignment = .center
-        label.numberOfLines = 0
-        return label
-    }()
-    
-    private lazy var stackView: UIStackView = {
-        let stack = UIStackView(arrangedSubviews: [noDataImage, noDataLabel])
-        stack.axis = .vertical
-        stack.spacing = 20
-        stack.alignment = .center
-        return stack
-    }()
+    private lazy var noDataView = NoDataView()
     
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -71,6 +48,7 @@ final class PublicStorageViewController: UIViewController {
         bindView()
         bindViewModel()
         bindNetworkMonitor()
+        bindShareing()
     }
 }
 
@@ -84,9 +62,9 @@ private extension PublicStorageViewController {
             self.cellDataSource = files
             collectionView.reloadData()
             if cellDataSource.count == 0 {
-                stackView.isHidden = false
+                noDataView.isHidden = false
             } else {
-                stackView.isHidden = true
+                noDataView.isHidden = true
             }
         }
     }
@@ -123,6 +101,20 @@ private extension PublicStorageViewController {
             }
         }
     }
+    
+    func bindShareing() {
+        viewModel.isSharing.bind { [weak self] isSharing in
+            guard let self = self, let isSharing = isSharing else { return }
+            DispatchQueue.main.async {
+                if isSharing {
+                    self.showGettingLinkView()
+                    self.whileGettingLinkView.isHidden = false
+                } else {
+                    self.whileGettingLinkView.isHidden = true
+                }
+            }
+        }
+    }
 }
 
 // MARK: Layout
@@ -134,12 +126,10 @@ private extension PublicStorageViewController {
         SetupNavBar()
         setupNetworkStatusView(networkStatusView)
         setupButtonUp()
-        setupStackView()
         setupCollectionView()
         setupLogout()
         setupLayoutButton()
         uploadButtonPressed()
-        setupStackView()
         setupConstraints()
     }
     
@@ -148,7 +138,7 @@ private extension PublicStorageViewController {
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
         view.addSubview(changeLayoutButton)
-        view.addSubview(stackView)
+        view.addSubview(noDataView)
         view.backgroundColor = .white
     }
     
@@ -193,10 +183,6 @@ private extension PublicStorageViewController {
         }
     }
     
-    func setupStackView() {
-        stackView.isHidden = true
-    }
-    
     func uploadButtonPressed() {
         uploadButton.addAction(UIAction.createNewFolder(view: self,
                                                         viewModel: viewModel),
@@ -212,24 +198,44 @@ private extension PublicStorageViewController {
         present(avc, animated: true)
     }
     
+    
+    func showGettingLinkView() {
+        if #available(iOS 15.0, *) {
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow }) {
+                keyWindow.addSubview(whileGettingLinkView)
+                whileGettingLinkView.snp.makeConstraints { make in
+                    make.edges.equalToSuperview()
+                }
+            }
+        } else {
+            if let keyWindow = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) {
+                keyWindow.addSubview(whileGettingLinkView)
+                whileGettingLinkView.snp.makeConstraints { make in
+                    make.edges.equalToSuperview()
+                }
+            }
+        }
+    }
+    
     func setupConstraints() {
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(IntConstants.defaultPadding - 4)
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(IntConstants.defaultPadding + 4)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.left.equalToSuperview().inset(IntConstants.defaultPadding)
-            make.right.equalToSuperview()
+            make.left.equalToSuperview()
+            make.right.equalToSuperview().inset(IntConstants.defaultPadding)
         }
         changeLayoutButton.snp.makeConstraints { make in
-            make.top.equalTo(collectionView).inset(-IntConstants.defaultPadding / 2)
-            make.right.equalTo(collectionView).inset(IntConstants.defaultPadding)
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.right.equalTo(view.safeAreaLayoutGuide).inset(19)
         }
         uploadButton.snp.makeConstraints { make in
             make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(IntConstants.defaultPadding)
         }
-        stackView.snp.makeConstraints { make in
+        noDataView.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
     }
@@ -238,6 +244,7 @@ private extension PublicStorageViewController {
     
     @objc func pullToRefresh() {
         viewModel.fetchData()
+        collectionView.reloadData()
         refresher.endRefreshing()
     }
     
@@ -245,14 +252,16 @@ private extension PublicStorageViewController {
         uploadButtonPressed()
     }
     
-    @objc private func changeContentLayout() {
+    @objc func changeContentLayout() {
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             if layout.itemSize == CGSize(width: view.bounds.width, height: IntConstants.DefaultHeight) {
                 layout.itemSize = IntConstants.itemSizeDefault
-                navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "file")
+                selectedStyle = .table
+                changeLayoutButton.setImage(selectedStyle.buttonImage, for: .normal)
             } else {
                 layout.itemSize = CGSize(width: view.bounds.width, height: IntConstants.DefaultHeight)
-                navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "profileTab")
+                selectedStyle = .defaultGrid
+                changeLayoutButton.setImage(selectedStyle.buttonImage, for: .normal)
             }
             collectionView.collectionViewLayout.invalidateLayout()
         }
@@ -289,29 +298,6 @@ extension PublicStorageViewController: UICollectionViewDelegate {
                                                                    viewModel: viewModel,
                                                                    model: model, indexPath: indexPath,
                                                                    viewController: self)
-    }
-    
-    func bindShareing() {
-        viewModel.isSharing.bind { [weak self] isSharing in
-            guard let self = self, let isSharing = isSharing else { return }
-            DispatchQueue.main.async {
-                if isSharing {
-                    self.whileGettingLinkView.isHidden = false
-                    self.activityIndicator.style = .medium
-                    self.activityIndicator.startAnimating()
-                } else {
-                    self.whileGettingLinkView.isHidden = true
-                    self.tabBarController?.tabBar.backgroundColor = .white
-
-                }
-            }
-        }
-    }
-    
-    func setupIsSharingView() {
-        whileGettingLinkView.isHidden = true
-        whileGettingLinkView.backgroundColor = AppColors.customGray.withAlphaComponent(0.5)
-        whileGettingLinkView.addSubview(activityIndicator)
     }
 }
 
@@ -355,7 +341,10 @@ extension PublicStorageViewController: UICollectionViewDataSource {
 
 extension PublicStorageViewController {
     func setupLogout() {
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .profileTab, style: .plain, target: self, action: #selector(logoutTapped))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: .profileTab,
+                                                            style: .plain,
+                                                            target: self,
+                                                            action: #selector(logoutTapped))
     }
     
     @objc func logoutTapped() {

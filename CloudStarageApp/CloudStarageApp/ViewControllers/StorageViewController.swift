@@ -2,22 +2,22 @@ import UIKit
 import SnapKit
 
 final class StorageViewController: UIViewController {
-    // MARK: Model
     private var viewModel: StorageViewModelProtocol
     private var cellDataSource: [CellDataModel] = []
-    var isOffline: Bool = false
+    private var isOffline: Bool = false
     
     private var navigationTitle: String
     private var fetchPath: String
-    //    UI
-    
+   
     private lazy var refresher = UIRefreshControl()
     private lazy var activityIndicator = UIActivityIndicatorView()
     private lazy var networkStatusView = UIView()
     private lazy var uploadButton = CSUploadButton()
     private lazy var changeLayoutButton = CSChangeLayoutButton()
     private lazy var selectedStyle: PresentationStyle = .table
-    private lazy var whileGettingLinkView = UIView(frame: view.bounds)
+    private lazy var whileGettingLinkView = GettinLinkView()
+    private lazy var noDataView = NoDataView()
+
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         layout.itemSize = CGSize(width: view.bounds.width, height: IntConstants.DefaultHeight)
@@ -46,11 +46,11 @@ final class StorageViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         setupLayout()
         bindView()
         bindViewModel()
         bindNetworkMonitor()
+        bindShareing()
     }
 }
 
@@ -63,6 +63,11 @@ private extension StorageViewController {
             guard let self = self, let files = files else { return }
             self.cellDataSource = files
             collectionView.reloadData()
+            if cellDataSource.count == 0 {
+                noDataView.isHidden = false
+            } else {
+                noDataView.isHidden = true
+            }
         }
     }
     
@@ -71,6 +76,7 @@ private extension StorageViewController {
             guard let self = self, let isLoading = isLoading else { return }
             DispatchQueue.main.async {
                 if isLoading {
+                    self.activityIndicator.isHidden = false
                     self.activityIndicator.startAnimating()
                     self.collectionView.reloadData()
                 } else {
@@ -97,6 +103,20 @@ private extension StorageViewController {
             }
         }
     }
+    
+    func bindShareing() {
+        viewModel.isSharing.bind { [weak self] isSharing in
+            guard let self = self, let isSharing = isSharing else { return }
+            DispatchQueue.main.async {
+                if isSharing {
+                    self.showGettingLinkView()
+                    self.whileGettingLinkView.isHidden = false
+                } else {
+                    self.whileGettingLinkView.isHidden = true
+                }
+            }
+        }
+    }
 }
 
 // MARK: Layout
@@ -114,10 +134,11 @@ private extension StorageViewController {
     }
     
     func setupView() {
-        view.addSubview(activityIndicator)
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
         view.addSubview(changeLayoutButton)
+        view.addSubview(activityIndicator)
+        view.addSubview(noDataView)
         view.backgroundColor = .white
         setupCollectionView()
     }
@@ -125,7 +146,7 @@ private extension StorageViewController {
     func setupNavBarBeforePaggination() {
         guard let navigationController = navigationController else { return }
         navigationController.navigationBar.prefersLargeTitles = true
-        navigationItem.title = navigationTitle
+        title = StrGlobalConstants.storageTitle
     }
     
     func setupNavBarAfterPaggination() {
@@ -166,10 +187,6 @@ private extension StorageViewController {
         collectionView.addSubview(refresher)
     }
     
-    func modelReturn(indexPath: IndexPath) -> CellDataModel {
-        return cellDataSource[indexPath.row]
-    }
-    
     func setupButtonTap() {
         uploadButton.action = { [weak self] in
             guard let self = self else { return }
@@ -187,22 +204,44 @@ private extension StorageViewController {
                                for: .touchUpInside)
     }
     
+    func showGettingLinkView() {
+        if #available(iOS 15.0, *) {
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+               let keyWindow = windowScene.windows.first(where: { $0.isKeyWindow }) {
+                keyWindow.addSubview(whileGettingLinkView)
+                whileGettingLinkView.snp.makeConstraints { make in
+                    make.edges.equalToSuperview()
+                }
+            }
+        } else {
+            if let keyWindow = UIApplication.shared.windows.first(where: { $0.isKeyWindow }) {
+                keyWindow.addSubview(whileGettingLinkView)
+                whileGettingLinkView.snp.makeConstraints { make in
+                    make.edges.equalToSuperview()
+                }
+            }
+        }
+    }
+    
     func setupConstraints() {
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
         collectionView.snp.makeConstraints { make in
-            make.top.equalTo(view.safeAreaLayoutGuide).inset(IntConstants.defaultPadding - 4)
+            make.top.equalTo(view.safeAreaLayoutGuide).inset(IntConstants.defaultPadding + 4)
             make.bottom.equalTo(view.safeAreaLayoutGuide)
-            make.left.equalToSuperview().inset(IntConstants.defaultPadding)
-            make.right.equalToSuperview()
+            make.left.equalToSuperview()
+            make.right.equalToSuperview().inset(IntConstants.defaultPadding)
         }
         changeLayoutButton.snp.makeConstraints { make in
-            make.top.equalTo(collectionView).inset(-IntConstants.defaultPadding / 2 )
-            make.right.equalTo(collectionView).inset(IntConstants.defaultPadding)
+            make.top.equalTo(view.safeAreaLayoutGuide)
+            make.right.equalTo(view.safeAreaLayoutGuide).inset(19)
         }
         uploadButton.snp.makeConstraints { make in
             make.right.bottom.equalTo(view.safeAreaLayoutGuide).inset(IntConstants.defaultPadding)
+        }
+        noDataView.snp.makeConstraints { make in
+            make.center.equalToSuperview()
         }
     }
     
@@ -210,6 +249,7 @@ private extension StorageViewController {
     
     @objc func pullToRefresh() {
         viewModel.fetchCurrentData(navigationTitle: navigationTitle, path: fetchPath)
+        collectionView.reloadData()
         refresher.endRefreshing()
     }
     
@@ -217,10 +257,12 @@ private extension StorageViewController {
         if let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout {
             if layout.itemSize == CGSize(width: view.bounds.width, height: IntConstants.DefaultHeight) {
                 layout.itemSize = IntConstants.itemSizeDefault
-                navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "file")
+                selectedStyle = .table
+                changeLayoutButton.setImage(selectedStyle.buttonImage, for: .normal)
             } else {
                 layout.itemSize = CGSize(width: view.bounds.width, height: IntConstants.DefaultHeight)
-                navigationItem.rightBarButtonItem?.image = #imageLiteral(resourceName: "profileTab")
+                selectedStyle = .defaultGrid
+                changeLayoutButton.setImage(selectedStyle.buttonImage, for: .normal)
             }
             collectionView.collectionViewLayout.invalidateLayout()
         }
@@ -231,12 +273,11 @@ private extension StorageViewController {
 
 extension StorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let model = modelReturn(indexPath: indexPath)
+        let model = cellDataSource[indexPath.row]
         let name = model.name
-        let path = model.path
+        var path = model.path
         let fileType = model.file
         self.fetchPath = path
-        
         let mimeType = model.mimeType
         
         switch mimeType {
@@ -249,7 +290,7 @@ extension StorageViewController: UICollectionViewDelegate {
         case fileType where fileType.contains(FileTypes.video):
             print("video")
         case "":
-            viewModel.paggination(title: name, path: path)
+            viewModel.paggination(title: name, path: &path)
             self.fetchPath = ""
         default:
             break
@@ -258,7 +299,7 @@ extension StorageViewController: UICollectionViewDelegate {
     
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         guard let indexPath = indexPaths.first else { return nil }
-        let model = modelReturn(indexPath: indexPath)
+        let model = cellDataSource[indexPath.row]
         return UIContextMenuConfiguration.contextMenuConfiguration(for: .full,
                                                                    viewModel: viewModel,
                                                                    model: model,
@@ -289,7 +330,6 @@ extension StorageViewController: UICollectionViewDataSource {
             }
             
             cell.configure(model)
-            
             return cell
         case true:
             guard let items = viewModel.returnItems(at: indexPath) else { return UICollectionViewCell() }
@@ -299,46 +339,12 @@ extension StorageViewController: UICollectionViewDataSource {
             }
             
             cell.storageOffline(items)
-            
             return cell
         }
     }
-    
-    func bindShareing() {
-        viewModel.isSharing.bind { [weak self] isSharing in
-            guard let self = self, let isSharing = isSharing else { return }
-            DispatchQueue.main.async {
-                if isSharing {
-                    self.whileGettingLinkView.isHidden = false
-                    self.activityIndicator.style = .medium
-                    self.activityIndicator.startAnimating()
-                } else {
-                    self.whileGettingLinkView.isHidden = true
-                    self.tabBarController?.tabBar.backgroundColor = .white
-
-                }
-            }
-        }
-    }
-    
-    
-    func setupIsSharingView() {
-        whileGettingLinkView.isHidden = true
-        whileGettingLinkView.backgroundColor = AppColors.customGray.withAlphaComponent(0.5)
-        whileGettingLinkView.addSubview(activityIndicator)
-    }
-    
 }
 
-extension StorageViewController: StorageViewControllerProtocol {
-    func logout() {
-        
-    }
-    
-    func reloadCollectionView(collectionView: UICollectionView) {
-        
-    }
-}
+extension StorageViewController: StorageViewControllerProtocol {}
 
 extension StorageViewController {
     
