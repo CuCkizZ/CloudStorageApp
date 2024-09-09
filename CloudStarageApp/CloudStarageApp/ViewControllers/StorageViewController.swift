@@ -275,9 +275,8 @@ extension StorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let model = cellDataSource[indexPath.row]
         let name = model.name
-        var path = model.path
+        let path = model.path
         let fileType = model.file
-        self.fetchPath = path
         let mimeType = model.mimeType
         
         switch mimeType {
@@ -287,13 +286,10 @@ extension StorageViewController: UICollectionViewDelegate {
             viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
         case mimeType where mimeType.contains(FileTypes.image):
             viewModel.presentImage(model: model)
-        case fileType where fileType.contains(FileTypes.video):
-            print("video")
         case "":
-            viewModel.paggination(title: name, path: &path)
-            self.fetchPath = ""
+            viewModel.paggination(title: name, path: path)
         default:
-            break
+            UIAlertController.formatError(view: self)
         }
     }
     
@@ -377,3 +373,13 @@ extension StorageViewController {
     }
 }
 
+
+extension UIAlertController {
+    
+    static func formatError(view: UIViewController) {
+        let alert = UIAlertController(title: "Sorry", message: "This format is not supported at the moment", preferredStyle: .alert)
+        let action = UIAlertAction(title: "OK", style: .destructive)
+        alert.addAction(action)
+        view.present(alert, animated: true)
+    }
+}
