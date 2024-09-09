@@ -10,6 +10,8 @@ import Foundation
 protocol CellViewModelProtocol {
     func sizeFormatter(bytes: Int) -> String
     func setMaxCharacters(text: String) -> NSMutableAttributedString
+    func optionalRemove(sizeString: String) -> String
+    func dateFormatter(dateString: String) -> String
 }
 
 final class CellViewModel: CellViewModelProtocol {
@@ -37,4 +39,22 @@ final class CellViewModel: CellViewModelProtocol {
         return attributedText
     }
     
+    func optionalRemove(sizeString: String) -> String {
+            let cleanedSizeString = sizeString
+                .replacingOccurrences(of: "Optional(", with: "")
+                .replacingOccurrences(of: ")", with: "")
+                .trimmingCharacters(in: .whitespacesAndNewlines)
+        return cleanedSizeString
+    }
+    
+    func dateFormatter(dateString: String) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
+        
+        if let date = dateFormatter.date(from: dateString) {
+            dateFormatter.dateFormat = "dd.MM.yyyy HH:mm"
+            return dateFormatter.string(from: date)
+        }
+        return ""
+    }
 }

@@ -11,15 +11,16 @@ enum OfflineConfiguration {
 
 final class CollectionViewCell: UICollectionViewCell {
     
-    private let viewModel: CellViewModelProtocol = CellViewModel()
     static let reuseID = String(describing: CollectionViewCell.self)
+    private let viewModel: CellViewModelProtocol = CellViewModel()
+    private let linkImage = "link.circle.fill"
     
     
     private let activityIndicator = UIActivityIndicatorView()
     private lazy var defaultImage = UIImage(resource: .folder)
     private lazy var publishIcon: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "link.circle.fill")
+        imageView.image = UIImage(systemName: linkImage)
         imageView.backgroundColor = .white
         imageView.tintColor = AppColors.customGray
         imageView.layer.cornerRadius = 15
@@ -55,8 +56,6 @@ final class CollectionViewCell: UICollectionViewCell {
         stack.spacing = 16
         return stack
     }()
-    
-    //    var imageSize = CGSize(width: 35, height: 30)
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -100,6 +99,7 @@ final class CollectionViewCell: UICollectionViewCell {
         }
     }
 
+
     
     override func prepareForReuse() {
         super.prepareForReuse()
@@ -109,21 +109,64 @@ final class CollectionViewCell: UICollectionViewCell {
     }
     
     func offlineConfigure(_ model: OfflineItems) {
-        nameLabel.text = model.name
-        dateLabel.text = model.date
-        sizeLabel.text = model.size
+        guard let name  = model.name else { return }
+        guard let date  = model.date else { return }
+        nameLabel.attributedText = viewModel.setMaxCharacters(text: name)
+        
+        if let sizeString = model.size {
+            let cleanedSizeString = viewModel.optionalRemove(sizeString: sizeString)
+            
+            if let size = Int(cleanedSizeString) {
+                let formattedDate = viewModel.dateFormatter(dateString: date)
+                let formattedSize = viewModel.sizeFormatter(bytes: size)
+                dateLabel.text = formattedDate + formattedSize
+            } else {
+                dateLabel.text = viewModel.dateFormatter(dateString: date)
+            }
+        } else {
+            dateLabel.text = viewModel.dateFormatter(dateString: date)
+        }
+        isOffline()
     }
     
     func storageOffline(_ model: OfflineStorage) {
-        nameLabel.text = model.name
-        dateLabel.text = model.date
-        sizeLabel.text = model.size
+        guard let name  = model.name else { return }
+        guard let date  = model.date else { return }
+        nameLabel.attributedText = viewModel.setMaxCharacters(text: name)
+        if let sizeString = model.size {
+            let cleanedSizeString = viewModel.optionalRemove(sizeString: sizeString)
+            
+            if let size = Int(cleanedSizeString) {
+                let formattedDate = viewModel.dateFormatter(dateString: date)
+                let formattedSize = viewModel.sizeFormatter(bytes: size)
+                dateLabel.text = formattedDate + formattedSize
+            } else {
+                dateLabel.text = viewModel.dateFormatter(dateString: date)
+            }
+        } else {
+            dateLabel.text = viewModel.dateFormatter(dateString: date)
+        }
+        isOffline()
     }
     
     func publishedOffline(_ model: OfflinePublished) {
-        nameLabel.text = model.name
-        dateLabel.text = model.date
-        sizeLabel.text = model.size
+        guard let name  = model.name else { return }
+        guard let date  = model.date else { return }
+        nameLabel.attributedText = viewModel.setMaxCharacters(text: name)
+        if let sizeString = model.size {
+            let cleanedSizeString = viewModel.optionalRemove(sizeString: sizeString)
+            
+            if let size = Int(cleanedSizeString) {
+                let formattedDate = viewModel.dateFormatter(dateString: date)
+                let formattedSize = viewModel.sizeFormatter(bytes: size)
+                dateLabel.text = formattedDate + formattedSize
+            } else {
+                dateLabel.text = viewModel.dateFormatter(dateString: date)
+            }
+        } else {
+            dateLabel.text = viewModel.dateFormatter(dateString: date)
+        }
+        isOffline()
     }
 }
 
@@ -153,6 +196,13 @@ private extension CollectionViewCell {
         
         dateLabel.backgroundColor = .clear
         sizeLabel.backgroundColor = .clear
+    }
+    
+    func isOffline() {
+        contentImageView.image = self.defaultImage
+        activityIndicator.stopAnimating()
+        activityIndicator.isHidden = true
+        publishIcon.isHidden = true
     }
     
     func setupStackView() {

@@ -33,6 +33,16 @@
         }
       }
     },
+    "There is no internet connection" : {
+      "localizations" : {
+        "ru" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Отсутствует подключение к интернету"
+          }
+        }
+      }
+    },
     "This format is not supported at the moment" : {
       "localizations" : {
         "ru" : {

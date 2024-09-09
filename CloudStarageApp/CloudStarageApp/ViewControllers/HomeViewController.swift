@@ -92,6 +92,8 @@ private extension HomeViewController {
                 } else {
                     self.showNetworkStatusView(self.networkStatusView)
                     self.viewModel.FetchedResultsController()
+                    self.activityIndicator.stopAnimating()
+                    self.activityIndicator.isHidden = true
                     self.isOffline = true
                 }
             }
@@ -200,14 +202,6 @@ private extension HomeViewController {
         uploadButton.addAction(UIAction.createNewFolder(view: self,
                                                         viewModel: viewModel),
                                for: .touchUpInside)
-    }
-    
-    func chechPublickKey(publicKey: String?) -> Bool {
-        if publicKey != nil {
-            return true
-        } else {
-            return false
-        }
     }
     
     func checkConnetction() {

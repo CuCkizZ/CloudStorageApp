@@ -1,9 +1,10 @@
 import UIKit
 import SnapKit
 
-private enum LocalConstants {
-    static let animationKey = "strokeEnd"
-}
+private let goToPublicTitle = String(localized: "Published files", table: "ButtonsLocalizable")
+private let animationKey = "strokeEnd"
+private let startAnimation = "start"
+private let endAnimation = "end"
 
 final class ProfileViewController: UIViewController {
     
@@ -52,22 +53,27 @@ final class ProfileViewController: UIViewController {
         bindViewModel()
         bindView()
     }
+}
     
-    private func bindView() {
+//    MARK: BindViewExtension
+    
+private extension ProfileViewController {
+    
+    func bindView() {
         viewModel.onDataLoaded = { [weak self] in
             guard let self = self else { return }
             self.dataSource = viewModel.dataSource
         }
     }
     
-    private func bindViewModel() {
+    func bindViewModel() {
         viewModel.isLoading.bind { [weak self] isLoading in
             guard let self = self, let isLoading = isLoading else { return }
             DispatchQueue.main.async {
                 if isLoading {
-                    self.configureWhileIsLoading(state: "start")
+                    self.configureWhileIsLoading(state: startAnimation)
                 } else {
-                    self.configureWhileIsLoading(state: "end")
+                    self.configureWhileIsLoading(state: endAnimation)
                 }
             }
         }
@@ -92,22 +98,6 @@ final class ProfileViewController: UIViewController {
                 }
             }
         }
-    }
-    
-    @objc func rightBarButtonAction() {
-        let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
-            print("Cancel")
-        }))
-        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
-            guard let self = self else { return }
-            self.viewModel.logout()
-        }))
-        present(alert, animated: true)
-    }
-    
-    @objc func logout() {
-        viewModel.logout()
     }
 }
 
@@ -165,14 +155,14 @@ private extension ProfileViewController {
     
     func configureWhileIsLoading(state: String) {
         switch state {
-        case "start":
+        case startAnimation:
             totalStorageLabel.isHidden = true
             usedStorageLabel.isHidden = true
             leftStorageLabel.isHidden = true
             totalLabelActivityIndicator.startAnimating()
             usageLabelActivityIndicator.startAnimating()
             leftLabelActivityIndicator.startAnimating()
-        case "end":
+        case endAnimation:
             totalLabelActivityIndicator.isHidden = true
             usageLabelActivityIndicator.isHidden = true
             leftLabelActivityIndicator.isHidden = true
@@ -207,7 +197,7 @@ private extension ProfileViewController {
     }
     
     func setupButton() {
-        buttonTitleLabel.text = String(localized: "Published files", table: "ButtonsLocalizable")
+        buttonTitleLabel.text = goToPublicTitle
         goToPublicButton.setTitleColor(.black, for: .normal)
         goToPublicButton.backgroundColor = .white
         goToPublicButton.layer.cornerRadius = 10
@@ -244,14 +234,14 @@ private extension ProfileViewController {
     }
     
     private func animateLayer(layer: CAShapeLayer, toValue: CGFloat) {
-        let animation = CABasicAnimation(keyPath: LocalConstants.animationKey)
+        let animation = CABasicAnimation(keyPath: animationKey)
         animation.fromValue = layer.strokeEnd
         animation.toValue = toValue
         animation.duration = 1
         animation.timingFunction = CAMediaTimingFunction(name: .easeInEaseOut)
         
         layer.strokeEnd = toValue
-        layer.add(animation, forKey: LocalConstants.animationKey)
+        layer.add(animation, forKey: animationKey)
     }
     
     

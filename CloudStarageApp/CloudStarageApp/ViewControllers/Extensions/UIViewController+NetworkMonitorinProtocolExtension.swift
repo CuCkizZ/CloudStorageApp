@@ -8,11 +8,17 @@
 import UIKit
 import SnapKit
 
+private let text = String(localized: "There is no internet connection", table: "Messages+alertsLocalizable")
+private let tableImage = "square.fill.text.grid.1x2"
+private let gridImage = "square.grid.3x3"
+
 extension UIViewController: NetworkMonitoringProtocol {
     
     func setupNetworkStatusView(_ networkStatusView: UIView) {
         networkStatusView.backgroundColor = .red
-        networkStatusView.frame = CGRect(x: 0, y: 0, width: view.frame.width, height: 30)
+        let x = (view.frame.width - networkStatusView.frame.width) / 2
+        networkStatusView.frame = CGRect(x: x, y: 0, width: view.frame.width / 1.3, height: 20)
+        networkStatusView.layer.cornerRadius = 10
         networkStatusView.alpha = 0
         view.addSubview(networkStatusView)
         setupMonitoringLabel(networkStatusView)
@@ -20,7 +26,9 @@ extension UIViewController: NetworkMonitoringProtocol {
     
     func setupMonitoringLabel(_ networkStatusView: UIView) {
         let label = UILabel()
-        label.text = "Отсутствует подключение к интернету"
+        label.text = text
+        label.textColor = .white
+        label.font = .Inter.light.size(of: 13)
         networkStatusView.addSubview(label)
         label.snp.makeConstraints { make in
             make.center.equalTo(networkStatusView)
@@ -29,7 +37,7 @@ extension UIViewController: NetworkMonitoringProtocol {
     
     func showNetworkStatusView(_ networkStatusView: UIView) {
         UIView.animate(withDuration: 0.5) {
-            networkStatusView.frame.origin.y = 50
+            networkStatusView.frame.origin.y = 48
             networkStatusView.alpha = 1
         }
     }
@@ -51,11 +59,11 @@ extension UIViewController {
         var buttonImage: UIImage {
             switch self {
             case .table:
-                return UIImage(systemName: "square.fill.text.grid.1x2")?
+                return UIImage(systemName: tableImage)?
                     .withTintColor(AppColors.standartBlue,
                                    renderingMode: .alwaysOriginal) ?? UIImage()
             case .defaultGrid:
-                return UIImage(systemName: "square.grid.3x3")?
+                return UIImage(systemName: gridImage)?
                     .withTintColor(AppColors.standartBlue,
                                    renderingMode: .alwaysOriginal) ?? UIImage()
             }

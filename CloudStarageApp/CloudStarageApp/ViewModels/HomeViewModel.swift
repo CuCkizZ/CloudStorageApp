@@ -200,7 +200,7 @@ extension HomeViewModel {
 
     func FetchedResultsController() {
         let fetchRequest: NSFetchRequest<OfflineItems> = OfflineItems.fetchRequest()
-        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "name", ascending: true)]
+        fetchRequest.sortDescriptors = [NSSortDescriptor(key: "date", ascending: false)]
         
         let context = dataManager.persistentContainer.viewContext
         

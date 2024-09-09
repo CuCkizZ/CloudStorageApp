@@ -113,7 +113,7 @@ final class CoreManager {
                     items.size = size
                 }
             } catch {
-                print("I cant")
+                return
             }
             
             saveContext()
@@ -130,7 +130,7 @@ final class CoreManager {
                     items.size = size
                 }
             } catch {
-                print("I cant")
+                return
             }
             
             saveContext()
@@ -152,7 +152,7 @@ final class CoreManager {
                 profile.leftSpace = Float(leftSpace)
             }
         } catch {
-            print("I cant")
+            return
         }
         saveContext()
     }

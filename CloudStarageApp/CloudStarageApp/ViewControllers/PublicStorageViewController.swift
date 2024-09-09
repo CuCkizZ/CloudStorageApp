@@ -97,6 +97,8 @@ private extension PublicStorageViewController {
                     self.showNetworkStatusView(self.networkStatusView)
                     self.isOffline = true
                     self.viewModel.FetchedResultsController()
+                    self.activityIndicator.stopAnimating()
+                    self.activityIndicator.isHidden = true
                 }
             }
         }
@@ -170,10 +172,6 @@ private extension PublicStorageViewController {
         refresher.tintColor = AppColors.customGray
         refresher.addTarget(self, action: #selector(pullToRefresh), for: .valueChanged)
         collectionView.addSubview(refresher)
-    }
-    
-    func modelReturn(indexPath: IndexPath) -> CellDataModel {
-        return cellDataSource[indexPath.row]
     }
     
     func setupButtonUp() {
@@ -272,30 +270,43 @@ private extension PublicStorageViewController {
 
 extension PublicStorageViewController: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let model = modelReturn(indexPath: indexPath)
-        let name = model.name
-        let mimeType = model.mimeType
-        let fileType = model.file
-        
-        switch mimeType {
-        case mimeType where mimeType.contains(FileTypes.word) || mimeType.contains(FileTypes.doc):
-            viewModel.presentDocument(name: name, type: .web, fileType: fileType)
-        case mimeType where mimeType.contains(FileTypes.pdf):
-            viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
-        case mimeType where mimeType.contains(FileTypes.image):
-            viewModel.presentImage(model: model)
-        default:
-            UIAlertController.formatError(view: self)
+        switch isOffline {
+        case true:
+            errorConnection()
+        case false:
+            let model = cellDataSource[indexPath.item]
+            let name = model.name
+            let fileType = model.file
+            let mimeType = model.mimeType
+            
+            switch mimeType {
+            case mimeType where mimeType.contains(FileTypes.word) || mimeType.contains(FileTypes.doc):
+                viewModel.presentDocument(name: name, type: .web, fileType: fileType)
+            case mimeType where mimeType.contains(FileTypes.pdf):
+                viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
+            case mimeType where mimeType.contains(FileTypes.image):
+                viewModel.presentImage(model: model)
+            default:
+                UIAlertController.formatError(view: self)
+            }
         }
     }
     
-    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
-        guard let indexPath = indexPaths.first else { return nil }
-        let model = modelReturn(indexPath: indexPath)
-        return UIContextMenuConfiguration.contextMenuConfiguration(for: .publish,
-                                                                   viewModel: viewModel,
-                                                                   model: model, indexPath: indexPath,
-                                                                   viewController: self)
+    func collectionView(_ collectionView: UICollectionView,
+                        contextMenuConfigurationForItemsAt indexPaths: [IndexPath],
+                        point: CGPoint) -> UIContextMenuConfiguration? {
+        switch isOffline {
+        case true:
+            return UIContextMenuConfiguration()
+        case false:
+            guard let indexPath = indexPaths.first else { return nil }
+            let model = cellDataSource[indexPath.row]
+            return UIContextMenuConfiguration.contextMenuConfiguration(for: .last,
+                                                                       viewModel: viewModel,
+                                                                       model: model,
+                                                                       indexPath: indexPath,
+                                                                       viewController: self)
+        }
     }
 }
 
@@ -314,7 +325,7 @@ extension PublicStorageViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch isOffline {
         case false:
-            let model = cellDataSource[indexPath.row]
+            let model = cellDataSource[indexPath.item]
             guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: CollectionViewCell.reuseID,
                                                                 for: indexPath) as? CollectionViewCell else {
                 fatalError(FatalError.wrongCell)
