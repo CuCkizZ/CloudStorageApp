@@ -18,12 +18,8 @@ extension UIViewController {
         static let defaultPadding = 16
         static let DefaultHeight: CGFloat = 38
         static let itemSizeDefault = CGSize(width: 100, height: 100)
-        static let minimumLineSpacing: CGFloat = 5
+        static let minimumLineSpacing: CGFloat = 15
         static let minimumInteritemSpacing: CGFloat = 5
-    }
-    
-    enum StrConstants {
-        static let defaultDirName =  String(localized: "New folder", table: "PublicConstantsLocalizable")
     }
     
     enum FileTypes {

@@ -14,17 +14,21 @@ final class CollectionViewCell: UICollectionViewCell {
     private let viewModel: CellViewModelProtocol = CellViewModel()
     static let reuseID = String(describing: CollectionViewCell.self)
     
+    
     private let activityIndicator = UIActivityIndicatorView()
+    private lazy var defaultImage = UIImage(resource: .folder)
     private lazy var publishIcon: UIImageView = {
         let imageView = UIImageView()
-        imageView.image = UIImage(systemName: "link")
+        imageView.image = UIImage(systemName: "link.circle.fill")
+        imageView.backgroundColor = .white
         imageView.tintColor = AppColors.customGray
         imageView.layer.cornerRadius = 15
         return imageView
     }()
     
     private lazy var contentImageView: UIImageView = {
-        let imageView = UIImageView(frame: CGRect(x: 0, y: 0, width: 50, height: 50))
+        let imageView = UIImageView()
+        imageView.layer.cornerRadius = 6
         activityIndicator.startAnimating()
         activityIndicator.isHidden = false
         activityIndicator.color = .red
@@ -32,7 +36,7 @@ final class CollectionViewCell: UICollectionViewCell {
         imageView.clipsToBounds = true
         return imageView
     }()
-    
+    private var currentImageURL: String?
     private lazy var nameLabel = UILabel()
     private lazy var sizeLabel = UILabel()
     private lazy var dateLabel = UILabel()
@@ -52,6 +56,8 @@ final class CollectionViewCell: UICollectionViewCell {
         return stack
     }()
     
+    //    var imageSize = CGSize(width: 35, height: 30)
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -68,30 +74,37 @@ final class CollectionViewCell: UICollectionViewCell {
     
     func configure(_ model: CellDataModel) {
         nameLabel.attributedText = viewModel.setMaxCharacters(text: model.name)
-        
         if let size = model.size {
             dateLabel.text = model.date + viewModel.sizeFormatter(bytes:size)
         } else {
             dateLabel.text = model.date
         }
+        activityIndicator.startAnimating()
+        activityIndicator.isHidden = false
         
-        if model.previewImage == nil {
-            contentImageView.image = UIImage(resource: .file)
-            self.activityIndicator.stopAnimating()
-            self.activityIndicator.isHidden = true
-        } else {
-            DispatchQueue.main.async {
-                if let urlString = model.previewImage {
-                    self.contentImageView.afload(urlString: urlString)
-                    self.activityIndicator.stopAnimating()
-                    self.activityIndicator.isHidden = true
-                }
+        DispatchQueue.main.async {
+            if let urlString = model.previewImage {
+                self.contentImageView.afload(urlString: urlString)
+                self.activityIndicator.stopAnimating()
+                self.activityIndicator.isHidden = true
+            } else {
+                self.contentImageView.image = self.defaultImage
+                self.activityIndicator.stopAnimating()
+                self.activityIndicator.isHidden = true
             }
         }
         if model.publickKey != nil {
             publishIcon.isHidden = false
         } else {
             publishIcon.isHidden = true
+        }
+    }
+
+    
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        if contentImageView.image != nil {
+            return
         }
     }
     
@@ -142,19 +155,12 @@ private extension CollectionViewCell {
         sizeLabel.backgroundColor = .clear
     }
     
-    func animatedShareIcon() {
-        UIView.transition(with: publishIcon, duration: 0.3, options: .transitionCrossDissolve, animations: {
-            self.publishIcon.isHidden = false
-        })
-    }
-    
     func setupStackView() {
         activityIndicator.snp.makeConstraints { make in
             make.center.equalToSuperview()
         }
         stackView.snp.makeConstraints { make in
             make.left.equalTo(contentView).inset(30)
-            make.top.equalTo(contentView)
         }
         contentImageView.snp.makeConstraints { make in
             make.height.width.equalTo(38)
@@ -163,7 +169,7 @@ private extension CollectionViewCell {
             make.height.equalTo(20)
         }
         publishIcon.snp.makeConstraints { make in
-            make.centerY.right.equalTo(contentView).inset(30)
+            make.centerY.right.equalTo(contentView).inset(18)
         }
     }
 }
@@ -174,15 +180,19 @@ extension CollectionViewCell {
         let isHorizontalStyle = bounds.width > 2 * bounds.height
         let oldAxis = stackView.axis
         let newAxis: NSLayoutConstraint.Axis = isHorizontalStyle ? .horizontal : .vertical
+        let imageSize: CGSize
         guard oldAxis != newAxis else { return }
         
         stackView.axis = newAxis
         stackView.spacing = isHorizontalStyle ? 16 : 4
         nameLabel.textAlignment = isHorizontalStyle ? .left : .center
         dateLabel.textAlignment = isHorizontalStyle ? .left : .center
-        let imageSize: CGSize
+        contentImageView.contentMode = isHorizontalStyle ? .scaleAspectFill : .scaleAspectFit
         if isHorizontalStyle {
-            imageSize = CGSize(width: 38, height: 38)
+            imageSize = CGSize(width: 38, height: 33)
+            publishIcon.snp.remakeConstraints { make in
+                make.centerY.right.equalTo(contentView).inset(18)
+            }
             stackView.snp.updateConstraints() { make in
                 make.left.equalTo(contentView).inset(30)
             }
@@ -191,7 +201,10 @@ extension CollectionViewCell {
             stackView.snp.updateConstraints() { make in
                 make.left.equalTo(contentView)
             }
-            stackLabel.frame = CGRect(x: 0, y: 0, width: 100, height: 30)
+            publishIcon.snp.remakeConstraints { make in
+                make.right.equalToSuperview().inset(5)
+                make.bottom.equalToSuperview().inset(12)
+            }
         }
         self.contentImageView.snp.remakeConstraints { make in
             make.size.equalTo(imageSize)
@@ -211,19 +224,6 @@ private extension CollectionViewCell {
             self.nameLabel.transform = fontTransform
             self.dateLabel.transform = fontTransform
             self.layoutIfNeeded()
-        }
-    }
-    
-    func animatedPublishIcon() {
-        UIView.animate(withDuration: 0.3) {
-            self.publishIcon.alpha = 1.0
-            self.publishIcon.isHidden = false
-        }
-    }
-    func animatedPublishIconTrue() {
-        UIView.animate(withDuration: 0.3) {
-            self.publishIcon.alpha = 0
-            self.publishIcon.isHidden = true
         }
     }
 }

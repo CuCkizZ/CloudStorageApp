@@ -15,6 +15,7 @@ enum StrGlobalConstants {
     static let profileTitle = String(localized: "Profile", table: "NavigationLocalizable")
     
     static let keycheinKey = "token"
+    static let defaultDirName =  String(localized: "New folder", table: "PublicConstantsLocalizable")
     static let yes = String(localized: "Yes", table: "PublicConstantsLocalizable")
     static let no = String(localized: "No", table: "PublicConstantsLocalizable")
     static let linkGettingError = String(localized: "Dont have a link, try again", table: "PublicConstantsLocalizable")

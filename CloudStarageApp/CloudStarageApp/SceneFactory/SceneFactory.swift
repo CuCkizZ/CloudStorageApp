@@ -1,12 +1,10 @@
 
 import UIKit
 
-private enum Constants {
-    enum Onboarding {
+private enum LocalConstants {
         static let text1 = String(localized: "textOne", table: "OnboardingLocalizable")
         static let text2 = String(localized: "textTwo", table: "OnboardingLocalizable")
         static let text3 = String(localized: "textThree", table: "OnboardingLocalizable")
-    }
 }
 
 struct SceneFactory {
@@ -17,13 +15,13 @@ struct SceneFactory {
         var pages = [OnboardingPageViewController]()
         
         let firstVC = OnboardingPageViewController()
-        firstVC.configure(Constants.Onboarding.text1, .image1)
+        firstVC.configure(LocalConstants.text1, .image1)
         
         let secondVc = OnboardingPageViewController()
-        secondVc.configure(Constants.Onboarding.text2, .image2)
+        secondVc.configure(LocalConstants.text2, .image2)
         
         let thirdVc = OnboardingPageViewController()
-        thirdVc.configure(Constants.Onboarding.text3, .image3)
+        thirdVc.configure(LocalConstants.text3, .image3)
         
         pages.append(firstVC)
         pages.append(secondVc)
@@ -71,20 +69,29 @@ struct SceneFactory {
                              finishDelegate: CoorditatorFinishDelegate) -> TabBarController {
         
         let homeNavigationController = UINavigationController()
-        let homeCoordinator: Coordinator = HomeCoordinator(type: .home, navigationController: homeNavigationController)
-        homeNavigationController.tabBarItem = UITabBarItem(title: StrGlobalConstants.homeTitle, image: UIImage(resource: .homeTab), tag: 0)
+        let homeCoordinator: Coordinator = HomeCoordinator(type: .home, 
+                                                           navigationController: homeNavigationController)
+        homeNavigationController.tabBarItem = UITabBarItem(title: StrGlobalConstants.homeTitle,
+                                                           image: UIImage(resource: .homeTab),
+                                                           tag: 0)
         homeCoordinator.finishDelegate = finishDelegate
         homeCoordinator.start()
         
         let storageNavigationController = UINavigationController()
-        let storageCoordinator: Coordinator = StorageCoordinator(type: .storage, navigationController: storageNavigationController)
-        storageNavigationController.tabBarItem = UITabBarItem(title: StrGlobalConstants.storageTitle, image: UIImage(resource: .storageTab), tag: 1)
+        let storageCoordinator: Coordinator = StorageCoordinator(type: .storage,
+                                                                 navigationController: storageNavigationController)
+        storageNavigationController.tabBarItem = UITabBarItem(title: StrGlobalConstants.storageTitle, 
+                                                              image: UIImage(resource: .storageTab), 
+                                                              tag: 1)
         storageCoordinator.finishDelegate = finishDelegate
         storageCoordinator.start()
         
         let profileNavigationController = UINavigationController()
-        let profileCoordinator: Coordinator = ProfileCoordinator(type: .profile, navigationController: profileNavigationController)
-        profileNavigationController.tabBarItem = UITabBarItem(title: StrGlobalConstants.profileTitle, image: UIImage(resource: .profileTab), tag: 2)
+        let profileCoordinator: Coordinator = ProfileCoordinator(type: .profile,
+                                                                 navigationController: profileNavigationController)
+        profileNavigationController.tabBarItem = UITabBarItem(title: StrGlobalConstants.profileTitle, 
+                                                              image: UIImage(resource: .profileTab),
+                                                              tag: 2)
         profileCoordinator.finishDelegate = finishDelegate
         profileCoordinator.start()
         
@@ -154,7 +161,7 @@ struct SceneFactory {
     
 //    MARK: PublicStorageViewController
     
-    static func makePublicScene(navigationTitle: String, coordinator: ProfileCoordinator) -> PublicStorageViewController {
+    static func makePublicScene(coordinator: ProfileCoordinator) -> PublicStorageViewController {
         let nm: NetworkManagerProtocol = NetworkManager()
         let vm: PublickStorageViewModelProtocol = PublicStorageViewModel(coordinator: coordinator, networkManager: nm)
         let vc = PublicStorageViewController(viewModel: vm)

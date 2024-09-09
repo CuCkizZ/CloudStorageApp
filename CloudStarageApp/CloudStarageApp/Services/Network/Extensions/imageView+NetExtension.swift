@@ -12,10 +12,10 @@ extension UIImageView {
     
     func afload(urlString: String) {
         let keychain = KeychainManager.shared
-        let token = keychain.get(forKey: StrGlobalConstants.keycheinKey)
+        guard let token: String = keychain.get(forKey: StrGlobalConstants.keycheinKey) else { return }
         guard let url = URL(string: urlString) else { return }
         let headers: HTTPHeaders = [
-            "Authorization": "OAuth \(String(describing: token))"
+            "Authorization": "OAuth \(token)"
         ]
         
         if let cachedResponse = URLCache.shared.cachedResponse(for: URLRequest(url: url)) {
@@ -26,8 +26,9 @@ extension UIImageView {
                 return
             }
         }
-        
+                
         AF.request(url, headers: headers).responseData { response in
+            print(headers)
             switch response.result {
             case .success(let data):
                 if let image = UIImage(data: data) {
