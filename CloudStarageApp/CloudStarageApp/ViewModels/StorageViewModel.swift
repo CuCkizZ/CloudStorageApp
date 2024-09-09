@@ -13,7 +13,7 @@ protocol StorageViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
     func returnItems(at indexPath: IndexPath) -> OfflineStorage?
     func fetchCurrentData(navigationTitle: String, path: String)
-    func paggination(title: String, path: inout String)
+    func paggination(title: String, path: String)
 }
 
 final class StorageViewModel {
@@ -199,10 +199,7 @@ extension StorageViewModel: StorageViewModelProtocol {
         coordinator.presentImageScene(model: model)
     }
     
-    func paggination(title: String, path: inout String) {
-        if path == "" {
-            path = "disk:/"
-        }
+    func paggination(title: String, path: String) {
         coordinator.paggination(navigationTitle: title, path: path)
     }
     
