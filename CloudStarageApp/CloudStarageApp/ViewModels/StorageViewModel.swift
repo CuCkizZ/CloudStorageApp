@@ -13,7 +13,7 @@ protocol StorageViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
     func returnItems(at indexPath: IndexPath) -> OfflineStorage?
     func fetchCurrentData(navigationTitle: String, path: String)
-    func paggination(title: String, path: String)
+    func paggination(title: String, path: inout String)
 }
 
 final class StorageViewModel {
@@ -82,7 +82,6 @@ extension StorageViewModel: StorageViewModelProtocol {
                     self.model = file
                     self.mapModel()
                     self.isLoading.value = false
-                    print("\(path)")
                 case .failure(let error):
                     print("model failrue: \(error)")
                 }
@@ -128,47 +127,63 @@ extension StorageViewModel: StorageViewModelProtocol {
     
     func publishResource(_ path: String) {
         networkManager.toPublicFile(path: path)
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            self.fetchData()
+        }
     }
     
     func deleteFile(_ name: String) {
         networkManager.deleteReqest(name: name)
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            self.fetchData()
+        }
     }
     
     func createNewFolder(_ name: String) {
         if name.isEmpty == true {
             networkManager.createNewFolder(StrGlobalConstants.publicTitle)
-            DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
-                guard let self = self else { return }
-                self.fetchData()
-            }
+        } else {
+            networkManager.createNewFolder(name)
+        }
+        DispatchQueue.global().asyncAfter(deadline: .now() + 1) { [weak self] in
+            guard let self = self else { return }
+            self.fetchData()
         }
     }
     
     func renameFile(oldName: String, newName: String) {
         networkManager.renameFile(oldName: oldName, newName: newName)
-        fetchData()
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            self.fetchData()
+        }
     }
 
 //    MARK: Navigation
     
     func presentAvc(indexPath: IndexPath) {
-        guard let item = model[indexPath.row].publicUrl else { return }
+        isSharing.value = false
+        guard let item = model[indexPath.item].publicUrl else { return }
         coordinator.presentAtivityVc(item: item)
         isSharing.value = false
     }
     
     func presentAvcFiles(path: URL, name: String) {
-        networkManager.shareFile(with: path) { result in
+        networkManager.shareFile(with: path) { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success((let response, let data)):
                 do {
+                    self.isSharing.value = true
                     let tempDirectory = FileManager.default.temporaryDirectory
                     let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? path.pathExtension
                     let tempFileURL = tempDirectory.appendingPathComponent(name).appendingPathExtension(fileExtension)
                     try data.write(to: tempFileURL)
-                    DispatchQueue.main.async { [weak self] in
-                        guard let self = self else { return }
-                        coordinator.presentAtivityVcFiles(item: tempFileURL)
+                    DispatchQueue.main.async {
+                        self.isSharing.value = false
+                        self.coordinator.presentAtivityVcFiles(item: tempFileURL)
                     }
                 } catch {
                     return
@@ -184,7 +199,10 @@ extension StorageViewModel: StorageViewModelProtocol {
         coordinator.presentImageScene(model: model)
     }
     
-    func paggination(title: String, path: String) {
+    func paggination(title: String, path: inout String) {
+        if path == "" {
+            path = "disk:/"
+        }
         coordinator.paggination(navigationTitle: title, path: path)
     }
     
@@ -197,7 +215,7 @@ extension StorageViewModel: StorageViewModelProtocol {
     }
     
     func logout() {
-        keychain.delete(forKey: "token")
+        keychain.delete(forKey: StrGlobalConstants.keycheinKey)
         coordinator.finish()
     }
 }

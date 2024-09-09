@@ -21,8 +21,7 @@ final class PublicStorageViewModel {
     private let keychain = KeychainManager.shared
     private let dataManager = CoreManager.shared
     private let networkMonitor = NWPathMonitor()
-    var fetchedResultController: NSFetchedResultsController<OfflinePublished>?
-
+    private var fetchedResultController: NSFetchedResultsController<OfflinePublished>?
     private var model: [Item] = []
     
     var isLoading: Observable<Bool> = Observable(false)
@@ -42,11 +41,11 @@ final class PublicStorageViewModel {
 }
 
 extension PublicStorageViewModel: PublickStorageViewModelProtocol {
-//    DataSource
+
     func numbersOfRowInSection() -> Int {
         model.count
     }
-//    Network
+//    MARK: Network
     func publishResource(_ path: String, indexPath: IndexPath) {
         networkManager.toPublicFile(path: path)
         isSharing.value = true
@@ -115,7 +114,7 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     
     func createNewFolder(_ name: String) {
         if name.isEmpty == true {
-            networkManager.createNewFolder("New Folder")
+            networkManager.createNewFolder(StrGlobalConstants.defaultDirName)
             DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
                 guard let self = self else { return }
                 self.fetchData()
@@ -132,27 +131,29 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     }
     
     func presentAvc(indexPath: IndexPath) {
-        guard let item = model[indexPath.row].publicUrl else { return }
+        isSharing.value = true
+        guard let item = model[indexPath.item].publicUrl else { return }
         coordinator.presentAtivityVc(item: item)
         isSharing.value = false
     }
     
     func presentAvcFiles(path: URL, name: String) {
-        networkManager.shareFile(with: path) { result in
+        networkManager.shareFile(with: path) { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success((let response, let data)):
                 do {
+                    self.isSharing.value = true
                     let tempDirectory = FileManager.default.temporaryDirectory
                     let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? path.pathExtension
                     let tempFileURL = tempDirectory.appendingPathComponent(name).appendingPathExtension(fileExtension)
-
                     try data.write(to: tempFileURL)
-                    DispatchQueue.main.async { [weak self] in
-                        guard let self = self else { return }
-                        coordinator.presentAtivityVcFiles(item: tempFileURL)
+                    DispatchQueue.main.async {
+                        self.isSharing.value = false
+                        self.coordinator.presentAtivityVcFiles(item: tempFileURL)
                     }
                 } catch {
-                    print ("viewModel error")
+                    return
                 }
             case .failure(_):
                 break
@@ -161,7 +162,7 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     }
     
     func logout() {
-        keychain.delete(forKey: "token")
+        keychain.delete(forKey: StrGlobalConstants.keycheinKey)
         coordinator.finish()
     }
 }

@@ -105,7 +105,7 @@ extension HomeViewModel: HomeViewModelProtocol {
     
     func createNewFolder(_ name: String) {
         if name.isEmpty == true {
-            neworkManager.createNewFolder("New Folder")
+            neworkManager.createNewFolder(StrGlobalConstants.defaultDirName)
             DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
                 guard let self = self else { return }
                 self.fetchData()
@@ -122,6 +122,7 @@ extension HomeViewModel: HomeViewModelProtocol {
             if isSharing.value == true {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
                     self.presentAvc(indexPath: indexPath)
+                    self.isSharing.value = false
                 }
             }
         }
@@ -150,21 +151,23 @@ extension HomeViewModel: HomeViewModelProtocol {
     }
     
     func presentAvcFiles(path: URL, name: String) {
-        neworkManager.shareFile(with: path) { result in
+        neworkManager.shareFile(with: path) { [weak self] result in
+            guard let self = self else { return }
             switch result {
             case .success((let response, let data)):
                 do {
+                    self.isSharing.value = true
                     let tempDirectory = FileManager.default.temporaryDirectory
                     let fileExtension = (response.suggestedFilename as NSString?)?.pathExtension ?? path.pathExtension
                     let tempFileURL = tempDirectory.appendingPathComponent(name).appendingPathExtension(fileExtension)
                     
                     try data.write(to: tempFileURL)
-                    DispatchQueue.main.async { [weak self] in
-                        guard let self = self else { return }
+                    DispatchQueue.main.async {
+                        self.isSharing.value = false
                         self.coordinator.presentAtivityVcFiles(item: tempFileURL)
                     }
                 } catch {
-                    let error = error.localizedDescription
+                    return
                 }
             case .failure(_):
                 break
