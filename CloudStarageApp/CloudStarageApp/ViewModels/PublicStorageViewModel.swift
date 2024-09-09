@@ -8,6 +8,7 @@
 import Foundation
 import Network
 import CoreData
+import YandexLoginSDK
 
 protocol PublickStorageViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
@@ -162,7 +163,7 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     }
     
     func logout() {
-        keychain.delete(forKey: StrGlobalConstants.keycheinKey)
+        try? YandexLoginSDK.shared.logout()
         coordinator.finish()
     }
 }

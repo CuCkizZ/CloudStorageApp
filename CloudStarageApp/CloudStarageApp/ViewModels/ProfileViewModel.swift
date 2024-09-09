@@ -1,13 +1,8 @@
-//
-//  ProfileViewModel.swift
-//  CloudStarageApp
-//
-//  Created by Nikita Beglov on 18.07.2024.
-//
 
 import Foundation
 import Network
 import CoreData
+import YandexLoginSDK
 
 protocol ProfileViewModelProtocol: AnyObject {
     var dataSource: ProfileDataSource? { get set }
@@ -90,7 +85,7 @@ extension ProfileViewModel: ProfileViewModelProtocol {
     }
     
     func logout() {
-        keychain.delete(forKey: "token")
+        try? YandexLoginSDK.shared.logout()
         coordinator.finish()
     }
 }
@@ -119,7 +114,6 @@ extension ProfileViewModel {
             let results = try context.fetch(fetchRequest)
             return results.first
         } catch {
-            print("Failed to fetch OfflineProfile: \(error)")
             return nil
         }
     }

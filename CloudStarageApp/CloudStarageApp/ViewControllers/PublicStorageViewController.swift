@@ -45,9 +45,9 @@ final class PublicStorageViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
-        bindView()
         bindViewModel()
         bindNetworkMonitor()
+        bindView()
         bindShareing()
     }
 }
@@ -134,11 +134,11 @@ private extension PublicStorageViewController {
     }
     
     func setupView() {
+        view.addSubview(noDataView)
         view.addSubview(activityIndicator)
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
         view.addSubview(changeLayoutButton)
-        view.addSubview(noDataView)
         view.backgroundColor = .white
     }
     

@@ -134,11 +134,11 @@ private extension StorageViewController {
     }
     
     func setupView() {
+        view.addSubview(noDataView)
         view.addSubview(collectionView)
         view.addSubview(uploadButton)
         view.addSubview(changeLayoutButton)
         view.addSubview(activityIndicator)
-        view.addSubview(noDataView)
         view.backgroundColor = .white
         setupCollectionView()
     }

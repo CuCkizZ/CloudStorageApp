@@ -8,6 +8,7 @@
 import Foundation
 import Network
 import CoreData
+import YandexLoginSDK
 
 protocol StorageViewModelProtocol: BaseCollectionViewModelProtocol, AnyObject {
     var cellDataSource: Observable<[CellDataModel]> { get set }
@@ -212,7 +213,7 @@ extension StorageViewModel: StorageViewModelProtocol {
     }
     
     func logout() {
-        keychain.delete(forKey: StrGlobalConstants.keycheinKey)
+        try? YandexLoginSDK.shared.logout()
         coordinator.finish()
     }
 }

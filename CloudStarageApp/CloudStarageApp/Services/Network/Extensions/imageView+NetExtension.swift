@@ -28,7 +28,6 @@ extension UIImageView {
         }
                 
         AF.request(url, headers: headers).responseData { response in
-            print(headers)
             switch response.result {
             case .success(let data):
                 if let image = UIImage(data: data) {
