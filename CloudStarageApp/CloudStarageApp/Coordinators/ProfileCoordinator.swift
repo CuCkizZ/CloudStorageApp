@@ -30,7 +30,7 @@ extension ProfileCoordinator {
     
     func goToPublic() {
         guard let navigationController = navigationController else { return }
-        let publicVC = factory.makePublicScene(navigationTitle: "Published", coordinator: self)
+        let publicVC = factory.makePublicScene(coordinator: self)
         navigationController.pushViewController(publicVC, animated: true)
     }
 //    Not avalible now

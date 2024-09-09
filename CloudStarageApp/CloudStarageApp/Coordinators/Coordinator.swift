@@ -57,7 +57,11 @@ class Coordinator: CoordinatorProtocol {
     var window: UIWindow?
     weak var finishDelegate: CoorditatorFinishDelegate?
     
-    init(childCoordinators: [CoordinatorProtocol] = [CoordinatorProtocol](), type: CoordinatorType, navigationController: UINavigationController, window: UIWindow? = nil,  finishDelegate: CoorditatorFinishDelegate? = nil) {
+    init(childCoordinators: [CoordinatorProtocol] = [CoordinatorProtocol](),
+         type: CoordinatorType,
+         navigationController: UINavigationController,
+         window: UIWindow? = nil,
+         finishDelegate: CoorditatorFinishDelegate? = nil) {
         self.childCoordinators = childCoordinators
         self.type = type
         self.navigationController = navigationController

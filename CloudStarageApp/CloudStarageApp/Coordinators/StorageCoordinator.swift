@@ -23,15 +23,15 @@ final class StorageCoordinator: Coordinator {
 extension StorageCoordinator {
     
     func showStorageScene() {
+        let title = StrGlobalConstants.storageTitle
         guard let navigationController = navigationController else { return }
-        let storageVC = factory.makeStorageScene(fetchpath: "disk:/", navigationTitle: "Storage", coordinator: self)
+        let storageVC = factory.makeStorageScene(fetchpath: "disk:/", navigationTitle: title, coordinator: self)
         navigationController.pushViewController(storageVC, animated: true)
     }
     
     func paggination(navigationTitle: String, path: String) {
         guard let navigationController = navigationController else { return }
         let pageVC = factory.makeStorageScene(fetchpath: path, navigationTitle: navigationTitle, coordinator: self)
-        print("coordinator works")
         navigationController.pushViewController(pageVC, animated: true)
     }
 }

@@ -26,7 +26,7 @@ final class AppCoordinator: Coordinator {
     }
     
     override func finish() {
-        print("Im done")
+
     }
 }
 
