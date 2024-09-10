@@ -101,16 +101,27 @@ extension PublicStorageViewModel: PublickStorageViewModelProtocol {
     
     func deleteFile(_ name: String) {
         networkManager.deleteReqest(name: name)
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            self.fetchData()
+        }
     }
     
     
     func unpublishResource(_ path: String) {
         networkManager.unpublishFile(path)
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            self.fetchData()
+        }
     }
     
     func renameFile(oldName: String, newName: String) {
         networkManager.renameFile(oldName: oldName, newName: newName)
-        fetchData()
+        DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            guard let self = self else { return }
+            self.fetchData()
+        }
     }
     
     func createNewFolder(_ name: String) {
