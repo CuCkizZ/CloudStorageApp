@@ -137,7 +137,7 @@ extension HomeViewModel: HomeViewModelProtocol {
     
     func renameFile(oldName: String, newName: String) {
         neworkManager.renameFile(oldName: oldName, newName: newName)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.fetchData()
         }
     }

@@ -240,7 +240,6 @@ private extension HomeViewController {
     
     @objc func pullToRefresh() {
         viewModel.fetchData()
-        collectionView.reloadData()
         refresher.endRefreshing()
     }
     

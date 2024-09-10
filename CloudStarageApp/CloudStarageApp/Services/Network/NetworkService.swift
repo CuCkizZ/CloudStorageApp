@@ -125,11 +125,11 @@ final class NetworkService: NetworkServiceProtocol {
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .put, headers: headers).validate().response { response in
-            guard let statusCode = response.response?.statusCode else {
+            guard let _ = response.response?.statusCode else {
                 return
             }
             if let data = response.data {
-                let str = String(data: data, encoding: .utf8)
+                let _ = String(data: data, encoding: .utf8)
                 return 
             }
         }
