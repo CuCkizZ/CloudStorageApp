@@ -76,7 +76,7 @@ extension ProfileViewModel: ProfileViewModelProtocol {
                     self.dataSource = profile
                     self.onDataLoaded?()
                     self.isLoading.value = false
-                case .failure(let error):
+                case .failure(_):
                     self.isLoading.value = false
                 }
                 
