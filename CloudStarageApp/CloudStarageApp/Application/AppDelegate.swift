@@ -9,6 +9,7 @@ private let clientID = "e10974fe4b64489bac4eb6ab97efae3f"
 class AppDelegate: UIResponder, UIApplicationDelegate {
     
     var window: UIWindow?
+    let yandex = YandexLoginSDK.shared
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         do {
@@ -46,6 +47,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         }
         
         return true
+    }
+    
+    func applicationWillTerminate(_ application: UIApplication) {
+
     }
     
     // MARK: UISceneSession Lifecycle

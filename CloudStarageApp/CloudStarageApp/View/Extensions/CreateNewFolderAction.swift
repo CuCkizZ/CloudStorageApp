@@ -52,7 +52,6 @@ extension UIAction {
                 viewModel.popToRoot()
             }
             let cancelAction = UIAlertAction(title: StrGlobalConstants.cancleButton, style: .cancel)
-            
             actionSheet.addAction(deleteAction)
             actionSheet.addAction(cancelAction)
             view.present(actionSheet, animated: true)

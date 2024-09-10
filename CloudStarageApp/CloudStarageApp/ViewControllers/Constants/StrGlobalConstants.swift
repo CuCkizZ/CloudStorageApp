@@ -40,4 +40,11 @@ enum StrGlobalConstants {
                                              table: "ContextMenuLocalizable")
     }
     
+    enum OfflineData {
+        static let offlineProfile = "OfflineProfile"
+        static let offlineItems = "OfflineItems"
+        static let offlineStorage = "OfflineStorage"
+        static let offlinePublished = "OfflinePublished"
+    }
+    
 }

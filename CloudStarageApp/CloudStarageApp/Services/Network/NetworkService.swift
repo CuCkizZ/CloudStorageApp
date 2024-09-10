@@ -85,7 +85,6 @@ final class NetworkService: NetworkServiceProtocol {
         AF.request(url, method: .get, parameters: urlParams, headers: self.headers).validate().response { response in
             if let error = response.error {
                 completion(.failure(error))
-                print("fetchLastData error:", error)
                 return
             }
             guard let data = response.data else { return }
@@ -100,7 +99,6 @@ final class NetworkService: NetworkServiceProtocol {
         AF.request(url, method: .get, headers: headers).response { response in
             if let error = response.error {
                 completion(.failure(error))
-                print("URL error")
                 return
             }
             guard let data = response.data else { return }
@@ -115,7 +113,6 @@ final class NetworkService: NetworkServiceProtocol {
         AF.request(url, method: .get, headers: headers).response { response in
             if let error = response.error {
                 completion(.failure(error))
-                print("URL error")
                 return
             }
             guard let data = response.data else { return }
@@ -129,16 +126,10 @@ final class NetworkService: NetworkServiceProtocol {
         
         AF.request(url, method: .put, headers: headers).validate().response { response in
             guard let statusCode = response.response?.statusCode else {
-                print("Error: no response")
                 return
-            }
-            print("status code: \(statusCode)")
-            if let error = response.error {
-                print("Error: \(error)")
             }
             if let data = response.data {
                 let str = String(data: data, encoding: .utf8)
-                print("Data: \(str ?? "")")
             }
         }
     }
@@ -148,7 +139,6 @@ final class NetworkService: NetworkServiceProtocol {
         
         AF.request(url, method: .delete, headers: headers).response { response in
             guard let statusCode = response.response?.statusCode else { return }
-            print("status code: \(statusCode)")
         }
     }
     
@@ -158,12 +148,9 @@ final class NetworkService: NetworkServiceProtocol {
         
         AF.request(url, method: .put, headers: headers).validate().response { response in
             guard let statusCode = response.response?.statusCode else {
-                print("Error: no response")
                 return
             }
-            print("status code: \(statusCode)")
             if let error = response.error {
-                print("Error: \(error)")
             }
         }
     }

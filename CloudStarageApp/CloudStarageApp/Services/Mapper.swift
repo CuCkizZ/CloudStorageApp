@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import CoreData
 
 final class Mapper {
     
@@ -31,9 +32,17 @@ final class Mapper {
             self.dataManager.addItemsTo(to: type,
                                         name: item.name,
                                         date: item.created,
-                                        size: String(describing: item.size))
+                                        size: String(describing: item.size),
+                                        mimeType: item.mimeType ?? ""
+            )
             self.dataManager.saveContext()
         })
     }
+    
+    func saveImage(data: Data) {
+        dataManager.saveImage(data: data)
+        dataManager.saveContext()
+    }
+    
 }
 

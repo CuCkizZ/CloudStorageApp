@@ -7,7 +7,6 @@ final class PublicStorageViewController: UIViewController {
     
     private let viewModel: PublickStorageViewModelProtocol
     private var cellDataSource: [CellDataModel] = []
-    //    UI
     private var isOffline: Bool = false
     
     private lazy var networkStatusView = UIView()
@@ -182,9 +181,12 @@ private extension PublicStorageViewController {
     }
     
     func uploadButtonPressed() {
-        uploadButton.addAction(UIAction.createNewFolder(view: self,
-                                                        viewModel: viewModel),
-                               for: .touchUpInside)
+        switch isOffline {
+        case true:
+            errorConnection()
+        case false:
+            uploadButton.addAction(UIAction.createNewFolder(view: self, viewModel: viewModel), for: .touchUpInside)
+        }
     }
     
     func copyShare(share: URL) {

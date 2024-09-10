@@ -2,6 +2,8 @@
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="22758" systemVersion="23G93" minimumToolsVersion="Automatic" sourceLanguage="Swift" usedWithSwiftData="YES" userDefinedModelVersionIdentifier="">
     <entity name="OfflineItems" representedClassName="OfflineItems" syncable="YES" codeGenerationType="class">
         <attribute name="date" optional="YES" attributeType="String"/>
+        <attribute name="image" optional="YES" attributeType="Binary"/>
+        <attribute name="mimeType" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="size" optional="YES" attributeType="String"/>
     </entity>
@@ -12,11 +14,13 @@
     </entity>
     <entity name="OfflinePublished" representedClassName="OfflinePublished" syncable="YES" codeGenerationType="class">
         <attribute name="date" optional="YES" attributeType="String"/>
+        <attribute name="mimeType" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="size" optional="YES" attributeType="String"/>
     </entity>
     <entity name="OfflineStorage" representedClassName="OfflineStorage" syncable="YES" codeGenerationType="class">
         <attribute name="date" optional="YES" attributeType="String"/>
+        <attribute name="mimeType" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
         <attribute name="size" optional="YES" attributeType="String"/>
     </entity>

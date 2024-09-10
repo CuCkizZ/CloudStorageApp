@@ -1,13 +1,15 @@
 import UIKit
 import SnapKit
-import Alamofire
-import SDWebImage
 
-enum OfflineConfiguration {
-    case last
-    case storage
-    case published
-}
+fileprivate let txtType = "text/plain"
+fileprivate let pdfType = "application/pdf"
+fileprivate let msWordType = "application/msword"
+fileprivate let docType = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+fileprivate let pngType = "image/png"
+fileprivate let jpegType = "image/jpeg"
+fileprivate let jpgType = "image/jpg"
+fileprivate let xlsType = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+fileprivate let videoType = "video/mp4"
 
 final class CollectionViewCell: UICollectionViewCell {
     
@@ -17,7 +19,7 @@ final class CollectionViewCell: UICollectionViewCell {
     
     
     private let activityIndicator = UIActivityIndicatorView()
-    private lazy var defaultImage = UIImage(resource: .folder)
+    private lazy var defaultImage = UIImage(resource: .folder).withTintColor(AppColors.standartBlue)
     private lazy var publishIcon: UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName: linkImage)
@@ -33,7 +35,7 @@ final class CollectionViewCell: UICollectionViewCell {
         activityIndicator.startAnimating()
         activityIndicator.isHidden = false
         activityIndicator.color = .red
-        imageView.contentMode = .center
+        imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
         return imageView
     }()
@@ -99,16 +101,31 @@ final class CollectionViewCell: UICollectionViewCell {
         }
     }
 
-
-    
     override func prepareForReuse() {
-        super.prepareForReuse()
-        if contentImageView.image != nil {
-            return
+        
+    }
+    
+    private func offlineImages(mimeType: String) {
+        switch mimeType {
+        case msWordType, docType:
+            contentImageView.image = UIImage(resource: .doc).withTintColor(AppColors.standartBlue)
+        case jpegType:
+            contentImageView.image = UIImage(resource: .image).withTintColor(AppColors.standartBlue)
+        case xlsType:
+            contentImageView.image = UIImage(resource: .xls).withTintColor(AppColors.standartBlue)
+        case pdfType:
+            contentImageView.image = UIImage(resource: .pdf).withTintColor(AppColors.standartBlue)
+        case videoType:
+            contentImageView.image = UIImage(resource: .video).withTintColor(AppColors.standartBlue)
+        case txtType:
+            contentImageView.image = UIImage(resource: .txt).withTintColor(AppColors.standartBlue)
+        default:
+            contentImageView.image = defaultImage
         }
     }
     
     func offlineConfigure(_ model: OfflineItems) {
+        isOffline()
         guard let name  = model.name else { return }
         guard let date  = model.date else { return }
         nameLabel.attributedText = viewModel.setMaxCharacters(text: name)
@@ -126,10 +143,12 @@ final class CollectionViewCell: UICollectionViewCell {
         } else {
             dateLabel.text = viewModel.dateFormatter(dateString: date)
         }
-        isOffline()
+        guard let type = model.mimeType else { return }
+        offlineImages(mimeType: type)
     }
     
     func storageOffline(_ model: OfflineStorage) {
+        isOffline()
         guard let name  = model.name else { return }
         guard let date  = model.date else { return }
         nameLabel.attributedText = viewModel.setMaxCharacters(text: name)
@@ -146,10 +165,12 @@ final class CollectionViewCell: UICollectionViewCell {
         } else {
             dateLabel.text = viewModel.dateFormatter(dateString: date)
         }
-        isOffline()
+        guard let type = model.mimeType else { return }
+        offlineImages(mimeType: type)
     }
     
     func publishedOffline(_ model: OfflinePublished) {
+        isOffline()
         guard let name  = model.name else { return }
         guard let date  = model.date else { return }
         nameLabel.attributedText = viewModel.setMaxCharacters(text: name)
@@ -166,7 +187,8 @@ final class CollectionViewCell: UICollectionViewCell {
         } else {
             dateLabel.text = viewModel.dateFormatter(dateString: date)
         }
-        isOffline()
+        guard let type = model.mimeType else { return }
+        offlineImages(mimeType: type)
     }
 }
 
@@ -199,7 +221,6 @@ private extension CollectionViewCell {
     }
     
     func isOffline() {
-        contentImageView.image = self.defaultImage
         activityIndicator.stopAnimating()
         activityIndicator.isHidden = true
         publishIcon.isHidden = true
@@ -239,7 +260,7 @@ extension CollectionViewCell {
         dateLabel.textAlignment = isHorizontalStyle ? .left : .center
         contentImageView.contentMode = isHorizontalStyle ? .scaleAspectFill : .scaleAspectFit
         if isHorizontalStyle {
-            imageSize = CGSize(width: 38, height: 33)
+            imageSize = CGSize(width: 38, height: 38)
             publishIcon.snp.remakeConstraints { make in
                 make.centerY.right.equalTo(contentView).inset(18)
             }

@@ -137,8 +137,8 @@ private extension StorageViewController {
     
     func setupView() {
         view.addSubview(noDataView)
-        view.addSubview(activityIndicator)
         view.addSubview(collectionView)
+        view.addSubview(activityIndicator)
         view.addSubview(uploadButton)
         view.addSubview(changeLayoutButton)
         view.backgroundColor = .white
@@ -201,9 +201,12 @@ private extension StorageViewController {
     }
     
     func uploadButtonPressed() {
-        uploadButton.addAction(UIAction.createNewFolder(view: self,
-                                                        viewModel: viewModel),
-                               for: .touchUpInside)
+        switch isOffline {
+        case true:
+            errorConnection()
+        case false:
+            uploadButton.addAction(UIAction.createNewFolder(view: self, viewModel: viewModel), for: .touchUpInside)
+        }
     }
     
     func showGettingLinkView() {
@@ -283,6 +286,7 @@ extension StorageViewController: UICollectionViewDelegate {
             let model = cellDataSource[indexPath.item]
             let name = model.name
             let fileType = model.file
+            let path = model.path
             let mimeType = model.mimeType
             
             switch mimeType {
@@ -292,6 +296,8 @@ extension StorageViewController: UICollectionViewDelegate {
                 viewModel.presentDocument(name: name, type: .pdf, fileType: fileType)
             case mimeType where mimeType.contains(FileTypes.image):
                 viewModel.presentImage(model: model)
+            case "":
+                viewModel.paggination(title: name, path: path)
             default:
                 UIAlertController.formatError(view: self)
             }

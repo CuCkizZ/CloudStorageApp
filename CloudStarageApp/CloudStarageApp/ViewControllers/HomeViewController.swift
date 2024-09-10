@@ -199,9 +199,12 @@ private extension HomeViewController {
     }
     
     func uploadButtonPressed() {
-        uploadButton.addAction(UIAction.createNewFolder(view: self,
-                                                        viewModel: viewModel),
-                               for: .touchUpInside)
+        switch isOffline {
+        case true:
+            errorConnection()
+        case false:
+            uploadButton.addAction(UIAction.createNewFolder(view: self, viewModel: viewModel), for: .touchUpInside)
+        }
     }
     
     func checkConnetction() {

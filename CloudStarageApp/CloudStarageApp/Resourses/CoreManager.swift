@@ -5,7 +5,7 @@
 //  Created by Nikita Beglov on 30.08.2024.
 //
 
-import Foundation
+import UIKit
 import CoreData
 
 enum TypeOfEntity {
@@ -13,6 +13,8 @@ enum TypeOfEntity {
     case storage
     case published
 }
+
+fileprivate let modelName = "DataModel"
 
 final class CoreManager {
     
@@ -25,7 +27,7 @@ final class CoreManager {
     private init() {}
     
     public lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "DataModel")
+        let container = NSPersistentContainer(name: modelName)
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
@@ -79,12 +81,34 @@ final class CoreManager {
         }
     }
     
-    func addItemsTo(to type: TypeOfEntity, name: String, date: String, size: String) {
+    func saveImage(data: Data) {
+//        TODO: save image in coreData
+//        let context = persistentContainer.viewContext
+//        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "OfflineItems")
+//
+//        do {
+//            if let existingItems = try context.fetch(fetchRequest) as? [OfflineItems], !existingItems.isEmpty {
+//                let item = existingItems.first!
+//                item.image = data
+//                print("Image updated for existing item")
+//            } else {
+//                let newItem = OfflineItems(context: context)
+//                newItem.image = data
+//                print("New item created and image saved")
+//            }
+//
+//            try context.save()
+//        } catch {
+//            print("Failed to save image: \(error)")
+//        }
+    }
+    
+    func addItemsTo(to type: TypeOfEntity, name: String, date: String, size: String, mimeType: String) {
         let context = persistentContainer.viewContext
         var entityName: String
         switch type {
         case .last:
-            entityName = "OfflineItems"
+            entityName = StrGlobalConstants.OfflineData.offlineItems
             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
             fetchRequest.predicate = NSPredicate(format: "name == %@ AND date == %@", name, date)
             do {
@@ -94,14 +118,15 @@ final class CoreManager {
                     items.name = name
                     items.date = date
                     items.size = size
+                    items.mimeType = mimeType
                 }
             } catch {
-                print("I cant")
+                return
             }
             
             saveContext()
         case .storage:
-            entityName = "OfflineStorage"
+            entityName = StrGlobalConstants.OfflineData.offlineStorage
             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
             fetchRequest.predicate = NSPredicate(format: "name == %@ AND date == %@", name, date)
             do {
@@ -111,6 +136,7 @@ final class CoreManager {
                     items.name = name
                     items.date = date
                     items.size = size
+                    items.mimeType = mimeType
                 }
             } catch {
                 return
@@ -118,7 +144,7 @@ final class CoreManager {
             
             saveContext()
         case .published:
-            entityName = "OfflinePublished"
+            entityName = StrGlobalConstants.OfflineData.offlinePublished
             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
             fetchRequest.predicate = NSPredicate(format: "name == %@ AND date == %@", name, date)
             do {
@@ -128,6 +154,7 @@ final class CoreManager {
                     items.name = name
                     items.date = date
                     items.size = size
+                    items.mimeType = mimeType
                 }
             } catch {
                 return
@@ -140,7 +167,7 @@ final class CoreManager {
     func addProfileData(totalSpace: Int, usedSpace: Int, leftSpace: Int) {
         let context = persistentContainer.viewContext
         var entityName: String
-        entityName = "OfflineProfile"
+        entityName = StrGlobalConstants.OfflineData.offlineProfile
         clearData(entityName: entityName)
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: entityName)
         do {

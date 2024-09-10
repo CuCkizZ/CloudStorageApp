@@ -13,8 +13,6 @@ final class LoginViewController: UIViewController {
     private weak var yandex: YandexLoginSDK?
     private lazy var yandexButton = YandexButton()
     
-    
-    
     init(viewModel: LoginViewModelProtocol) {
         self.viewModel = viewModel
         super .init(nibName: nil, bundle: nil)
@@ -30,7 +28,6 @@ final class LoginViewController: UIViewController {
         super.viewDidLoad()
         
         loginButtonPressed()
-        yandexButton.addTarget(self, action: #selector(loginButtonPressed), for: .touchUpInside)
         setupLayout()
     }
 }
@@ -50,15 +47,12 @@ private extension LoginViewController {
     func setupView() {
         view.backgroundColor = .white
         view.addSubview(yandexButton)
+        yandexButton.addTarget(self, action: #selector(loginButtonPressed), for: .touchUpInside)
     }
     
     func setupNavBar() {
         title = StrGlobalConstants.loginTitle
         navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.leftBarButtonItem = UIBarButtonItem(image: .profileTab,
-                                                           style: .plain,
-                                                           target: self,
-                                                           action: #selector(logoutTapped))
     }
     
     func setupConstraints() {
@@ -99,35 +93,5 @@ extension LoginViewController: YandexLoginSDKObserver {
         } catch {
             errorOccured(error)
         }
-    }
-    
-    @objc func logoutButtonPressed() {
-        do {
-            try yandex?.logout()
-        } catch {
-            return
-        }
-        viewModel.logout()
-    }
-
-    func logout() {
-        do {
-            try yandex?.logout()
-        } catch {
-            return
-        }
-        viewModel.logout()
-    }
-    
-    @objc func logoutTapped() {
-        let alert = UIAlertController(title: "Log out", message: "Are you sure?", preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { action in
-            return
-        }))
-        alert.addAction(UIAlertAction(title: "Log out", style: .destructive, handler: { [weak self] action in
-            guard let self = self else { return }
-            self.viewModel.logout()
-        }))
-        present(alert, animated: true)
     }
 }

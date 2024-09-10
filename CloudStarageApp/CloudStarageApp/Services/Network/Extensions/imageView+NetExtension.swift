@@ -8,6 +8,8 @@
 import UIKit
 import Alamofire
 
+let mapper = Mapper()
+
 extension UIImageView {
     
     func afload(urlString: String) {
@@ -33,6 +35,7 @@ extension UIImageView {
                 if let image = UIImage(data: data) {
                     DispatchQueue.main.async {
                         self.image = image
+                        mapper.saveImage(data: data)
                     }
                 } else {
                     print("Failed to convert data to image")

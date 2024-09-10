@@ -85,12 +85,12 @@ private extension AppCoordinator {
         navigationController?.view.removeFromSuperview()
         navigationController = nil
             
-        coreManager.clearData(entityName: "OfflineProfile")
-        coreManager.clearData(entityName: "OfflineItems")
-        coreManager.clearData(entityName: "OfflineStorage")
-        coreManager.clearData(entityName: "OfflinePublished")
+        coreManager.clearData(entityName: StrGlobalConstants.OfflineData.offlineProfile)
+        coreManager.clearData(entityName: StrGlobalConstants.OfflineData.offlineItems)
+        coreManager.clearData(entityName: StrGlobalConstants.OfflineData.offlineStorage)
+        coreManager.clearData(entityName: StrGlobalConstants.OfflineData.offlinePublished)
         
-        keychainManager.delete(forKey: "token")
+        keychainManager.delete(forKey: StrGlobalConstants.keycheinKey)
         
         userStorage.isLoginIn = false
         
