@@ -313,7 +313,7 @@ extension StorageViewController: UICollectionViewDelegate {
         case false:
             guard let indexPath = indexPaths.first else { return nil }
             let model = cellDataSource[indexPath.row]
-            return UIContextMenuConfiguration.contextMenuConfiguration(for: .last,
+            return UIContextMenuConfiguration.contextMenuConfiguration(for: .full,
                                                                        viewModel: viewModel,
                                                                        model: model,
                                                                        indexPath: indexPath,
