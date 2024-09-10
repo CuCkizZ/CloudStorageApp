@@ -130,6 +130,7 @@ final class NetworkService: NetworkServiceProtocol {
             }
             if let data = response.data {
                 let str = String(data: data, encoding: .utf8)
+                return 
             }
         }
     }
@@ -138,7 +139,6 @@ final class NetworkService: NetworkServiceProtocol {
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .delete, headers: headers).response { response in
-            guard let statusCode = response.response?.statusCode else { return }
         }
     }
     
@@ -147,11 +147,6 @@ final class NetworkService: NetworkServiceProtocol {
         guard let url = URL(string: urlSting) else { return }
         
         AF.request(url, method: .put, headers: headers).validate().response { response in
-            guard let statusCode = response.response?.statusCode else {
-                return
-            }
-            if let error = response.error {
-            }
         }
     }
     
@@ -160,17 +155,6 @@ final class NetworkService: NetworkServiceProtocol {
         guard let url = URL(string: urlString) else { return }
         
         AF.request(url, method: .put, headers: headers).validate().response { response in
-            guard let statusCode = response.response?.statusCode else {
-                print("Error: no response")
-                return
-            }
-            print("status code: \(statusCode)")
-            if let error = response.error {
-                print("Error: \(error)")
-            }
-            if let data = response.data {
-                _ = String(data: data, encoding: .utf8)
-            }
         }
     }
     

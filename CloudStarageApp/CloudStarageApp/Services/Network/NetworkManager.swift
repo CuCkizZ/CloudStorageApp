@@ -46,11 +46,9 @@ final class NetworkManager: NetworkManagerProtocol {
                     completion(.success((result.items)))
                 } catch {
                     completion(.failure(error))
-                    print("Ошибка при парсе: \(error.localizedDescription)")
                 }
             case .failure(let error):
                 completion(.failure(error))
-                print("Нечего парсить")
             }
         }
     }
@@ -66,11 +64,9 @@ final class NetworkManager: NetworkManagerProtocol {
                     self.mapper.mapCoreData(result.embedded, type: .storage)
                 } catch {
                     completion(.failure(error))
-                    print("Ошибка при парсе: \(error.localizedDescription)")
                 }
             case .failure(let error):
                 completion(.failure(error))
-                print("Нечего парсить")
             }
         }
     }
@@ -86,11 +82,9 @@ final class NetworkManager: NetworkManagerProtocol {
                     self.mapper.mapCoreData(result, type: .published)
                 } catch {
                     completion(.failure(error))
-                    print("Ошибка при парсе: \(error.localizedDescription)")
                 }
             case .failure(let error):
                 completion(.failure(error))
-                print("Нечего парсить")
             }
         }
     }
@@ -106,11 +100,9 @@ final class NetworkManager: NetworkManagerProtocol {
                     self.mapper.mapCoreData(result.embedded, type: .storage)
                 } catch {
                     completion(.failure(error))
-                    print("Ошибка при парсе: \(error.localizedDescription)")
                 }
             case .failure(let error):
                 completion(.failure(error))
-                print("Нечего парсить")
             }
         }
     }
@@ -125,11 +117,9 @@ final class NetworkManager: NetworkManagerProtocol {
                     completion(.success(result))
                 } catch {
                     completion(.failure(error))
-                    print("Ошибка при парсе: \(error.localizedDescription)")
                 }
             case .failure(let error):
                 completion(.failure(error))
-                print("Нечего парсить")
             }
         }
     }
@@ -145,11 +135,9 @@ final class NetworkManager: NetworkManagerProtocol {
                     completion(.success(profile))
                 } catch {
                     completion(.failure(error))
-                    print("Ошибка при парсе: \(error.localizedDescription)")
                 }
             case .failure(let error):
                 completion(.failure(error))
-                print("Нечего парсить")
             }
         }
     }

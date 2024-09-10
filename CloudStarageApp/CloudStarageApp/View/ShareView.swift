@@ -196,7 +196,6 @@ private extension ShareView {
     }
     
     @objc func shareFile() {
-        print("file name", name)
         guard let file = file,
                 let path = path,
                 let name = name else
