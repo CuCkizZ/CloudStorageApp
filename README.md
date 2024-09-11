@@ -5,8 +5,7 @@
 
 Вход в приложение по Яндекс ID с использованием OAuth 2.0 - YandexLoginSDK. Авторизовачный токен храниться в Keychain
 
-![IMG_1223](https://github.com/user-attachments/assets/5e08ae0e-8b3a-4c37-96c2-11098f295136)
-![IMG_1224](https://github.com/user-attachments/assets/6f72b885-3602-41fd-b1ec-269478a670fc)
+![IMG_273BB814BAEA-1 (1)](https://github.com/user-attachments/assets/e1835e27-a8c9-41be-9984-1b419ccc79be)
 ![IMG_92602A8A714B-1 (1)](https://github.com/user-attachments/assets/fe513c08-4163-4088-9478-a9c37bab5b4f)
 
 Простмотр файлов на Яндекс диск. Возможность менять представление. Загруженные данные сразу сохраняются в CoreData и при отсутвии интернета позваляют так же посмотреть файлы.
