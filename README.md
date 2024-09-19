@@ -3,7 +3,8 @@
 ![IMG_1222](https://github.com/user-attachments/assets/67feb127-4edf-430a-b1e0-eaf71a7469d9)
 
 
-Вход в приложение по Яндекс ID с использованием OAuth 2.0 - YandexLoginSDK. Авторизовачный токен храниться в Keychain
+<h2 align="center">Вход в приложение по Яндекс ID с использованием OAuth 2.0 - YandexLoginSDK. Авторизовачный токен храниться в Keychain</h2>
+
 
 ![IMG_273BB814BAEA-1 (1)](https://github.com/user-attachments/assets/e1835e27-a8c9-41be-9984-1b419ccc79be)
 ![IMG_92602A8A714B-1 (1)](https://github.com/user-attachments/assets/fe513c08-4163-4088-9478-a9c37bab5b4f)
