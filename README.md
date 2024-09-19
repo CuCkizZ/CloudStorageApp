@@ -1,9 +1,10 @@
-# CloudStorageApp
+[![Typing SVG](https://readme-typing-svg.herokuapp.com?color=%2336BCF7&lines=Cloud+storage+app)](https://git.io/typing-svg)
+
+<h2 align="center">Вход в приложение по Яндекс ID с использованием OAuth 2.0 - YandexLoginSDK. Авторизовачный токен храниться в Keychain</h2>
 ![IMG_1221](https://github.com/user-attachments/assets/5089ad3e-5d74-426b-ba41-82f9c58e8c7c)
 ![IMG_1222](https://github.com/user-attachments/assets/67feb127-4edf-430a-b1e0-eaf71a7469d9)
 
 
-<h2 align="center">Вход в приложение по Яндекс ID с использованием OAuth 2.0 - YandexLoginSDK. Авторизовачный токен храниться в Keychain</h2>
 
 
 ![IMG_273BB814BAEA-1 (1)](https://github.com/user-attachments/assets/e1835e27-a8c9-41be-9984-1b419ccc79be)
