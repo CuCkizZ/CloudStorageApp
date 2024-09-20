@@ -23,7 +23,6 @@ final class HomeViewModel {
     
     var loginResult: LoginResult? {
         didSet {
-            
         }
     }
     
